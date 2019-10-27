@@ -16,12 +16,12 @@ uses
   IM.Contact.Add in 'IM.Contact.Add.pas' {FormContactAdd},
   IM.Tool.Captcha in 'IM.Tool.Captcha.pas' {FormCaptcha},
   Base64Unit in 'Base64Unit.pas',
-  GmXml in 'GmXml.pas',
   MD5Hash in 'MD5Hash.pas',
-  Jabber in 'D:\Мультимедиа\Проекты\#Fork\TJabberClient\Jabber.pas',
-  Jabber.Types in 'D:\Мультимедиа\Проекты\#Fork\TJabberClient\Jabber.Types.pas',
-  Jabber.Actions in 'D:\Мультимедиа\Проекты\#Fork\TJabberClient\Jabber.Actions.pas',
-  IM.Form.Welcome in 'IM.Form.Welcome.pas' {FormWelcome};
+  IM.Form.Welcome in 'IM.Form.Welcome.pas' {FormWelcome},
+  GmXml in '..\HGMJabberClient\GmXml.pas',
+  Jabber.Actions in '..\HGMJabberClient\Jabber.Actions.pas',
+  Jabber in '..\HGMJabberClient\Jabber.pas',
+  Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas';
 
 {$R *.res}
 
@@ -35,18 +35,18 @@ begin
     Application.ShowMainForm := True;
     Application.Title := 'IMJabber';
     Application.CreateForm(TFormMain, FormMain);
-    Application.CreateForm(TFormConfig, FormConfig);
-    Application.CreateForm(TFormAccount, FormAccount);
-    Application.CreateForm(TFormAbout, FormAbout);
-    Application.CreateForm(TFormConsole, FormConsole);
-    Application.CreateForm(TFormChatRoom, FormChatRoom);
-    Application.CreateForm(TFormConference, FormConference);
-    Application.CreateForm(TFormConfInvite, FormConfInvite);
-    Application.CreateForm(TFormNotify, FormNotify);
-    Application.CreateForm(TFormAccountCard, FormAccountCard);
-    Application.CreateForm(TFormContactAdd, FormContactAdd);
-    Application.CreateForm(TFormCaptcha, FormCaptcha);
-    FormWelcome := TFormWelcome.Create(FormMain);
+  Application.CreateForm(TFormConfig, FormConfig);
+  Application.CreateForm(TFormAccount, FormAccount);
+  Application.CreateForm(TFormAbout, FormAbout);
+  Application.CreateForm(TFormConsole, FormConsole);
+  Application.CreateForm(TFormChatRoom, FormChatRoom);
+  Application.CreateForm(TFormConference, FormConference);
+  Application.CreateForm(TFormConfInvite, FormConfInvite);
+  Application.CreateForm(TFormNotify, FormNotify);
+  Application.CreateForm(TFormAccountCard, FormAccountCard);
+  Application.CreateForm(TFormContactAdd, FormContactAdd);
+  Application.CreateForm(TFormCaptcha, FormCaptcha);
+  FormWelcome := TFormWelcome.Create(FormMain);
     FormWelcome.Parent := FormMain.PanelClient;
     FormWelcome.Show;
     Application.Run;

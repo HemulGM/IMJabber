@@ -157,15 +157,15 @@
             <Form>FormCaptcha</Form>
         </DCCReference>
         <DCCReference Include="Base64Unit.pas"/>
-        <DCCReference Include="GmXml.pas"/>
         <DCCReference Include="MD5Hash.pas"/>
-        <DCCReference Include="D:\Мультимедиа\Проекты\#Fork\TJabberClient\Jabber.pas"/>
-        <DCCReference Include="D:\Мультимедиа\Проекты\#Fork\TJabberClient\Jabber.Types.pas"/>
-        <DCCReference Include="D:\Мультимедиа\Проекты\#Fork\TJabberClient\Jabber.Actions.pas"/>
         <DCCReference Include="IM.Form.Welcome.pas">
             <Form>FormWelcome</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\HGMJabberClient\GmXml.pas"/>
+        <DCCReference Include="..\HGMJabberClient\Jabber.Actions.pas"/>
+        <DCCReference Include="..\HGMJabberClient\Jabber.pas"/>
+        <DCCReference Include="..\HGMJabberClient\Jabber.Types.pas"/>
         <None Include="skins\chat\style.css"/>
         <None Include="skins\chat\js.js"/>
         <BuildConfiguration Include="Debug">
@@ -239,7 +239,7 @@
                 <Platform value="Win64">False</Platform>
             </Platforms>
             <Deployment Version="3">
-                <DeployFile LocalName="skins\chat\style.css" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="skins\chat\js.js" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
@@ -251,33 +251,18 @@
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployFile LocalName="skins\chat\js.js" Configuration="Debug" Class="ProjectFile">
+                <DeployFile LocalName="skins\chat\style.css" Configuration="Debug" Class="ProjectFile">
                     <Platform Name="Win32">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>
                     </Platform>
                 </DeployFile>
-                <DeployClass Name="DependencyModule">
-                    <Platform Name="Win32">
-                        <Operation>0</Operation>
-                        <Extensions>.dll;.bpl</Extensions>
-                    </Platform>
+                <DeployClass Name="ProjectiOSDeviceResourceRules">
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="OSX32">
-                        <RemoteDir>Contents\MacOS</RemoteDir>
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
-                    </Platform>
-                    <Platform Name="iOSSimulator">
-                        <Operation>1</Operation>
-                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <DeployClass Name="ProjectOSXResource">
@@ -656,12 +641,27 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectiOSDeviceResourceRules">
+                <DeployClass Name="DependencyModule">
+                    <Platform Name="Win32">
+                        <Operation>0</Operation>
+                        <Extensions>.dll;.bpl</Extensions>
+                    </Platform>
                     <Platform Name="iOSDevice64">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="OSX32">
+                        <RemoteDir>Contents\MacOS</RemoteDir>
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                     <Platform Name="iOSDevice32">
                         <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
+                    </Platform>
+                    <Platform Name="iOSSimulator">
+                        <Operation>1</Operation>
+                        <Extensions>.dylib</Extensions>
                     </Platform>
                 </DeployClass>
                 <ProjectRoot Platform="iOSDevice64" Name="$(PROJECTNAME).app"/>
