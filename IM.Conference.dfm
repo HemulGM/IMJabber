@@ -48,7 +48,7 @@ object FormConference: TFormConference
       ExplicitTop = 6
       ExplicitWidth = 338
     end
-    object Image1: TImage
+    object ImagePhoto: TImage
       Left = 24
       Top = 16
       Width = 16
@@ -151,10 +151,6 @@ object FormConference: TFormConference
         SkinData.SkinSection = 'PAGECONTROL'
         object sTabSheet1: TsTabSheet
           Caption = #1043#1083#1072#1074#1085#1072#1103
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object sSpeedButton1: TsSpeedButton
             Left = 6
             Top = 29
@@ -1500,10 +1496,10 @@ object FormConference: TFormConference
       end
     end
     object chat: TsMemo
-      Left = 4
-      Top = 6
+      Left = 3
+      Top = 3
       Width = 500
-      Height = 115
+      Height = 136
       Color = clWhite
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clBlack
@@ -1525,10 +1521,9 @@ object FormConference: TFormConference
       Height = 335
       Align = alClient
       TabOrder = 2
-      ExplicitLeft = 9
-      ExplicitTop = 127
-      ExplicitWidth = 495
-      ExplicitHeight = 202
+      ExplicitLeft = 76
+      ExplicitTop = 47
+      ExplicitHeight = 317
       ControlData = {
         4C000000E2330000A02200000000000000000000000000000000000000000000
         000000004C000000000000000000000001000000E0D057007335CF11AE690800
@@ -1934,7 +1929,7 @@ object FormConference: TFormConference
     Left = 400
     Top = 200
     Bitmap = {
-      494C010107002800A00010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010107002800AC0010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000002000000001002000000000000020
       000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFF
       FFFFFEFEFFFFD0D4EAFF9AA3D7FF7885CAFF707EC7FF8D97D2FFBAC0E1FFF2F3

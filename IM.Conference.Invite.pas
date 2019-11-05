@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, sLabel, sButton, sComboBox, sGroupBox, md5hash2, ComCtrls,
+  Dialogs, StdCtrls, sLabel, sButton, sComboBox, sGroupBox, MD5Hash, ComCtrls,
   acProgressBar, inifiles;
 
 type

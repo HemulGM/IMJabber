@@ -6,8 +6,10 @@ const
   Base64ABC = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 type
+  TBase64Buf = array[0..2] of Byte;
+
   TBase64 = record
-    ByteArr: array[0..2] of Byte;
+    ByteArr: TBase64Buf;
     ByteCount: Byte;
   end;
 
@@ -15,7 +17,32 @@ function CodeBase64(Base64: TBase64): string;
 
 function DecodeBase64(StringValue: string): TBase64;
 
+function Base64ToSHA(Base64Value: string): string;
+
+function ShaHASH(Value: string): string;
+
 implementation
+ uses IdGlobal, IdHashSHA, System.SysUtils, System.NetEncoding;
+
+function Base64ToSHA(Base64Value: string): string;
+var
+  Hasher: TIdHashSHA1;
+  Base64Bytes: TBytes;
+begin
+  Hasher := TIdHashSHA1.Create;
+  Base64Bytes := TNetEncoding.Base64.DecodeStringToBytes(Base64Value);
+  Result := Hasher.HashBytesAsHex(TIdBytes(Base64Bytes));
+  Hasher.Free;
+end;
+
+function ShaHASH(Value: string): string;
+var
+  Hasher: TIdHashSHA1;
+begin
+  Hasher := TIdHashSHA1.Create;
+  Result := LowerCase(Hasher.HashStringAsHex(Trim(Value)));
+  Hasher.Free;
+end;
 
 function CodeBase64(Base64: TBase64): string;
 var

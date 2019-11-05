@@ -5,289 +5,371 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, sMemo, ComCtrls, sPageControl, ExtCtrls, sPanel, sButton,
-  acProgressBar, ExtDlgs, ActnList, registry, Base64Unit, System.Actions;
+  acProgressBar, ExtDlgs, ActnList, registry, Base64Unit, System.Actions,
+  Jabber.Types, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage, Vcl.Imaging.GIFImg,
+  Vcl.Grids, HGM.Controls.VirtualTable, HGM.Button, acPNG;
 
 type
+  TEmailList = TTableData<TEmail>;
+
+  TTelList = TTableData<TTel>;
+
+  TAdrList = TTableData<TAddress>;
+
   TFormAccountCard = class(TForm)
     sPanel1: TsPanel;
     sPageControl1: TsPageControl;
     sTabSheet1: TsTabSheet;
-    sTabSheet2: TsTabSheet;
-    sTabSheet3: TsTabSheet;
     sTabSheet4: TsTabSheet;
-    sTabSheet5: TsTabSheet;
-    sPanel2: TsPanel;
-    sButton1: TsButton;
-    sButton2: TsButton;
-    Image1: TImage;
-    sButton3: TsButton;
-    sButton4: TsButton;
-    sButton5: TsButton;
-    sProgressBar1: TsProgressBar;
-    Timer1: TTimer;
+    ButtonClose: TsButton;
+    ButtonApply: TsButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
-    Label4: TLabel;
     Label5: TLabel;
+    EditFullName: TEdit;
+    EditNickName: TEdit;
+    EditBirthDay: TEdit;
+    EditUrl: TEdit;
+    RichEditDesc: TRichEdit;
+    SaveDialog1: TSaveDialog;
+    Label16: TLabel;
+    EditFirstName: TEdit;
+    Label17: TLabel;
+    EditLastName: TEdit;
+    Label18: TLabel;
+    EditMiddleName: TEdit;
+    TabSheetConacts: TsTabSheet;
+    TableExEmail: TTableEx;
+    Label4: TLabel;
+    TableExTel: TTableEx;
     Label6: TLabel;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    Edit3: TEdit;
-    Edit4: TEdit;
-    Edit5: TEdit;
-    Edit6: TEdit;
+    Label19: TLabel;
+    TableExAddress: TTableEx;
+    ButtonFlat1: TButtonFlat;
+    ButtonFlat2: TButtonFlat;
+    ButtonFlat3: TButtonFlat;
+    ButtonFlat4: TButtonFlat;
+    ButtonFlat5: TButtonFlat;
+    ButtonFlat6: TButtonFlat;
+    ButtonFlat7: TButtonFlat;
+    ButtonFlat8: TButtonFlat;
+    ButtonFlat9: TButtonFlat;
     Label7: TLabel;
     Label8: TLabel;
     Label9: TLabel;
     Label10: TLabel;
-    Edit7: TEdit;
-    Edit8: TEdit;
-    Edit9: TEdit;
-    Edit10: TEdit;
-    Label11: TLabel;
-    Label12: TLabel;
-    Label13: TLabel;
-    Label14: TLabel;
-    Label15: TLabel;
-    Edit11: TEdit;
-    Edit12: TEdit;
-    Edit13: TEdit;
-    Edit14: TEdit;
-    Edit15: TEdit;
-    ActionListMain: TActionList;
-    get_vcard: TAction;
-    send_vcard: TAction;
-    RichEdit1: TRichEdit;
-    vk_clear: TAction;
-    sButton6: TsButton;
-    SaveDialog1: TSaveDialog;
-    sButton7: TsButton;
-    procedure FormResize(Sender: TObject);
-    procedure get_vcardExecute(Sender: TObject);
-    procedure FormShow(Sender: TObject);
-    procedure sButton4Click(Sender: TObject);
-    procedure sButton2Click(Sender: TObject);
-    procedure send_vcardExecute(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure sButton1Click(Sender: TObject);
-    procedure Image1Click(Sender: TObject);
-    procedure sButton5Click(Sender: TObject);
-    procedure sButton3Click(Sender: TObject);
-    procedure vk_clearExecute(Sender: TObject);
-    procedure sButton6Click(Sender: TObject);
-    procedure sButton7Click(Sender: TObject);
+    EditOrgName: TEdit;
+    EditOrgUnit: TEdit;
+    EditTitle: TEdit;
+    EditRole: TEdit;
+    Panel1: TPanel;
+    ImagePhoto: TImage;
+    Panel2: TPanel;
+    ButtonFlatPhotoRemove: TButtonFlat;
+    ButtonFlatPhotoSaveAs: TButtonFlat;
+    ButtonFlatPhotoSet: TButtonFlat;
+    FileOpenDialog: TFileOpenDialog;
+    procedure ButtonCloseClick(Sender: TObject);
+    procedure ButtonApplyClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure TableExEmailGetData(FCol, FRow: Integer; var Value: string);
+    procedure TableExTelGetData(FCol, FRow: Integer; var Value: string);
+    procedure TableExAddressGetData(FCol, FRow: Integer; var Value: string);
+    procedure ButtonFlat1Click(Sender: TObject);
+    procedure ButtonFlatPhotoSetClick(Sender: TObject);
   private
-    { Private declarations }
+    FCard: TVCard;
+    FAdr: TAdrList;
+    FEmails: TEmailList;
+    FTels: TTelList;
+    FImageType: string;
+    FImageBin: string;
+    procedure SetCard;
   public
-    { Public declarations }
+    class function ShowCard(Card: TVCard): Boolean;
+    class function EditCard(var Card: TVCard): Boolean;
+    function ShowModal(var Card: TVCard): Integer; overload;
   end;
 
 var
   FormAccountCard: TFormAccountCard;
-  vcreg: treginifile;
+
+function SetImageFromBinVal(BinVal, ImageType: string; Target: TPicture): Boolean;
 
 implementation
 
 uses
-  IM.Main, IM.Account;
+  IM.Main, IM.Account, System.NetEncoding, HGM.Common.Helper,
+  IdHashMessageDigest, HGM.Common.Utils;
 
 {$R *.dfm}
 
-procedure TFormAccountCard.FormResize(Sender: TObject);
-begin
-  Edit1.Width := FormAccountCard.Width - 145;
-  Edit2.Width := FormAccountCard.Width - 145;
-  Edit3.Width := FormAccountCard.Width - 145;
-  Edit4.Width := FormAccountCard.Width - 145;
-  Edit5.Width := FormAccountCard.Width - 145;
-  Edit6.Width := FormAccountCard.Width - 145;
-  Edit7.Width := FormAccountCard.Width - 145;
-  Edit8.Width := FormAccountCard.Width - 145;
-  Edit9.Width := FormAccountCard.Width - 145;
-  Edit10.Width := FormAccountCard.Width - 145;
-  Edit11.Width := FormAccountCard.Width - 145;
-  Edit12.Width := FormAccountCard.Width - 145;
-  Edit13.Width := FormAccountCard.Width - 145;
-  Edit14.Width := FormAccountCard.Width - 145;
-  Edit15.Width := FormAccountCard.Width - 145;
-  sButton3.Left := FormAccountCard.Width - 300;
-  sButton5.Left := FormAccountCard.Width - 200;
-  sButton4.Left := FormAccountCard.Width - 100;
-end;
-
-procedure TFormAccountCard.FormShow(Sender: TObject);
-begin
-//ActionList1.Actions[0].Execute;
-end;
-
-procedure TFormAccountCard.get_vcardExecute(Sender: TObject);
+function SetImageFromBinVal(BinVal, ImageType: string; Target: TPicture): Boolean;
 var
-  i: integer;
+  ImageBytes: TBytes;
+  PhotoStream: TMemoryStream;
+  PNG: TPngImage;
+  JPG: TJPEGImage;
+  GIF: TGIFImage;
 begin
-//Запрос на получение VCard
-  if FormMain.JabberClient.Connected then
-  begin
-    FormMain.vcard_flag := True;
-    randomize;
-    i := random(777);
-
-    if (FormMain.pub_vcard_view = true) and (FormMain.pub_vcard_jid <> '') then
+  ImageBytes := TNetEncoding.Base64.DecodeStringToBytes(BinVal);
+  ImageType := LowerCase(ImageType);
+  PhotoStream := TMemoryStream.Create;
+  try
+    PhotoStream.Write(ImageBytes, Length(ImageBytes));
+    PhotoStream.Position := 0;
+    Result := True;
+    if ImageType = 'image/png' then
     begin
-      FormMain.JabberClient.SendData('<iq type="get" to="' + FormMain.pub_vcard_jid + '" id="code' + inttostr(i) + '" >' + '<vCard xmlns="vcard-temp" prodid="-//HandGen//NONSGML vGen v1.0//EN" version="2.0" /></iq>');
+      PNG := TPngImage.Create;
+      PNG.LoadFromStream(PhotoStream);
+      Target.Assign(PNG);
+      PNG.Free;
+    end
+    else if (ImageType = 'image/jpg') or (ImageType = 'image/jpeg') then
+    begin
+      JPG := TJPEGImage.Create;
+      JPG.LoadFromStream(PhotoStream);
+      Target.Assign(JPG);
+      JPG.Free;
+    end
+    else if ImageType = 'image/gif' then
+    begin
+      GIF := TGIFImage.Create;
+      GIF.LoadFromStream(PhotoStream);
+      Target.Assign(GIF);
+      GIF.Free;
     end
     else
     begin
-      FormMain.JabberClient.SendData('<iq type="get" to="' + FormAccount.EditLogin.Text + '@' + FormAccount.EditServer.text + '" id="code' + inttostr(i) + '" >' + '<vCard xmlns="vcard-temp" prodid="-//HandGen//NONSGML vGen v1.0//EN" version="2.0" /></iq>');
+      Target.Assign(nil);
+      Result := False;
     end;
-
-    sProgressBar1.Visible := true;
-    sProgressBar1.Position := 10;
+  finally
+    PhotoStream.Free;
   end;
 end;
 
-procedure TFormAccountCard.Image1Click(Sender: TObject);
-begin
-  FormMain.ActionListMain.Actions[2].Execute;
-end;
-
-procedure TFormAccountCard.sButton1Click(Sender: TObject);
-begin
-  FormMain.ActionListMain.Actions[2].Execute;
-end;
-
-procedure TFormAccountCard.sButton2Click(Sender: TObject);
-begin
-  Image1.Picture.Bitmap.FreeImage;
-end;
-
-procedure TFormAccountCard.sButton3Click(Sender: TObject);
-begin
-  ActionListMain.Actions[1].Execute;
-end;
-
-procedure TFormAccountCard.sButton4Click(Sender: TObject);
-begin
-  close;
-  sButton7.Visible := false;
-end;
-
-procedure TFormAccountCard.sButton5Click(Sender: TObject);
-begin
-  FormMain.pub_vcard_view := false;
-  FormAccountCard.sButton3.Visible := true;
-  ActionListMain.Actions[0].Execute;
-end;
-
-procedure TFormAccountCard.sButton6Click(Sender: TObject);
+procedure TFormAccountCard.ButtonApplyClick(Sender: TObject);
 var
-  i: integer;
+  i: Integer;
 begin
-  i := random(777);
-  SaveDialog1.FileName := 'vcard' + inttostr(i) + '.bmp';
-  if SaveDialog1.Execute then
-    Image1.Picture.SaveToFile(SaveDialog1.FileName);
+  FCard.FullName := EditFullName.Text;
+  FCard.Name.FirstName := EditFirstName.Text;
+  FCard.Name.MiddleName := EditMiddleName.Text;
+  FCard.Name.LastName := EditLastName.Text;
+  FCard.NickName := EditNickName.Text;
+  FCard.BirthDay := StrToDate(EditBirthDay.Text);
+  FCard.URL := EditUrl.Text;
+  FCard.Title := EditTitle.Text;
+  FCard.Role := EditRole.Text;
+  FCard.Desc := RichEditDesc.Text;
+
+  FCard.ClearTel;
+  for i := 0 to FTels.Count - 1 do
+    FCard.AddTel(FTels[i]);
+
+  FCard.ClearEmail;
+  for i := 0 to FEmails.Count - 1 do
+    FCard.AddEmail(FEmails[i]);
+
+  FCard.ClearAdr;
+  for i := 0 to FAdr.Count - 1 do
+    FCard.AddAddress(FAdr[i]);
+
+  FCard.Organisation.Name := EditOrgName.Text;
+  FCard.Organisation.OrgUnit := EditOrgUnit.Text;
+
+  FCard.Photo.PhotoType := FImageType;
+  FCard.Photo.BinVal := FImageBin;
+  ModalResult := mrOk;
 end;
 
-procedure TFormAccountCard.sButton7Click(Sender: TObject);
+procedure TFormAccountCard.ButtonCloseClick(Sender: TObject);
 begin
-  FormMain.ActionAuthAndAdd.Execute;
   Close;
 end;
 
-procedure TFormAccountCard.send_vcardExecute(Sender: TObject);
-const
-  Base64MaxLength = 72;
+procedure TFormAccountCard.ButtonFlat1Click(Sender: TObject);
 var
-  i, hFile: integer;
-  pic_type, fway, pic_buf, xml_str, base64String: string;
-  f: TextFile; // файл
-  Buf: array[0..2] of Byte;
-  Base64: TBase64;
-  iqid: string;
+  Item: TEmail;
 begin
-  randomize;
-  i := random(777);
+  Item.Flags := [efWork, efInternet, efPref, efX400];
+  Item.UserId := 'alinvip22@gmail.com';
+  FEmails.Add(Item);
+end;
 
-  vcreg := treginifile.Create('software');
-  pic_type := vcreg.readString('LampIM', 'avatar_type', '');
-  if pic_type <> '' then
+procedure TFormAccountCard.ButtonFlatPhotoSetClick(Sender: TObject);
+var
+  FS: TFileStream;
+  STR: TStringStream;
+  Base64String, Ext: string;
+begin
+  if FileOpenDialog.Execute(Handle) then
   begin
-    fway := ExtractFilePath(ParamStr(0)) + 'avatar\avatar' + pic_type;
-
-    if FileExists(fway) then
+    Ext := LowerCase(ExtractFileExt(FileOpenDialog.FileName));
+    if Ext = '.png' then
+      Ext := 'image/png'
+    else if (Ext = '.jpg') or (Ext = '.jpeg') then
+      Ext := 'image/jpeg'
+    else if Ext = '.gif' then
+      Ext := 'image/gif'
+    else
+      Ext := '';
+    if Ext <> '' then
     begin
 
-      Application.ProcessMessages;
-      base64String := '';
-      hFile := FileOpen(fway, fmOpenReadWrite);
-      AssignFile(f, fway + '.b64');
-      Rewrite(f);
-      FillChar(Buf, SizeOf(Buf), #0);
-      repeat
-        Base64.ByteCount := FileRead(hFile, Buf, SizeOf(Buf));
-        Move(Buf, Base64.ByteArr, SizeOf(Buf));
-        base64String := base64String + CodeBase64(Base64);
-        if Length(base64String) = Base64MaxLength then
-        begin
-          pic_buf := pic_buf + base64String;
-          base64String := '';
-        end;
-      until Base64.ByteCount < 3;
-      pic_buf := pic_buf + base64String;
-      CloseFile(f);
-      FileClose(hFile);
-      if fileexists(fway + '.b64') then
-        deletefile(fway + '.b64');
-    end;
-
-    if length(pic_buf) > 0 then
+      FS := TFileStream.Create(FileOpenDialog.FileName, fmOpenRead);
+      STR := TStringStream.Create;
+      TNetEncoding.Base64.Encode(FS, STR);
+      Base64String := STR.DataString;
+      STR.Free;
+      FS.Free;
+      FImageBin := Base64String;
+      FImageType := Ext;
+      ImagePhoto.Picture.LoadFromFile(FileOpenDialog.FileName);
+    end
+    else
     begin
-      pic_type := copy(pic_type, 2, length(pic_type));
-      xml_str := '<PHOTO><TYPE>image/' + pic_type + '</TYPE><BINVAL>' + pic_buf + '</BINVAL></PHOTO>';
+      MessageBox(Handle, 'Произошла ошибка при загрузки изображения. Выберите другое', '', MB_ICONWARNING or MB_OK);
+      Exit;
     end;
-
   end;
-//Отправка вкард
-  FormMain.up_vcard_flag := true;
-  sProgressBar1.Visible := true;
-  iqid := 'vc' + inttostr(i);
-  FormMain.iq_id := iqid;
-  FormMain.JabberClient.SendData('<iq type="set" id="' + iqid + '" >' + '<vCard xmlns="vcard-temp" prodid="-//HandGen//NONSGML vGen v1.0//EN" version="2.0" >' + '<FN>' + Edit1.Text + '</FN><NICKNAME>' + Edit2.Text + '</NICKNAME>' + xml_str + '<BDAY>' + Edit3.Text + '</BDAY><ADR><HOME/><STREET>' + Edit11.Text + '</STREET>' + '<LOCALITY>' + Edit12.Text + '</LOCALITY><REGION>' + Edit13.Text + '</REGION><PCODE>' + Edit14.Text + '</PCODE>' + '<CTRY>' + Edit15.Text + '</CTRY></ADR><TEL><HOME/><VOICE/><NUMBER>' +
-    Edit4.Text + '</NUMBER>' + '</TEL><EMAIL><INTERNET/><USERID>' + Edit6.Text + '</USERID></EMAIL>' + '<TITLE>' + Edit9.Text + '</TITLE><ROLE>' + Edit10.Text + '</ROLE><ORG><ORGNAME>' + Edit7.Text + '</ORGNAME>' + '<ORGUNIT>' + Edit8.Text + '</ORGUNIT></ORG><URL>' + Edit5.Text + '</URL>' + '<DESC>' + RichEdit1.Text + '</DESC></vCard></iq>');
-  sProgressBar1.Position := 10;
-  Timer1.Enabled := true;
-  sButton5.Enabled := false;
-  sButton3.Enabled := false;
-  vcreg.Free;
-
 end;
 
-procedure TFormAccountCard.Timer1Timer(Sender: TObject);
+procedure TFormAccountCard.SetCard;
+var
+  i: Integer;
 begin
-  if sProgressBar1.Position > 95 then
-    sProgressBar1.Position := 0;
-  sProgressBar1.Position := sProgressBar1.Position + 5;
+  EditFullName.Text := FCard.FullName;
+  EditFirstName.Text := FCard.Name.FirstName;
+  EditMiddleName.Text := FCard.Name.MiddleName;
+  EditLastName.Text := FCard.Name.LastName;
+  EditNickName.Text := FCard.NickName;
+  EditBirthDay.Text := DateToStr(FCard.BirthDay);
+  EditUrl.Text := FCard.URL;
+  EditTitle.Text := FCard.Title;
+  EditRole.Text := FCard.Role;
+  RichEditDesc.Text := FCard.Desc;
+  EditOrgName.Text := FCard.Organisation.Name;
+  EditOrgUnit.Text := FCard.Organisation.OrgUnit;
+
+  FImageType := FCard.Photo.PhotoType;
+  FImageBin := FCard.Photo.BinVal;
+
+  FAdr.BeginUpdate;
+  for i := Low(FCard.Address) to High(FCard.Address) do
+    FAdr.Add(FCard.Address[i]);
+  FAdr.EndUpdate;
+
+  FEmails.BeginUpdate;
+  for i := Low(FCard.EMail) to High(FCard.EMail) do
+    FEmails.Add(FCard.EMail[i]);
+  FEmails.EndUpdate;
+
+  FTels.BeginUpdate;
+  for i := Low(FCard.Tel) to High(FCard.Tel) do
+    FTels.Add(FCard.Tel[i]);
+  FTels.EndUpdate;
+
+  SetImageFromBinVal(FImageBin, FImageType, ImagePhoto.Picture);
 end;
 
-procedure TFormAccountCard.vk_clearExecute(Sender: TObject);
+class function TFormAccountCard.ShowCard(Card: TVCard): Boolean;
 begin
-  edit1.Clear;
-  edit2.Clear;
-  edit3.Clear;
-  edit4.Clear;
-  edit5.Clear;
-  edit6.Clear;
-  edit7.Clear;
-  edit8.Clear;
-  edit9.Clear;
-  edit10.Clear;
-  edit12.Clear;
-  edit13.Clear;
-  edit14.Clear;
-  edit15.Clear;
-  RichEdit1.Clear;
-  Image1.Picture.Bitmap.FreeImage;
+  with TFormAccountCard.Create(nil) do
+  begin
+    FCard := Card;
+    SetCard;
+    ButtonApply.Visible := False;
+    ShowModal;
+    Result := True;
+    Free;
+  end;
+end;
+
+function TFormAccountCard.ShowModal(var Card: TVCard): Integer;
+begin
+  FCard := Card;
+  SetCard;
+  ButtonApply.Visible := True;
+  Result := ShowModal;
+  if Result = mrOK then
+    Card := FCard;
+end;
+
+procedure TFormAccountCard.TableExAddressGetData(FCol, FRow: Integer; var Value: string);
+begin
+  if FAdr.IndexIn(FRow) then
+  begin
+    case FCol of
+      0:
+        Value := '';
+      1:
+        Value := FAdr[FRow].ExtAdd;
+      2:
+        Value := FAdr[FRow].Street;
+      3:
+        Value := FAdr[FRow].Locality;
+      4:
+        Value := FAdr[FRow].Region;
+      5:
+        Value := FAdr[FRow].PCode;
+      6:
+        Value := FAdr[FRow].Country;
+    end;
+  end;
+end;
+
+procedure TFormAccountCard.TableExEmailGetData(FCol, FRow: Integer; var Value: string);
+begin
+  if FEmails.IndexIn(FRow) then
+  begin
+    case FCol of
+      0:
+        Value := '';
+      1:
+        Value := FEmails[FRow].UserId;
+    end;
+  end;
+end;
+
+procedure TFormAccountCard.TableExTelGetData(FCol, FRow: Integer; var Value: string);
+begin
+  if FTels.IndexIn(FRow) then
+  begin
+    case FCol of
+      0:
+        Value := '';
+      1:
+        Value := FTels[FRow].Number;
+    end;
+  end;
+end;
+
+class function TFormAccountCard.EditCard(var Card: TVCard): Boolean;
+begin
+  with TFormAccountCard.Create(nil) do
+  begin
+    Result := ShowModal(Card) = mrOk;
+    Free;
+  end;
+end;
+
+procedure TFormAccountCard.FormCreate(Sender: TObject);
+begin
+  FTels := TTelList.Create(TableExTel);
+  FEmails := TEmailList.Create(TableExEmail);
+  FAdr := TAdrList.Create(TableExAddress);
+end;
+
+procedure TFormAccountCard.FormDestroy(Sender: TObject);
+begin
+  FTels.Free;
+  FEmails.Free;
+  FAdr.Free;
 end;
 
 end.

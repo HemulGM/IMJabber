@@ -1,5 +1,9 @@
 program IMJabber;
 
+
+
+{$R *.dres}
+
 uses
   Forms,
   windows,
@@ -39,7 +43,6 @@ begin
   Application.CreateForm(TFormAccount, FormAccount);
   Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormConsole, FormConsole);
-  Application.CreateForm(TFormChatRoom, FormChatRoom);
   Application.CreateForm(TFormConference, FormConference);
   Application.CreateForm(TFormConfInvite, FormConfInvite);
   Application.CreateForm(TFormNotify, FormNotify);
@@ -49,11 +52,12 @@ begin
   FormWelcome := TFormWelcome.Create(FormMain);
     FormWelcome.Parent := FormMain.PanelClient;
     FormWelcome.Show;
+    FormMain.Start;
     Application.Run;
   end
   else
   begin
-    Application.MessageBox('Можно запустить только одну копию Lamp IM!', 'Внимание!');
+    Application.MessageBox('Можно запустить только одну копию программы IMJabber', 'Внимание!');
     Halt;
   end;
 end.

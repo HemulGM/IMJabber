@@ -29,15 +29,21 @@ var
 implementation
 
 uses
-  IM.Main, Jabber;
+  IM.Main, Jabber, Jabber.Types;
 
 {$R *.dfm}
 
 procedure TFormContactAdd.sButton1Click(Sender: TObject);
+var Item: TRosterItem;
 begin
   if (Edit1.Text <> '') and (Edit2.Text <> '') and (pos('@', Edit2.Text) > 0) then
   begin
-    FormMain.JabberClient.AddContact(edit2.Text, edit1.Text, '');
+    Item := TRosterItem.Create;
+    Item.JID := edit2.Text;
+    Item.Name := edit2.Text;
+    //Item.Groups := edit2.Text;
+    if FormMain.JabberClient.AddContact(Item) then ShowMessage('OK');
+    Item.Free;
     edit1.Text := '';
     edit2.Text := '';
     Close;

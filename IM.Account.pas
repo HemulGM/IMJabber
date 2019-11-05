@@ -221,7 +221,7 @@ begin
     ModalResult := mrOk;
   end
   else
-    FormChatRoom.SwowPopupWnd('Не все поля заполнены!');
+    ShowMessage('Не все поля заполнены!');
 end;
 
 procedure TFormAccount.ButtonCancelClick(Sender: TObject);

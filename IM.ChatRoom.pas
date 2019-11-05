@@ -4,53 +4,57 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, sButton, ExtCtrls, sBevel, ComCtrls, sPageControl, sMemo,
-  sPanel, Menus, OleCtrls, SHDocVw, ActnList, ImgList, Buttons, acPNG,
-  sSpeedButton, MMsystem, IdTCPConnection, IdTCPClient, IdMultipartFormData,
-  ExtDlgs, IdBaseComponent, IdHTTP, IniFiles, System.ImageList, System.Actions;
+  Dialogs, StdCtrls, ExtCtrls, ComCtrls, ImgList, Buttons, ExtDlgs, IniFiles,
+  System.ImageList, System.Actions, Jabber.Types, Vcl.Grids,
+  HGM.Controls.VirtualTable, HGM.Button;
 
 type
+  TChatElementType = (etChat, etDate);
+
+  TChatElement = record
+    MessageItem: TJabberMessage;
+    Date: TDate;
+    ElementType: TChatElementType;
+  end;
+
+  TMessages = class(TTableData<TChatElement>)
+    FLastDate: TDateTime;
+    function Add(Value: TChatElement): Integer; override;
+    procedure Reads(MessageItem: TJabberMessage);
+  end;
+
   TFormChatRoom = class(TForm)
-    sPanel1: TPanel;
-    sPageControl1: TPageControl;
-    sTabSheet1: TTabSheet;
-    sTabSheet2: TTabSheet;
-    sPanel2: TPanel;
-    WebBrowserDialog: TWebBrowser;
-    WebBrowser2: TWebBrowser;
-    ImageList1: TImageList;
-    sSpeedButton2: TsSpeedButton;
-    sSpeedButton5: TsSpeedButton;
-    sSpeedButton7: TsSpeedButton;
-    Timer1: TTimer;
+    PanelSend: TPanel;
+    ImageList24: TImageList;
     BalloonHint1: TBalloonHint;
     MemoSend: TMemo;
-    ButtonSend: TButton;
     Panel1: TPanel;
     LabelNick: TLabel;
-    Button1: TButton;
+    TableExMessages: TTableEx;
+    LabelStatus: TLabel;
+    Shape1: TShape;
+    ButtonFlatAttachment: TButtonFlat;
+    ImageListIcons: TImageList;
     procedure ButtonSendClick(Sender: TObject);
     procedure MemoSendKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure WebBrowser2TitleChange(ASender: TObject; const Text: WideString);
-    procedure sSpeedButton2Click(Sender: TObject);
-    procedure sSpeedButton5Click(Sender: TObject);
-    procedure sSpeedButton7Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure TableExMessagesDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
   private
-    FFirstMessage: Boolean;
     FEnterSend: Boolean;
-    procedure ProcNewMessage(Body: string);
-    function CompileBody(Body: string): string;
-    procedure FillSmiles;
-    function PutSmiles(TextBody: string; FillType: bool): string;
+    FJID: string;
+    FNick: string;
+    FMessages: TMessages;
+    procedure SetJID(const Value: string);
   public
-    procedure Reads;
-    procedure NewMessage(Nick, MessageBody: string);
-    procedure SwowPopupWnd(text: string);
+    procedure MessageMarkers(Item: TJabberMessage);
+    procedure NewMessage(Item: TJabberMessage);
+    class procedure SwowPopupWnd(Text: string);
+    property JID: string read FJID write SetJID;
+    procedure SetItem(Item: TRosterItem);
   end;
 
 var
@@ -59,66 +63,19 @@ var
 implementation
 
 uses
-  MSHTML, ActiveX, IM.Main, IM.Notifycation, IM.Account, MD5Hash;
+  IM.Main, IM.Notifycation, IM.Account, System.DateUtils, Jabber;
 
 {$R *.dfm}
 
-//Функция загрузки HTML кода в TWebBrowser
-procedure WB_LoadHTML(WebBrowser: TWebBrowser; HTMLCode: string);
-var
-  Mem: TStringStream;
+class procedure TFormChatRoom.SwowPopupWnd(text: string);
 begin
-  WebBrowser.Navigate('about:blank');
-  while WebBrowser.ReadyState < READYSTATE_INTERACTIVE do
-    Application.ProcessMessages;
-
-  if Assigned(WebBrowser.Document) then
-  begin
-    Mem := TStringStream.Create;
-    try
-      Mem.WriteString(HTMLCode);
-      Mem.Position := 0;
-      (WebBrowser.Document as IPersistStreamInit).Load(TStreamAdapter.Create(Mem));
-    finally
-      Mem.Free;
-    end;
-  end;
+  FormMain.TrayIcon.BalloonHint := text;
+  FormMain.TrayIcon.ShowBalloonHint;
 end;
 
-function TFormChatRoom.CompileBody(Body: string): string;
-var
-  Homedir, Header, Footer: string;
-begin
-  Homedir := ExtractFilePath(ParamStr(0));
-  Header := '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html><head><meta http-equiv="content-type" content="text/html; charset=windows-1251" />' + '<title>Чат</title>' + '<link rel="stylesheet" href="' + Homedir + 'skins/chat/style.css" type="text/css" />' + '</head><body onload="javascript:window.scrollTo(0,100000);">';
-  Footer := '</body></html>';
-  Result := Header + Body + Footer;
-end;
-
-//Функция отображения всплывающих окон
-procedure TFormChatRoom.SwowPopupWnd(text: string);
-var
-  ActiveWnd: THandle;
-begin
-  FormNotify.Label1.Caption := text;
-  ActiveWnd := GetActiveWindow;
-  FormNotify.Left := Screen.Width - FormNotify.Width - 1;
-  FormNotify.Top := Screen.Height - FormNotify.Height - 31;
-  FormNotify.Show;
-  SetActiveWindow(ActiveWnd);
-
-  Timer1.Enabled := true;
-end;
-
-//Скрыть всплывающее окно
 procedure HidePopupWnd;
 begin
   FormNotify.Hide;
-end;
-
-procedure TFormChatRoom.Button1Click(Sender: TObject);
-begin
-  Hide;
 end;
 
 procedure TFormChatRoom.Button2Click(Sender: TObject);
@@ -126,24 +83,16 @@ begin
   HidePopupWnd;
 end;
 
-procedure TFormChatRoom.FillSmiles;
-var
-  Header, Body, EndBody, HomeDir: string;
-begin
-  //Текущий каталог программы
-  HomeDir := ExtractFilePath(ParamStr(0));
-  Header := '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' + '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" id="lampim">' + '<head><meta http-equiv="content-type" content="text/html; charset=windows-1251" />' + '<link rel="stylesheet" href="' + HomeDir + 'skins/chat/style.css" type="text/css" />' + '</head><body onload="javascript:window.scrollTo(0,0);">' + '<script language="JavaScript"> function smile (a) {document.title=a;}</script>';
-  EndBody := '</body></html>';
-  //Парсим смайлы
-  Body := PutSmiles('', False);
-  WB_LoadHTML(WebBrowser2, Header + Body + EndBody);
-end;
-
 procedure TFormChatRoom.FormCreate(Sender: TObject);
 begin
-  FFirstMessage := True;
-  FEnterSend := True;
-  FillSmiles;
+  TableExMessages.CursorActive := crDefault;
+  FMessages := TMessages.Create(TableExMessages);
+  FMessages.FLastDate := Now - 60;
+end;
+
+procedure TFormChatRoom.FormDestroy(Sender: TObject);
+begin
+  FMessages.Free;
 end;
 
 procedure TFormChatRoom.FormShow(Sender: TObject);
@@ -151,151 +100,214 @@ begin
   MemoSend.Focused;
 end;
 
-//Функция парсинга смайлов
-//flag_type - true = замена текстовых смайлов на ссылки
-//flag_type - false = создание ссылок на смайлы
-function TFormChatRoom.PutSmiles(TextBody: string; FillType: bool): string;
-var
-  HomeDir, PrevSmile: string;
-  ListOfSmiles: TStringList;
-  ListOfFileNames: TStringList;
-  i: integer;
+procedure TFormChatRoom.MessageMarkers(Item: TJabberMessage);
 begin
-  HomeDir := ExtractFilePath(ParamStr(0));
-  ListOfSmiles := TStringList.Create;
-  ListOfFileNames := TStringList.Create;
-
-  ListOfSmiles.LoadFromFile(HomeDir + 'smiles\standart\smiles.dat');
-  ListOfFileNames.LoadFromFile(HomeDir + 'smiles\standart\files.dat');
-
-  if FillType then
-  begin
-    if ListOfFileNames.Count = ListOfSmiles.Count then
-    begin
-      for i := 0 to ListOfSmiles.Count - 1 do
-      begin
-        TextBody := StringReplace(TextBody, ListOfSmiles.Strings[i], '<img align="middle" src="' + HomeDir + 'smiles\standart\' + ListOfFileNames.Strings[i] + '" alt="" border="0">', [rfReplaceAll, rfIgnoreCase]);
-      end;
-    end;
-    Result := TextBody;
-  end
-  else
-  begin
-    if ListOfFileNames.Count = ListOfSmiles.Count then
-    begin
-      PrevSmile := '';
-      for i := 0 to ListOfSmiles.Count - 1 do
-      begin
-        if PrevSmile <> ListOfFileNames.Strings[i] then
-          TextBody := TextBody + '<a onclick="smile(''' + ListOfSmiles.Strings[i] + ''')" href="#"><img display="block" max-width=100%" max-height="100%" src="' + HomeDir + 'smiles/standart/' + ListOfFileNames.Strings[i] + '" alt="" border="0"></a>';
-        PrevSmile := ListOfFileNames.Strings[i];
-      end;
-    end;
-    Result := TextBody;
-  end;
-
-  ListOfSmiles.Free;
-  ListOfFileNames.Free;
+  FMessages.Reads(Item);
 end;
 
-procedure TFormChatRoom.Reads;
+procedure TFormChatRoom.SetItem(Item: TRosterItem);
 begin
-  //
+  if JID.IsEmpty then
+    JID := LoginFromJID(Item.JID);
+  FNick := Item.Name;
+  LabelNick.Caption := FNick;
+  if Item.StatusText.IsEmpty then
+    LabelStatus.Caption := ShowTypeText[Item.Status]
+  else
+    LabelStatus.Caption := Item.StatusText;
+end;
+
+procedure TFormChatRoom.SetJID(const Value: string);
+begin
+  FJID := Value;
 end;
 
 procedure TFormChatRoom.ButtonSendClick(Sender: TObject);
 var
-  JID: string;
+  Item: TJabberMessage;
+  ChatItem: TChatElement;
 begin
   if (MemoSend.Text <> '') and (MemoSend.Text <> ' ') then
   begin
-    JID := Hint;
-    FormMain.JabberClient.SendMessage(JID, 'chat', MemoSend.Text);
-    ProcNewMessage('<div class="mymsg">[' + FormatDateTime('h:m', now) + ']<b> ' + FormMain.JabberClient.UserNick + ': </b>' + ToEscaping(MemoSend.Text) + '</div>');
+    Item.ID := FormMain.JabberClient.SendMessage(JID, MemoSend.Text, mtChat);
+    Item.From := FormMain.JabberClient.JID;
+    Item.Body := MemoSend.Text;
     MemoSend.Clear;
+    ChatItem.MessageItem := Item;
+    ChatItem.ElementType := etChat;
+    ChatItem.MessageItem.Displayed := False;
+    ChatItem.MessageItem.Received := False;
+    ChatItem.Date := Now;
+    FMessages.Add(ChatItem);
+    FMessages.UpdateTable;
   end;
 end;
 
 procedure TFormChatRoom.MemoSendKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (Key = VK_RETURN) then
+  if (Key = VK_RETURN) and not (ssCtrl in Shift) then
   begin
-    if FEnterSend then
-      ButtonSend.Click;
+    ButtonSendClick(nil);
   end;
 end;
 
-procedure TFormChatRoom.NewMessage(Nick, MessageBody: string);
+procedure TFormChatRoom.NewMessage(Item: TJabberMessage);
 var
-  NickColor: string;
+  ChatItem: TChatElement;
 begin
-  //Генерируем цвет ника
-  NickColor := Copy(MD5(Nick), 1, 6);
-  NickColor := StringReplace(NickColor, 'F', '0', [rfReplaceAll, rfIgnoreCase]);
-  ProcNewMessage('<div class="usermsg">[' + FormatDateTime('h:m', Now) + ']<font color="#' + NickColor + '"> <b>' + Nick + ':</b></font> ' + MessageBody + '</div>');
-end;
-
-procedure TFormChatRoom.ProcNewMessage(Body: string);
-var
-  Range: IHTMLTxtRange;
-  Document: IHTMLDocument2;
-begin
-  Body := FromEscaping(Body);
-  //Заменяем текстовые смайлы на путь
-  Body := PutSmiles(Body, True);
-
-  if FFirstMessage then
-  begin
-    FFirstMessage := False;
-    //Загружаем тело страницы в Веббраузер
-    WB_LoadHTML(WebBrowserDialog, CompileBody(Body));
-  end;
-  //Загружаем построчно в браузер
-  Range := ((WebBrowserDialog.Document as IHTMLDocument2).Body as IHTMLBodyElement).createTextRange;
-  Range.Collapse(False);
-  Range.PasteHTML(Body);
-
-  Document := WebBrowserDialog.Document as IHTMLDocument2;
-  if Assigned(Document) then
-    Document.ParentWindow.ScrollBy(0, 1000000);
-
-  if not Active then
+  ChatItem.MessageItem := Item;
+  ChatItem.ElementType := etChat;
+  ChatItem.Date := Now;
+  FMessages.Add(ChatItem);
+  FMessages.UpdateTable;
+  if (not Active) or (not Visible) then
   begin
     FormMain.TrayIcon.Animate := True;
     FormMain.PlaySound(sndMessage);
   end;
 end;
 
-procedure TFormChatRoom.sSpeedButton2Click(Sender: TObject);
+procedure TFormChatRoom.TableExMessagesDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+var
+  R, TxtRect: TRect;
+  S: string;
 begin
-  FEnterSend := not FEnterSend;
-  MemoSend.WantReturns := not FEnterSend;
-end;
+  if not FMessages.IndexIn(ARow) then
+    Exit;
 
-procedure TFormChatRoom.sSpeedButton5Click(Sender: TObject);
-begin
-  try
-    WebBrowserDialog.ExecWB(OLECMDID_COPY, OLECMDEXECOPT_PROMPTUSER);
-    MemoSend.Text := (WebBrowserDialog.Document as IHTMLDocument2).Body.innerHTML;
-  except
+  R := Rect;
+  with TableExMessages.Canvas do
+  begin
+    Font.Color := clWhite;
+    Font.Name := 'Segoe UI Emoji';
+    Font.Size := 10;
+    Brush.Style := bsSolid;
+    case FMessages[ARow].ElementType of
+      etChat:
+        begin
+          S := FMessages[ARow].MessageItem.Body;
+          //Если не от нас
+          if FMessages[ARow].MessageItem.From <> FormMain.JabberClient.JID then
+          begin
+            Brush.Color := $00332518;
+            R.Width := (TableExMessages.Width div 3) * 2;
+            TxtRect := R;
+            TextRect(TxtRect, S, [tfCalcRect, tfWordBreak]);
+
+            R.Width := TxtRect.Width;
+            R.Height := TxtRect.Height;
+            R.Inflate(5, 5);
+            R.Location := Point(Rect.Left, Rect.Top);
+
+            if TableExMessages.GetRowHeight(ARow) <> R.Height then
+            begin
+              TableExMessages.SetRowHeight(ARow, R.Height);
+              Exit;
+            end;
+
+            R.Width := R.Width + 40;
+            RoundRect(R, 5, 5);
+            Font.Color := $00847F7C;
+            TextOut(R.Right - 40, R.Bottom - 20, FormatDateTime('HH:MM', FMessages[ARow].Date));
+            TxtRect.Location := Point(R.Left + 4, R.CenterPoint.Y - TxtRect.Height div 2);
+            Brush.Style := bsClear;
+            Font.Color := clWhite;
+            TextRect(TxtRect, S, [tfWordBreak]);
+          end
+          else
+          begin
+            Brush.Color := $0078522B;
+            R.Width := (TableExMessages.Width div 3) * 2;
+            TxtRect := R;
+            TextRect(TxtRect, S, [tfCalcRect, tfWordBreak]);
+
+            R.Width := TxtRect.Width;
+            R.Height := TxtRect.Height;
+            R.Inflate(5, 5);
+            R.Location := Point(Rect.Width - R.Width, Rect.Top);
+
+            if TableExMessages.GetRowHeight(ARow) <> R.Height then
+            begin
+              TableExMessages.SetRowHeight(ARow, R.Height);
+              Exit;
+            end;
+            R.Width := R.Width + 16 + 40;
+            R.Offset(-56, 0);
+            RoundRect(R, 5, 5);
+            Font.Color := $00B48E6A;
+            TextOut(R.Right - 56, R.Bottom - 20, FormatDateTime('HH:MM', FMessages[ARow].Date));   
+            TxtRect.Location := Point(R.Left + 4, R.CenterPoint.Y - TxtRect.Height div 2);
+            Brush.Style := bsClear;
+            Font.Color := clWhite;
+            TextRect(TxtRect, S, [tfWordBreak]);
+            if FMessages[ARow].MessageItem.Received then
+            begin
+              if not FMessages[ARow].MessageItem.Displayed then
+                ImageList24.Draw(TableExMessages.Canvas, R.Right - 24, R.Bottom - 18, 0, True)
+              else
+                ImageList24.Draw(TableExMessages.Canvas, R.Right - 24, R.Bottom - 18, 1, True);
+            end
+            else
+              ImageList24.Draw(TableExMessages.Canvas, R.Right - 24, R.Bottom - 18, 2, True);
+          end;
+        end;
+      etDate:
+        begin
+          Brush.Color := $003A2C1D;
+          R.Width := 80;
+          R.Height := 25;
+          TxtRect.Location := Point(R.Left + 3, R.Top + 3);
+          R.Location := TPoint.Create(Rect.CenterPoint.X - R.Width div 2, Rect.CenterPoint.Y - R.Height div 2);
+          RoundRect(R, 20, 20);
+          S := FormatDateTime('D mmmm', FMessages[ARow].Date);
+          Brush.Style := bsClear;
+          TextRect(R, S, [tfSingleLine, tfVerticalCenter, tfCenter]);
+        end;
+    end;
+
   end;
-end;
-
-procedure TFormChatRoom.sSpeedButton7Click(Sender: TObject);
-begin
-  WB_LoadHTML(WebBrowserDialog, CompileBody('<div class="mymsg">[19:37]<b> HemulGM: </b>dfgdgdfg</div><div class="usermsg">[19:37]<b> WorcAc: </b>dfgdgdfg</div>'));
-end;
-
-procedure TFormChatRoom.Timer1Timer(Sender: TObject);
-begin
-  HidePopupWnd;
-  timer1.Enabled := false;
 end;
 
 procedure TFormChatRoom.WebBrowser2TitleChange(ASender: TObject; const Text: WideString);
 begin
   if Text <> 'about:blank' then
     MemoSend.Text := MemoSend.Text + ' ' + Text + ' ';
+end;
+
+{ TMessages }
+
+function TMessages.Add(Value: TChatElement): Integer;
+var
+  Item: TChatElement;
+begin
+  if MonthOf(FLastDate) <> MonthOf(Now) then
+  begin
+    FLastDate := Now;
+    Item.ElementType := etDate;
+    Item.Date := Now;
+    Add(Item);
+  end;
+  Result := inherited Add(Value);
+end;
+
+procedure TMessages.Reads(MessageItem: TJabberMessage);
+var
+  i: Integer;
+  Item: TChatElement;
+begin
+  for i := 0 to Count - 1 do
+    if Items[i].MessageItem.ID = MessageItem.ID then
+    begin
+      Item := Items[i];
+      if MessageItem.Displayed then
+        Item.MessageItem.Displayed := True;
+      if MessageItem.Received then
+        Item.MessageItem.Received := True;
+      Items[i] := Item;
+      UpdateTable;
+      Exit;
+    end;
+
 end;
 
 end.

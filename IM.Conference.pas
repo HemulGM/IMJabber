@@ -5,10 +5,10 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, ComCtrls, sPageControl, ExtCtrls, sSplitter, StdCtrls, sButton, sMemo,
-  sPanel, sListView, sTabControl, ActnList, md5hash2, Menus, OleCtrls, SHDocVw,
-  Buttons, sSpeedButton, acAlphaHints, mmsystem, MSHTML, inifiles, ExtDlgs,
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP,
-  IdMultipartFormData, acPNG, ImgList, System.ImageList, System.Actions;
+  sPanel, sListView, sTabControl, ActnList, Menus, OleCtrls, SHDocVw, Buttons,
+  sSpeedButton, acAlphaHints, mmsystem, MSHTML, inifiles, ExtDlgs,
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, MD5Hash,
+  IdMultipartFormData, ImgList, System.ImageList, System.Actions, acPNG;
 
 type
   TFormConference = class(TForm)
@@ -77,7 +77,7 @@ type
     sSpeedButton11: TsSpeedButton;
     OpenPictureDialog1: TOpenPictureDialog;
     IdHTTP1: TIdHTTP;
-    Image1: TImage;
+    ImagePhoto: TImage;
     sSpeedButton12: TsSpeedButton;
     conferenceusers: TListView;
     ImageList1: TImageList;
@@ -161,8 +161,8 @@ var
 implementation
 
 uses
-  IM.Conference.Invite, IM.Main, IM.ChatRoom, ActiveX, ComObj, IM.Account.Card,
-  IM.Account;
+  IM.Conference.Invite, IM.Main, IM.ChatRoom, ActiveX, IM.Account.Card,
+  IM.Account, Jabber.Types;
 
 {$R *.dfm}
 
@@ -211,7 +211,7 @@ end;
 
 procedure TFormConference.CreateParams(var Params: TCreateParams);
 begin
-  inherited CreateParams(Params);
+inherited CreateParams(Params);
 end;
 
 //Звук сообщения групчата
@@ -272,21 +272,15 @@ var
   f2: TextFile; // файл
   buf2, homedir: string; // буфер для чтения из файла
 
-  smiles: tListBox;
-  smiles_files: tListBox;
+  smiles: TStringList;
+  smiles_files: TStringList;
   i: integer;
   tmpstr: string;
 begin
   homedir := ExtractFilePath(ParamStr(0));
-  smiles := tListBox.Create(FormChatRoom);
-  smiles.Name := 'allsmiles';
-  smiles.Parent := FormChatRoom;
-  smiles.Visible := false;
+  smiles := TStringList.Create;
 
-  smiles_files := tListBox.Create(FormChatRoom);
-  smiles_files.Name := 'smilesfiles';
-  smiles_files.Parent := FormChatRoom;
-  smiles_files.Visible := false;
+  smiles_files := TStringList.Create;
 
   AssignFile(f, ExtractFilePath(ParamStr(0)) + 'smiles\standart\smiles.dat');
   AssignFile(f2, ExtractFilePath(ParamStr(0)) + 'smiles\standart\files.dat');
@@ -296,14 +290,14 @@ begin
   while not EOF(f) do
   begin
     readln(f, buf); // прочитать строку из файла
-    smiles.items.Add(buf); // добавить строку
+    smiles.Add(buf); // добавить строку
   end;
 
 // чтение из файла
   while not EOF(f2) do
   begin
     readln(f2, buf2); // прочитать строку из файла
-    smiles_files.items.Add(buf2);
+    smiles_files.Add(buf2);
   end;
 
   CloseFile(f);
@@ -311,11 +305,11 @@ begin
 
   if flag_type then
   begin
-    if smiles_files.items.Count = smiles.items.Count then
+    if smiles_files.Count = smiles.Count then
     begin
-      for i := 0 to smiles.items.Count - 1 do
+      for i := 0 to smiles.Count - 1 do
       begin
-        text := StringReplace(text, smiles.items.Strings[i], '<img align="middle" src="' + homedir + 'smiles\standart\' + smiles_files.items.Strings[i] + '" alt="" border="0">', [rfReplaceAll, rfIgnoreCase]);
+        text := StringReplace(text, smiles.Strings[i], '<img align="middle" src="' + homedir + 'smiles\standart\' + smiles_files.Strings[i] + '" alt="" border="0">', [rfReplaceAll, rfIgnoreCase]);
       end;
 
     end
@@ -327,13 +321,13 @@ begin
   end
   else
   begin
-    if smiles_files.items.Count = smiles.items.Count then
+    if smiles_files.Count = smiles.Count then
     begin
-      for i := 0 to smiles.items.Count - 1 do
+      for i := 0 to smiles.Count - 1 do
       begin
-        if tmpstr <> smiles_files.items.Strings[i] then
-          text := text + '<a onclick="smile(''' + smiles.items.Strings[i] + ''')" href="#"><img src="' + homedir + 'smiles/standart/' + smiles_files.items.Strings[i] + '" alt="" border="0"></a>';
-        tmpstr := smiles_files.items.Strings[i];
+        if tmpstr <> smiles_files.Strings[i] then
+          text := text + '<a onclick="smile(''' + smiles.Strings[i] + ''')" href="#"><img src="' + homedir + 'smiles/standart/' + smiles_files.Strings[i] + '" alt="" border="0"></a>';
+        tmpstr := smiles_files.Strings[i];
       end;
     end
     else
@@ -343,8 +337,8 @@ begin
 
   end;
 
-  smiles.Destroy;
-  smiles_files.Destroy;
+  smiles.Free;
+  smiles_files.Free;
 end;
 
 //функция доступа к дочерным формам
@@ -684,16 +678,12 @@ procedure TFormConference.N1Click(Sender: TObject);
 begin
   if (conferenceusers.ItemIndex <> -1) and (sTabControl1.Tabs.Strings[sTabControl1.TabIndex] <> '') and (conferenceusers.Items[conferenceusers.ItemIndex].Caption <> '') then
   begin
-    FormAccountCard.ActionListMain.Actions[2].Execute;
-    FormAccountCard.sPageControl1.TabIndex := 0;
-    FormAccountCard.sButton1.Visible := false;
-    FormAccountCard.sButton2.Visible := false;
-    FormAccountCard.sButton3.Visible := false;
-    FormAccountCard.sButton5.Visible := false;
-    FormAccountCard.Image1.Enabled := false;
+    //FormAccountCard.ActionListMain.Actions[2].Execute;
+    FormAccountCard.ButtonApply.Visible := false;
+    FormAccountCard.ImagePhoto.Enabled := false;
     FormMain.pub_vcard_view := true;
     FormMain.pub_vcard_jid := sTabControl1.Tabs.Strings[sTabControl1.TabIndex] + '/' + conferenceusers.Items[conferenceusers.ItemIndex].Caption;
-    FormAccountCard.ActionListMain.Actions[0].Execute;
+    //FormAccountCard.ActionListMain.Actions[0].Execute;
   end;
 end;
 
@@ -708,17 +698,12 @@ begin
 end;
 
 procedure TFormConference.N21Click(Sender: TObject);
-var
-  i: integer;
 begin
   if (conferenceusers.ItemIndex <> -1) and (sTabControl1.Tabs.Strings[sTabControl1.TabIndex] <> '') and (conferenceusers.Items[conferenceusers.ItemIndex].Caption <> '') then
   begin
-    randomize;
-    i := random(777);
     if FormMain.JabberClient.Connected then
     begin
-      FormMain.JabberClient.SendData('<iq type="get" from="' + FormMain.JabberClient.JID + '@' + FormMain.JabberClient.UserServer + '/' + FormMain.JabberClient.Resource + '" to="' + sTabControl1.Tabs.Strings[sTabControl1.TabIndex] + '/' + conferenceusers.Items[conferenceusers.ItemIndex].Caption + '" id="' + inttostr(i) + '"><query xmlns="jabber:iq:version"/></iq>');
-      FormMain.get_version_flag := true;
+      FormMain.JabberClient.GetVersion(sTabControl1.Tabs.Strings[sTabControl1.TabIndex] + '/' + conferenceusers.Items[conferenceusers.ItemIndex].Caption);
     end;
   end;
 end;
@@ -1175,7 +1160,7 @@ end;
 
 procedure TFormConference.send_msgExecute(Sender: TObject);
 begin
-  FormMain.JabberClient.SendMessage(sTabControl1.Tabs.Strings[sTabControl1.TabIndex], 'groupchat', send.Text);
+  FormMain.JabberClient.SendMessage(sTabControl1.Tabs.Strings[sTabControl1.TabIndex], send.Text, mtGroupChat);
   send.Clear;
 end;
 
