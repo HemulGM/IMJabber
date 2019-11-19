@@ -4,23 +4,30 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, sButton, sLabel, sGroupBox;
+  Dialogs, StdCtrls, HGM.Button, Vcl.ExtCtrls, Vcl.Grids,
+  HGM.Controls.VirtualTable, IM.Classes;
 
 type
   TFormContactAdd = class(TForm)
-    sGroupBox1: TsGroupBox;
-    sLabel1: TsLabel;
-    sLabel2: TsLabel;
-    Edit1: TEdit;
-    Edit2: TEdit;
-    sButton1: TsButton;
-    sButton2: TsButton;
-    procedure sButton2Click(Sender: TObject);
-    procedure sButton1Click(Sender: TObject);
+    EditNick: TEdit;
+    EditJID: TEdit;
+    sLabel1: TLabel;
+    sLabel2: TLabel;
+    ButtonFlatOK: TButtonFlat;
+    ButtonFlatCancel: TButtonFlat;
+    TableExGroups: TTableEx;
+    Label1: TLabel;
+    Shape1: TShape;
+    Shape2: TShape;
+    procedure ButtonFlatCancelClick(Sender: TObject);
+    procedure ButtonFlatOKClick(Sender: TObject);
+    procedure TableExGroupsGetData(FCol, FRow: Integer; var Value: string);
+    procedure TableExGroupsDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+    procedure TableExGroupsItemColClick(Sender: TObject; MouseButton: TMouseButton; const Index: Integer);
   private
-    { Private declarations }
+    FGroups: TGroupList;
   public
-    { Public declarations }
+    class function Execute(var JID, Nick: string; Groups: TGroupList): Boolean;
   end;
 
 var
@@ -29,30 +36,62 @@ var
 implementation
 
 uses
-  IM.Main, Jabber, Jabber.Types;
+  IM.Main;
 
 {$R *.dfm}
 
-procedure TFormContactAdd.sButton1Click(Sender: TObject);
-var Item: TRosterItem;
+class function TFormContactAdd.Execute(var JID, Nick: string; Groups: TGroupList): Boolean;
 begin
-  if (Edit1.Text <> '') and (Edit2.Text <> '') and (pos('@', Edit2.Text) > 0) then
+  with TFormContactAdd.Create(nil) do
   begin
-    Item := TRosterItem.Create;
-    Item.JID := edit2.Text;
-    Item.Name := edit2.Text;
-    //Item.Groups := edit2.Text;
-    if FormMain.JabberClient.AddContact(Item) then ShowMessage('OK');
-    Item.Free;
-    edit1.Text := '';
-    edit2.Text := '';
-    Close;
+    FGroups := Groups;
+    Groups.AddTable(TableExGroups);
+    Result := ShowModal = mrOk;
+    JID := EditJID.Text;
+    Nick := EditNick.Text;
+    Groups.UnAssignTable(TableExGroups);
+    Free;
+  end;
+end;
+
+procedure TFormContactAdd.TableExGroupsDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+begin
+  if ACol <> 0 then
+    Exit;
+  if FGroups.Checked[ARow] then
+    FormMain.ImageListNormal.Draw(TableExGroups.Canvas, Rect.Left + 2, Rect.Top + 2, 1, True)
+  else
+    FormMain.ImageListNormal.Draw(TableExGroups.Canvas, Rect.Left + 2, Rect.Top + 2, 2, True);
+end;
+
+procedure TFormContactAdd.TableExGroupsGetData(FCol, FRow: Integer; var Value: string);
+begin
+  case FCol of
+    0:
+      Value := '';
+    1:
+      Value := FGroups[FRow].Name;
+  end;
+end;
+
+procedure TFormContactAdd.TableExGroupsItemColClick(Sender: TObject; MouseButton: TMouseButton; const Index: Integer);
+begin
+  if Index <> 0 then
+    Exit;
+  FGroups.Checked[TableExGroups.ItemIndex] := not FGroups.Checked[TableExGroups.ItemIndex];
+end;
+
+procedure TFormContactAdd.ButtonFlatOKClick(Sender: TObject);
+begin
+  if (EditJID.Text <> '') and (EditNick.Text <> '') and (Pos('@', EditJID.Text) > 0) then
+  begin
+    ModalResult := mrOk;
   end
   else
     ShowMessage('Поля заполнены неверно!');
 end;
 
-procedure TFormContactAdd.sButton2Click(Sender: TObject);
+procedure TFormContactAdd.ButtonFlatCancelClick(Sender: TObject);
 begin
   Close;
 end;

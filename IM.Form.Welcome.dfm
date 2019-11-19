@@ -5,7 +5,7 @@ object FormWelcome: TFormWelcome
   BorderStyle = bsNone
   ClientHeight = 427
   ClientWidth = 497
-  Color = 2039583
+  Color = 2168334
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWhite
@@ -13,41 +13,29 @@ object FormWelcome: TFormWelcome
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  DesignSize = (
+    497
+    427)
   PixelsPerInch = 96
   TextHeight = 13
-  object Label1: TLabel
+  object Label2: TLabelEx
     AlignWithMargins = True
-    Left = 3
-    Top = 50
-    Width = 491
-    Height = 33
-    Margins.Top = 50
-    Align = alTop
-    Alignment = taCenter
-    Caption = #1044#1086#1073#1088#1086' '#1087#1086#1078#1072#1083#1086#1074#1072#1090#1100
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -27
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    ExplicitWidth = 235
-  end
-  object Label2: TLabel
-    AlignWithMargins = True
-    Left = 3
-    Top = 89
-    Width = 491
-    Height = 16
-    Align = alTop
-    Alignment = taCenter
-    Caption = #1042#1099#1073#1077#1088#1080' '#1095#1072#1090' '#1089#1083#1077#1074#1072
+    Left = 120
+    Top = 203
+    Width = 275
+    Height = 22
+    Anchors = []
+    Brush.Color = 3812381
+    Pen.Color = 3812381
+    Shape = stRoundRect
+    Caption = #1042#1099#1073#1077#1088#1080#1090#1077', '#1082#1086#1084#1091' '#1093#1086#1090#1077#1083#1080' '#1073#1099' '#1085#1072#1087#1080#1089#1072#1090#1100
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWhite
     Font.Height = -13
     Font.Name = 'Tahoma'
     Font.Style = []
-    ParentFont = False
-    ExplicitWidth = 106
+    TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter, tfWordBreak, tfWordEllipsis]
+    IgnorBounds = True
+    EllipseRectVertical = False
   end
 end

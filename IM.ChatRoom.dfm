@@ -4,8 +4,8 @@ object FormChatRoom: TFormChatRoom
   Align = alClient
   BorderStyle = bsNone
   Caption = #1063#1072#1090' '#1089' '
-  ClientHeight = 528
-  ClientWidth = 648
+  ClientHeight = 575
+  ClientWidth = 1030
   Color = 2168334
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -16,188 +16,371 @@ object FormChatRoom: TFormChatRoom
   OldCreateOrder = False
   Position = poDesktopCenter
   OnCreate = FormCreate
-  OnDestroy = FormDestroy
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object PanelSend: TPanel
-    Left = 0
-    Top = 478
-    Width = 648
-    Height = 50
-    Align = alBottom
+  object Splitter1: TSplitter
+    Left = 739
+    Top = 0
+    Width = 1
+    Height = 575
+    Align = alRight
+    Color = 1774090
+    ParentColor = False
+    ResizeStyle = rsUpdate
+    OnCanResize = Splitter1CanResize
+    ExplicitLeft = 631
+    ExplicitTop = -40
+    ExplicitHeight = 568
+  end
+  object PanelRight: TPanel
+    Left = 740
+    Top = 0
+    Width = 290
+    Height = 575
+    Align = alRight
     BevelOuter = bvNone
-    Color = 2826519
+    Color = 3943971
+    Constraints.MaxWidth = 390
+    Constraints.MinWidth = 290
     ParentBackground = False
     TabOrder = 0
-    object Shape1: TShape
+    ExplicitLeft = 632
+    ExplicitTop = -40
+    ExplicitHeight = 568
+    object PanelConfOccups: TPanel
+      AlignWithMargins = True
+      Left = 0
+      Top = 169
+      Width = 290
+      Height = 406
+      Margins.Left = 0
+      Margins.Top = 5
+      Margins.Right = 0
+      Margins.Bottom = 0
+      Align = alClient
+      BevelOuter = bvNone
+      Color = 2826519
+      ParentBackground = False
+      TabOrder = 0
+      ExplicitHeight = 399
+    end
+    object PanelConfInfo: TPanel
+      AlignWithMargins = True
       Left = 0
       Top = 0
-      Width = 648
-      Height = 1
+      Width = 290
+      Height = 161
+      Margins.Left = 0
+      Margins.Top = 0
+      Margins.Right = 0
       Align = alTop
-      Brush.Color = 1774090
-      Pen.Color = 1774090
-      ExplicitWidth = 40
-    end
-    object MemoSend: TMemo
-      Left = 0
-      Top = 1
-      Width = 599
-      Height = 49
-      Align = alClient
-      BorderStyle = bsNone
+      BevelOuter = bvNone
       Color = 2826519
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Segoe UI Emoji'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-      WantReturns = False
-      OnKeyUp = MemoSendKeyUp
-      ExplicitLeft = -6
-      ExplicitTop = 2
-      ExplicitWidth = 562
-    end
-    object ButtonFlatAttachment: TButtonFlat
-      Left = 599
-      Top = 1
-      Width = 49
-      Height = 49
-      Align = alRight
-      Caption = ''
-      ColorNormal = 2826519
-      ColorOver = 5455917
-      ColorPressed = 2826519
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -13
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      FontOver.Charset = DEFAULT_CHARSET
-      FontOver.Color = clWindowText
-      FontOver.Height = -13
-      FontOver.Name = 'Tahoma'
-      FontOver.Style = []
-      FontDown.Charset = DEFAULT_CHARSET
-      FontDown.Color = clWindowText
-      FontDown.Height = -13
-      FontDown.Name = 'Tahoma'
-      FontDown.Style = []
-      IgnorBounds = True
-      ImageIndentLeft = 11
-      ImageIndex = 1
-      Images = ImageListIcons
-      RoundRectParam = 0
-      Shape = stCircle
-      ShowFocusRect = False
+      ParentBackground = False
       TabOrder = 1
-      TabStop = True
-      TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
-      SubTextFont.Charset = DEFAULT_CHARSET
-      SubTextFont.Color = clWhite
-      SubTextFont.Height = -13
-      SubTextFont.Name = 'Tahoma'
-      SubTextFont.Style = []
-      ExplicitLeft = 605
+      object LabelNick2: TLabel
+        Left = 101
+        Top = 83
+        Width = 159
+        Height = 19
+        AutoSize = False
+        Caption = #1053#1072#1079#1074#1072#1085#1080#1077
+        EllipsisPosition = epEndEllipsis
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object LabelStatus2: TLabel
+        Left = 101
+        Top = 108
+        Width = 159
+        Height = 17
+        AutoSize = False
+        Caption = #1058#1077#1084#1072
+        EllipsisPosition = epEndEllipsis
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 9079434
+        Font.Height = -13
+        Font.Name = 'Segoe UI Emoji'
+        Font.Style = []
+        ParentFont = False
+      end
+      object LabelExAvatar: TLabelEx
+        Left = 11
+        Top = 72
+        Width = 81
+        Height = 66
+        Brush.Color = 10053222
+        Pen.Color = 10053222
+        Shape = stCircle
+        Caption = #1053#1040
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -29
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter, tfWordBreak, tfWordEllipsis]
+        IgnorBounds = True
+        EllipseRectVertical = False
+      end
+      object ButtonFlat1: TButtonFlat
+        Left = 223
+        Top = 0
+        Width = 55
+        Height = 55
+        Caption = ''
+        ColorNormal = 2826519
+        ColorOver = 5455917
+        ColorPressed = 2826519
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        FontOver.Charset = DEFAULT_CHARSET
+        FontOver.Color = clWindowText
+        FontOver.Height = -13
+        FontOver.Name = 'Tahoma'
+        FontOver.Style = []
+        FontDown.Charset = DEFAULT_CHARSET
+        FontDown.Color = clWindowText
+        FontDown.Height = -13
+        FontDown.Name = 'Tahoma'
+        FontDown.Style = []
+        IgnorBounds = True
+        ImageIndentLeft = 16
+        ImageIndex = 2
+        RoundRectParam = 0
+        ShowFocusRect = False
+        TabOrder = 0
+        TabStop = True
+        TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+        SubTextFont.Charset = DEFAULT_CHARSET
+        SubTextFont.Color = clWhite
+        SubTextFont.Height = -13
+        SubTextFont.Name = 'Tahoma'
+        SubTextFont.Style = []
+      end
+      object Panel1: TPanel
+        Left = 0
+        Top = 0
+        Width = 290
+        Height = 55
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 1
+        object Label2: TLabel
+          AlignWithMargins = True
+          Left = 25
+          Top = 3
+          Width = 207
+          Height = 49
+          Margins.Left = 25
+          Align = alClient
+          Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWhite
+          Font.Height = -15
+          Font.Name = 'Segoe UI Semibold'
+          Font.Style = []
+          ParentFont = False
+          Layout = tlCenter
+          ExplicitWidth = 95
+          ExplicitHeight = 20
+        end
+        object ButtonFlat2: TButtonFlat
+          Left = 235
+          Top = 0
+          Width = 55
+          Height = 55
+          Align = alRight
+          Caption = ''
+          ColorNormal = 2826519
+          ColorOver = 2826519
+          ColorPressed = 2826519
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          FontOver.Charset = DEFAULT_CHARSET
+          FontOver.Color = clWindowText
+          FontOver.Height = -13
+          FontOver.Name = 'Tahoma'
+          FontOver.Style = []
+          FontDown.Charset = DEFAULT_CHARSET
+          FontDown.Color = clWindowText
+          FontDown.Height = -13
+          FontDown.Name = 'Tahoma'
+          FontDown.Style = []
+          IgnorBounds = True
+          ImageIndentLeft = 16
+          ImageIndex = 5
+          Images = FormMain.ImageListNormal
+          ImagesOver = FormMain.ImageListOver
+          RoundRectParam = 0
+          ShowFocusRect = False
+          TabOrder = 0
+          TabStop = True
+          TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+          SubTextFont.Charset = DEFAULT_CHARSET
+          SubTextFont.Color = clWhite
+          SubTextFont.Height = -13
+          SubTextFont.Name = 'Tahoma'
+          SubTextFont.Style = []
+        end
+      end
     end
   end
-  object Panel1: TPanel
+  object PanelClient: TPanel
     Left = 0
     Top = 0
-    Width = 648
-    Height = 55
-    Align = alTop
-    BevelOuter = bvNone
-    Color = 2826519
-    ParentBackground = False
-    TabOrder = 1
-    object LabelNick: TLabel
-      Left = 10
-      Top = 6
-      Width = 67
-      Height = 19
-      Caption = 'LabelNick'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -16
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-    end
-    object LabelStatus: TLabel
-      Left = 10
-      Top = 30
-      Width = 110
-      Height = 17
-      Caption = #1057#1090#1072#1090#1091#1089' '#1082#1086#1085#1090#1072#1082#1090#1072
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 9079434
-      Font.Height = -13
-      Font.Name = 'Segoe UI Emoji'
-      Font.Style = []
-      ParentFont = False
-    end
-  end
-  object TableExMessages: TTableEx
-    Left = 0
-    Top = 55
-    Width = 648
-    Height = 423
+    Width = 739
+    Height = 575
     Align = alClient
-    BorderStyle = bsNone
-    Color = 2168334
-    DefaultRowHeight = 50
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWhite
-    Font.Height = -11
-    Font.Name = 'Segoe UI Emoji'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 2
-    OnDrawCellData = TableExMessagesDrawCellData
-    ItemIndex = -1
-    Columns = <
-      item
-        Width = 648
-      end>
-    DefaultDataDrawing = False
-    ShowScrollBar = False
-    ItemCount = 1
-    LineColor = 2168334
-    LineColorXor = 2168334
-    LineHotColor = 2168334
-    LineSelColor = 2168334
-    FontHotLine.Charset = DEFAULT_CHARSET
-    FontHotLine.Color = 2631720
-    FontHotLine.Height = -11
-    FontHotLine.Name = 'Tahoma'
-    FontHotLine.Style = []
-    FontLine.Charset = DEFAULT_CHARSET
-    FontLine.Color = 2631720
-    FontLine.Height = -11
-    FontLine.Name = 'Tahoma'
-    FontLine.Style = []
-    FontSelLine.Charset = DEFAULT_CHARSET
-    FontSelLine.Color = clWhite
-    FontSelLine.Height = -11
-    FontSelLine.Name = 'Tahoma'
-    FontSelLine.Style = []
-    ShowColumns = False
-    ColumnsFont.Charset = DEFAULT_CHARSET
-    ColumnsFont.Color = 2631720
-    ColumnsFont.Height = -11
-    ColumnsFont.Name = 'Tahoma'
-    ColumnsFont.Style = []
+    BevelOuter = bvNone
+    TabOrder = 1
+    ExplicitLeft = 424
+    ExplicitTop = 264
+    ExplicitWidth = 185
+    ExplicitHeight = 41
+    object PanelInfo: TPanel
+      Left = 0
+      Top = 0
+      Width = 739
+      Height = 55
+      Align = alTop
+      BevelOuter = bvNone
+      Color = 2826519
+      ParentBackground = False
+      TabOrder = 0
+      ExplicitWidth = 1030
+      object LabelNick: TLabel
+        Left = 10
+        Top = 6
+        Width = 67
+        Height = 19
+        Caption = 'LabelNick'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -16
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentFont = False
+      end
+      object LabelStatus: TLabel
+        Left = 10
+        Top = 30
+        Width = 110
+        Height = 17
+        Caption = #1057#1090#1072#1090#1091#1089' '#1082#1086#1085#1090#1072#1082#1090#1072
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = 9079434
+        Font.Height = -13
+        Font.Name = 'Segoe UI Emoji'
+        Font.Style = []
+        ParentFont = False
+      end
+    end
+    object hChatMessages: ThChat
+      Left = 0
+      Top = 55
+      Width = 739
+      Height = 475
+      Align = alClient
+      BorderWidth = 10
+      ExplicitTop = 0
+      ExplicitHeight = 530
+    end
+    object PanelSend: TPanel
+      Left = 0
+      Top = 530
+      Width = 739
+      Height = 45
+      Align = alBottom
+      BevelOuter = bvNone
+      Color = 2826519
+      ParentBackground = False
+      TabOrder = 2
+      ExplicitWidth = 1030
+      object ButtonFlatAttachment: TButtonFlat
+        Left = 689
+        Top = 0
+        Width = 50
+        Height = 45
+        Align = alRight
+        Caption = ''
+        ColorNormal = 2826519
+        ColorOver = 5455917
+        ColorPressed = 2826519
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        FontOver.Charset = DEFAULT_CHARSET
+        FontOver.Color = clWindowText
+        FontOver.Height = -13
+        FontOver.Name = 'Tahoma'
+        FontOver.Style = []
+        FontDown.Charset = DEFAULT_CHARSET
+        FontDown.Color = clWindowText
+        FontDown.Height = -13
+        FontDown.Name = 'Tahoma'
+        FontDown.Style = []
+        IgnorBounds = True
+        ImageIndentLeft = 11
+        ImageIndex = 1
+        Images = ImageListIcons
+        RoundRectParam = 0
+        ShowFocusRect = False
+        TabOrder = 1
+        TabStop = True
+        TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+        SubTextFont.Charset = DEFAULT_CHARSET
+        SubTextFont.Color = clWhite
+        SubTextFont.Height = -13
+        SubTextFont.Name = 'Tahoma'
+        SubTextFont.Style = []
+        ExplicitLeft = 980
+      end
+      object RichEditSend: TRichEdit
+        Left = 0
+        Top = 0
+        Width = 689
+        Height = 45
+        Align = alClient
+        BevelInner = bvSpace
+        BevelOuter = bvSpace
+        BevelKind = bkSoft
+        BevelWidth = 6
+        BorderStyle = bsNone
+        Color = 2826519
+        Font.Charset = RUSSIAN_CHARSET
+        Font.Color = clWhite
+        Font.Height = -16
+        Font.Name = 'Segoe UI Emoji'
+        Font.Style = []
+        ParentFont = False
+        PlainText = True
+        TabOrder = 0
+        Zoom = 100
+        OnKeyDown = RichEditSendKeyDown
+        OnResizeRequest = RichEditSendResizeRequest
+        ExplicitWidth = 980
+      end
+    end
   end
   object ImageList24: TImageList
     ColorDepth = cd32Bit
-    Left = 320
-    Top = 160
+    Left = 272
+    Top = 128
     Bitmap = {
-      494C0101030018001C0010001000FFFFFFFF2100FFFFFFFFFFFFFFFF424D3600
+      494C0101030018004C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -333,20 +516,21 @@ object FormChatRoom: TFormChatRoom
       FFFFFFFFF81F0000FFFFF6FFF0070000F8FFE07FE3C30000F07FC03FC7830000
       E23F801FCF130000E71F800FCE330000FF8FFE07CE730000FFC7FF03C6730000
       FFE3FF81C6630000FFF7FFC9E3C70000FFFFFFFFF00F0000FFFFFFFFF81F0000
-      FFFFFFFFFFFF0000FFFFFFFFFFFF0000}
+      FFFFFFFFFFFF0000FFFFFFFFFFFF000000000000000000000000000000000000
+      000000000000}
   end
-  object BalloonHint1: TBalloonHint
-    Left = 232
-    Top = 160
+  object BalloonHint: TBalloonHint
+    Left = 192
+    Top = 128
   end
   object ImageListIcons: TImageList
     ColorDepth = cd32Bit
     Height = 24
     Width = 24
     Left = 352
-    Top = 256
+    Top = 128
     Bitmap = {
-      494C010102002400280018001800FFFFFFFF2100FFFFFFFFFFFFFFFF424D3600
+      494C010102002400580018001800FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000001800000001002000000000000024
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -647,6 +831,7 @@ object FormChatRoom: TFormChatRoom
       00000000E01C47FE083F000000000000E0FF87FE083F000000000000F07F0FFE
       083F000000000000F8180FFE38FF000000000000FC001FFE11FF000000000000
       FE007FFE01FF000000000000FFFFFFFF83FF000000000000FFFFFFFFCFFF0000
-      00000000FFFFFFFFFFFF000000000000}
+      00000000FFFFFFFFFFFF00000000000000000000000000000000000000000000
+      000000000000}
   end
 end

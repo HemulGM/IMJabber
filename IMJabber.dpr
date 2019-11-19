@@ -1,12 +1,10 @@
 program IMJabber;
 
-
-
 {$R *.dres}
 
 uses
-  Forms,
-  windows,
+  Vcl.Forms,
+  Winapi.Windows,
   IM.Main in 'IM.Main.pas' {FormMain},
   IM.Config in 'IM.Config.pas' {FormConfig},
   IM.Account in 'IM.Account.pas' {FormAccount},
@@ -25,25 +23,24 @@ uses
   GmXml in '..\HGMJabberClient\GmXml.pas',
   Jabber.Actions in '..\HGMJabberClient\Jabber.Actions.pas',
   Jabber in '..\HGMJabberClient\Jabber.pas',
-  Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas';
+  Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas',
+  IM.Classes in 'IM.Classes.pas',
+  VCLFlickerReduce in '..\#Fork\VCLFlickerReduce\VCLFlickerReduce.pas';
 
 {$R *.res}
 
 begin
-  //Запрещение запуска 2 копии программы...
+  //Запрещение запуска 2 копии программы
   CreateFileMapping(HWND($FFFFFFFF), nil, PAGE_READWRITE, 0, 1024, 'IMJabber HGM');
   if GetLastError <> ERROR_ALREADY_EXISTS then
   begin
     Application.Initialize;
-  //Application.MainFormOnTaskbar := True;
     Application.ShowMainForm := True;
     Application.Title := 'IMJabber';
     Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormConfig, FormConfig);
   Application.CreateForm(TFormAccount, FormAccount);
-  Application.CreateForm(TFormAbout, FormAbout);
   Application.CreateForm(TFormConsole, FormConsole);
-  Application.CreateForm(TFormConference, FormConference);
   Application.CreateForm(TFormConfInvite, FormConfInvite);
   Application.CreateForm(TFormNotify, FormNotify);
   Application.CreateForm(TFormAccountCard, FormAccountCard);

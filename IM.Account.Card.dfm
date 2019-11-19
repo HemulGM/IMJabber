@@ -6,9 +6,9 @@ object FormAccountCard: TFormAccountCard
   Caption = #1051#1080#1095#1085#1072#1103' VCard'
   ClientHeight = 457
   ClientWidth = 703
-  Color = clBtnFace
+  Color = 2168334
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = clWhite
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -18,7 +18,7 @@ object FormAccountCard: TFormAccountCard
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object sPanel1: TsPanel
+  object sPanel1: TPanel
     Left = 0
     Top = 417
     Width = 703
@@ -26,8 +26,7 @@ object FormAccountCard: TFormAccountCard
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 0
-    SkinData.SkinSection = 'PANEL'
-    object ButtonClose: TsButton
+    object ButtonClose: TButton
       Left = 623
       Top = 8
       Width = 75
@@ -35,9 +34,8 @@ object FormAccountCard: TFormAccountCard
       Caption = #1047#1072#1082#1088#1099#1090#1100
       TabOrder = 0
       OnClick = ButtonCloseClick
-      SkinData.SkinSection = 'BUTTON'
     end
-    object ButtonApply: TsButton
+    object ButtonApply: TButton
       Left = 542
       Top = 8
       Width = 75
@@ -45,10 +43,9 @@ object FormAccountCard: TFormAccountCard
       Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
       TabOrder = 1
       OnClick = ButtonApplyClick
-      SkinData.SkinSection = 'BUTTON'
     end
   end
-  object sPageControl1: TsPageControl
+  object PageControlCard: TPageControl
     AlignWithMargins = True
     Left = 5
     Top = 5
@@ -58,16 +55,12 @@ object FormAccountCard: TFormAccountCard
     Margins.Top = 5
     Margins.Right = 5
     Margins.Bottom = 5
-    ActivePage = sTabSheet1
+    ActivePage = TabSheetGeneral
     Align = alClient
+    Style = tsButtons
     TabOrder = 1
-    SkinData.SkinSection = 'PAGECONTROL'
-    object sTabSheet1: TsTabSheet
+    object TabSheetGeneral: TTabSheet
       Caption = #1054#1073#1097#1077#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label1: TLabel
         Left = 238
         Top = 51
@@ -150,77 +143,165 @@ object FormAccountCard: TFormAccountCard
         Left = 306
         Top = 48
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 0
       end
       object EditNickName: TEdit
         Left = 306
         Top = 21
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 1
       end
       object EditBirthDay: TEdit
         Left = 306
         Top = 156
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 2
       end
       object EditUrl: TEdit
         Left = 306
         Top = 183
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 3
       end
       object EditFirstName: TEdit
         Left = 306
         Top = 75
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 4
       end
       object EditLastName: TEdit
         Left = 306
         Top = 102
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 5
       end
       object EditMiddleName: TEdit
         Left = 306
         Top = 129
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 6
       end
       object EditOrgName: TEdit
         Left = 306
         Top = 210
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 7
       end
       object EditOrgUnit: TEdit
         Left = 306
         Top = 237
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 8
       end
       object EditTitle: TEdit
         Left = 306
         Top = 264
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 9
       end
       object EditRole: TEdit
         Left = 306
         Top = 291
         Width = 215
-        Height = 21
+        Height = 24
+        BorderStyle = bsNone
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        ParentColor = True
+        ParentFont = False
         TabOrder = 10
       end
       object Panel1: TPanel
@@ -2436,12 +2517,8 @@ object FormAccountCard: TFormAccountCard
         end
       end
     end
-    object TabSheetConacts: TsTabSheet
+    object TabSheetContacts: TTabSheet
       Caption = #1050#1086#1085#1090#1072#1082#1090#1099
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label4: TLabel
         Left = 16
         Top = 3
@@ -2946,24 +3023,21 @@ object FormAccountCard: TFormAccountCard
         SubTextFont.Style = []
       end
     end
-    object sTabSheet4: TsTabSheet
+    object TabSheetAbout: TTabSheet
       Caption = #1054#1073#1086' '#1084#1085#1077
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RichEditDesc: TRichEdit
         Left = 0
         Top = 0
         Width = 685
-        Height = 379
+        Height = 376
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = RUSSIAN_CHARSET
-        Font.Color = clWindowText
+        Font.Color = clWhite
         Font.Height = -11
         Font.Name = 'Tahoma'
         Font.Style = []
+        ParentColor = True
         ParentFont = False
         ScrollBars = ssVertical
         TabOrder = 0

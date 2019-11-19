@@ -17,12 +17,12 @@ type
   TAdrList = TTableData<TAddress>;
 
   TFormAccountCard = class(TForm)
-    sPanel1: TsPanel;
-    sPageControl1: TsPageControl;
-    sTabSheet1: TsTabSheet;
-    sTabSheet4: TsTabSheet;
-    ButtonClose: TsButton;
-    ButtonApply: TsButton;
+    sPanel1: TPanel;
+    PageControlCard: TPageControl;
+    TabSheetGeneral: TTabSheet;
+    TabSheetAbout: TTabSheet;
+    ButtonClose: TButton;
+    ButtonApply: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -39,7 +39,7 @@ type
     EditLastName: TEdit;
     Label18: TLabel;
     EditMiddleName: TEdit;
-    TabSheetConacts: TsTabSheet;
+    TabSheetContacts: TTabSheet;
     TableExEmail: TTableEx;
     Label4: TLabel;
     TableExTel: TTableEx;

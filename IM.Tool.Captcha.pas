@@ -8,12 +8,11 @@ uses
 
 type
   TFormCaptcha = class(TForm)
-    sGroupBox1: TsGroupBox;
-    WebBrowser1: TWebBrowser;
+    WebBrowser: TWebBrowser;
   private
     { Private declarations }
   public
-    { Public declarations }
+    class function Execute(URL: string): Boolean;
   end;
 
 var
@@ -22,5 +21,18 @@ var
 implementation
 
 {$R *.dfm}
+
+{ TFormCaptcha }
+
+class function TFormCaptcha.Execute(URL: string): Boolean;
+begin
+  with TFormCaptcha.Create(nil) do
+  begin
+    WebBrowser.Navigate(URL);
+    ShowModal;
+    Result := True;
+    Free;
+  end;
+end;
 
 end.

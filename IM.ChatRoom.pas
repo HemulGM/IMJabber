@@ -3,46 +3,54 @@ unit IM.ChatRoom;
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, ComCtrls, ImgList, Buttons, ExtDlgs, IniFiles,
-  System.ImageList, System.Actions, Jabber.Types, Vcl.Grids,
-  HGM.Controls.VirtualTable, HGM.Button;
+  Winapi.Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls,
+  Forms, Dialogs, StdCtrls, ExtCtrls, ComCtrls, ImgList, Buttons, ExtDlgs,
+  IniFiles, System.ImageList, System.Actions, Jabber.Types, Vcl.Grids,
+  HGM.Controls.VirtualTable, HGM.Button, IM.Classes, HGM.Controls.Chat,
+  HGM.Controls.Labels;
 
 type
-  TChatElementType = (etChat, etDate);
-
-  TChatElement = record
+  TChatElement = class(TChatMessage)
     MessageItem: TJabberMessage;
-    Date: TDate;
-    ElementType: TChatElementType;
   end;
 
-  TMessages = class(TTableData<TChatElement>)
+  TMessages = class(TChatItems)
     FLastDate: TDateTime;
-    function Add(Value: TChatElement): Integer; override;
+    function Add(Value: TChatItem): Integer;
     procedure Reads(MessageItem: TJabberMessage);
   end;
 
   TFormChatRoom = class(TForm)
     PanelSend: TPanel;
     ImageList24: TImageList;
-    BalloonHint1: TBalloonHint;
-    MemoSend: TMemo;
-    Panel1: TPanel;
+    BalloonHint: TBalloonHint;
+    PanelInfo: TPanel;
     LabelNick: TLabel;
-    TableExMessages: TTableEx;
     LabelStatus: TLabel;
-    Shape1: TShape;
     ButtonFlatAttachment: TButtonFlat;
     ImageListIcons: TImageList;
+    RichEditSend: TRichEdit;
+    hChatMessages: ThChat;
+    PanelRight: TPanel;
+    PanelConfOccups: TPanel;
+    PanelConfInfo: TPanel;
+    LabelNick2: TLabel;
+    LabelStatus2: TLabel;
+    LabelExAvatar: TLabelEx;
+    ButtonFlat1: TButtonFlat;
+    Panel1: TPanel;
+    Label2: TLabel;
+    ButtonFlat2: TButtonFlat;
+    Splitter1: TSplitter;
+    PanelClient: TPanel;
     procedure ButtonSendClick(Sender: TObject);
-    procedure MemoSendKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure WebBrowser2TitleChange(ASender: TObject; const Text: WideString);
     procedure Button2Click(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
     procedure TableExMessagesDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+    procedure RichEditSendResizeRequest(Sender: TObject; Rect: TRect);
+    procedure RichEditSendKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
   private
     FEnterSend: Boolean;
     FJID: string;
@@ -63,7 +71,7 @@ var
 implementation
 
 uses
-  IM.Main, IM.Notifycation, IM.Account, System.DateUtils, Jabber;
+  IM.Main, IM.Notifycation, IM.Account, System.DateUtils, Jabber, Math;
 
 {$R *.dfm}
 
@@ -85,19 +93,14 @@ end;
 
 procedure TFormChatRoom.FormCreate(Sender: TObject);
 begin
-  TableExMessages.CursorActive := crDefault;
-  FMessages := TMessages.Create(TableExMessages);
+  FMessages := TMessages.Create(hChatMessages);
   FMessages.FLastDate := Now - 60;
-end;
-
-procedure TFormChatRoom.FormDestroy(Sender: TObject);
-begin
-  FMessages.Free;
+  hChatMessages.Items := FMessages;
 end;
 
 procedure TFormChatRoom.FormShow(Sender: TObject);
 begin
-  MemoSend.Focused;
+  RichEditSend.Focused;
 end;
 
 procedure TFormChatRoom.MessageMarkers(Item: TJabberMessage);
@@ -111,10 +114,12 @@ begin
     JID := LoginFromJID(Item.JID);
   FNick := Item.Name;
   LabelNick.Caption := FNick;
-  if Item.StatusText.IsEmpty then
-    LabelStatus.Caption := ShowTypeText[Item.Status]
-  else
-    LabelStatus.Caption := Item.StatusText;
+  LabelStatus.Caption := Item.GetDisplayStatus;
+  LabelNick2.Caption := LabelNick.Caption;
+  LabelStatus2.Caption := LabelStatus.Caption;
+  LabelExAvatar.Caption := CreateShortName(Item.JID, LabelNick2.Caption);
+  LabelExAvatar.Brush.Color := CreateColorFromJID(Item.JID);
+  LabelExAvatar.Pen.Color := LabelExAvatar.Brush.Color;
 end;
 
 procedure TFormChatRoom.SetJID(const Value: string);
@@ -122,44 +127,68 @@ begin
   FJID := Value;
 end;
 
+procedure TFormChatRoom.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
+begin
+  NewSize := Max(PanelRight.Constraints.MinWidth, Min(NewSize, PanelRight.Constraints.MaxWidth));
+end;
+
 procedure TFormChatRoom.ButtonSendClick(Sender: TObject);
 var
   Item: TJabberMessage;
   ChatItem: TChatElement;
 begin
-  if (MemoSend.Text <> '') and (MemoSend.Text <> ' ') then
+  if (RichEditSend.Text <> '') and (RichEditSend.Text <> ' ') then
   begin
-    Item.ID := FormMain.JabberClient.SendMessage(JID, MemoSend.Text, mtChat);
     Item.From := FormMain.JabberClient.JID;
-    Item.Body := MemoSend.Text;
-    MemoSend.Clear;
-    ChatItem.MessageItem := Item;
-    ChatItem.ElementType := etChat;
-    ChatItem.MessageItem.Displayed := False;
-    ChatItem.MessageItem.Received := False;
-    ChatItem.Date := Now;
+    Item.Body := RichEditSend.Text;
+    Item.ID := FormMain.JabberClient.SendMessage(JID, Item.Body, mtChat);
+    RichEditSend.Clear;
+
+    ChatItem := TChatElement.Create(FMessages);
+    with ChatItem do
+    begin
+      MessageItem := Item;
+      MessageItem.Displayed := False;
+      MessageItem.Received := False;
+      FromType := mtMe;
+      ShowFrom := False;
+      From := Item.Nick;
+      text := Item.Body;
+      Date := Now;
+    end;
+
     FMessages.Add(ChatItem);
-    FMessages.UpdateTable;
+    hChatMessages.Repaint;
   end;
 end;
 
-procedure TFormChatRoom.MemoSendKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TFormChatRoom.RichEditSendKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  if (Key = VK_RETURN) and not (ssCtrl in Shift) then
+  if (Key = VK_RETURN) and not (ssShift in Shift) then
   begin
     ButtonSendClick(nil);
+    Key := 0;
+    Exit;
   end;
+end;
+
+procedure TFormChatRoom.RichEditSendResizeRequest(Sender: TObject; Rect: TRect);
+begin
+  PanelSend.Height := Min(200, Max(45, 24 + Rect.Height));
 end;
 
 procedure TFormChatRoom.NewMessage(Item: TJabberMessage);
 var
   ChatItem: TChatElement;
 begin
+  ChatItem := TChatElement.Create(FMessages);
   ChatItem.MessageItem := Item;
-  ChatItem.ElementType := etChat;
   ChatItem.Date := Now;
+  ChatItem.ShowFrom := False;
+  ChatItem.From := Item.Nick;
+  ChatItem.Text := Item.Body;
   FMessages.Add(ChatItem);
-  FMessages.UpdateTable;
+  hChatMessages.Repaint;
   if (not Active) or (not Visible) then
   begin
     FormMain.TrayIcon.Animate := True;
@@ -172,7 +201,7 @@ var
   R, TxtRect: TRect;
   S: string;
 begin
-  if not FMessages.IndexIn(ARow) then
+  {if not FMessages.IndexIn(ARow) then
     Exit;
 
   R := Rect;
@@ -192,7 +221,7 @@ begin
             Brush.Color := $00332518;
             R.Width := (TableExMessages.Width div 3) * 2;
             TxtRect := R;
-            TextRect(TxtRect, S, [tfCalcRect, tfWordBreak]);
+            TextRect(TxtRect, S, [tfCalcRect, tfWordBreak, tfEndEllipsis]);
 
             R.Width := TxtRect.Width;
             R.Height := TxtRect.Height;
@@ -212,7 +241,7 @@ begin
             TxtRect.Location := Point(R.Left + 4, R.CenterPoint.Y - TxtRect.Height div 2);
             Brush.Style := bsClear;
             Font.Color := clWhite;
-            TextRect(TxtRect, S, [tfWordBreak]);
+            TextRect(TxtRect, S, [tfWordBreak, tfEndEllipsis]);
           end
           else
           begin
@@ -235,7 +264,7 @@ begin
             R.Offset(-56, 0);
             RoundRect(R, 5, 5);
             Font.Color := $00B48E6A;
-            TextOut(R.Right - 56, R.Bottom - 20, FormatDateTime('HH:MM', FMessages[ARow].Date));   
+            TextOut(R.Right - 56, R.Bottom - 20, FormatDateTime('HH:MM', FMessages[ARow].Date));
             TxtRect.Location := Point(R.Left + 4, R.CenterPoint.Y - TxtRect.Height div 2);
             Brush.Style := bsClear;
             Font.Color := clWhite;
@@ -264,27 +293,21 @@ begin
           TextRect(R, S, [tfSingleLine, tfVerticalCenter, tfCenter]);
         end;
     end;
-
-  end;
-end;
-
-procedure TFormChatRoom.WebBrowser2TitleChange(ASender: TObject; const Text: WideString);
-begin
-  if Text <> 'about:blank' then
-    MemoSend.Text := MemoSend.Text + ' ' + Text + ' ';
+  end;   }
 end;
 
 { TMessages }
 
-function TMessages.Add(Value: TChatElement): Integer;
+function TMessages.Add(Value: TChatItem): Integer;
 var
-  Item: TChatElement;
+  Item: TChatInfo;
 begin
-  if MonthOf(FLastDate) <> MonthOf(Now) then
+  if DateOf(FLastDate) <> DateOf(Now) then
   begin
+    Item := TChatInfo.Create(Self);
     FLastDate := Now;
-    Item.ElementType := etDate;
     Item.Date := Now;
+    Item.Text := FormatDateTime('D mmmm', Item.Date);
     Add(Item);
   end;
   Result := inherited Add(Value);
@@ -296,18 +319,19 @@ var
   Item: TChatElement;
 begin
   for i := 0 to Count - 1 do
-    if Items[i].MessageItem.ID = MessageItem.ID then
+  begin
+    if Items[i] is TChatElement then
     begin
-      Item := Items[i];
+      Item := Items[i] as TChatElement;
       if MessageItem.Displayed then
         Item.MessageItem.Displayed := True;
       if MessageItem.Received then
         Item.MessageItem.Received := True;
-      Items[i] := Item;
-      UpdateTable;
-      Exit;
+      if Item.MessageItem.ID = MessageItem.ID then
+        Exit;
     end;
-
+  end;
+  Owner.Repaint;
 end;
 
 end.
