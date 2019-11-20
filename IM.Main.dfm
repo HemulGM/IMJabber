@@ -354,55 +354,13 @@ object FormMain: TFormMain
       end
     end
   end
-  object ActionListMain: TActionList
-    Left = 72
-    Top = 128
-    object ActionGroupChat: TAction
-      Caption = 'ActionGroupChat'
-    end
-    object ActionNewChat: TAction
-      Caption = 'ActionNewChat'
-    end
-    object load_avatar: TAction
-      Caption = 'load_avatar'
-    end
-    object ActionRequierAutorize: TAction
-      Caption = 'ActionRequierAutorize'
-    end
-    object ActionAutorization: TAction
-      Caption = 'ActionAutorization'
-    end
-    object ActionRemoveAutorize: TAction
-      Caption = 'ActionRemoveAutorize'
-    end
-    object ActionAccountCheck: TAction
-      Caption = 'ActionAccountCheck'
-    end
-    object sort_contacts: TAction
-      Caption = 'sort_contacts'
-    end
-    object ActionAddInviteItem: TAction
-      Caption = 'ActionAddInviteItem'
-      OnExecute = ActionAddInviteItemExecute
-    end
-    object ActionStatusInConfs: TAction
-      Caption = 'ActionStatusInConfs'
-    end
-    object ActionAuthAndAdd: TAction
-      OnExecute = ActionAuthAndAddExecute
-    end
-    object ActionShowMain: TAction
-      Caption = 'ActionShowMain'
-      OnExecute = ActionShowMainExecute
-    end
-  end
   object ImageListStatuses: TImageList
     ColorDepth = cd32Bit
     DrawingStyle = dsTransparent
     Left = 40
     Top = 320
     Bitmap = {
-      494C0101080010004C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101080010005C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000003000000001002000000000000030
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2259,7 +2217,7 @@ object FormMain: TFormMain
     Left = 48
     Top = 191
     Bitmap = {
-      494C01010900C000700018001800FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C01010900C000800018001800FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       000000000000360000002800000060000000480000000100200000000000006C
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

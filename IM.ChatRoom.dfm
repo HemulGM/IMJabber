@@ -45,9 +45,6 @@ object FormChatRoom: TFormChatRoom
     Constraints.MinWidth = 290
     ParentBackground = False
     TabOrder = 0
-    ExplicitLeft = 632
-    ExplicitTop = -40
-    ExplicitHeight = 568
     object PanelConfOccups: TPanel
       AlignWithMargins = True
       Left = 0
@@ -63,7 +60,6 @@ object FormChatRoom: TFormChatRoom
       Color = 2826519
       ParentBackground = False
       TabOrder = 0
-      ExplicitHeight = 399
     end
     object PanelConfInfo: TPanel
       AlignWithMargins = True
@@ -177,8 +173,8 @@ object FormChatRoom: TFormChatRoom
           AlignWithMargins = True
           Left = 25
           Top = 3
-          Width = 207
-          Height = 49
+          Width = 95
+          Height = 20
           Margins.Left = 25
           Align = alClient
           Caption = #1048#1085#1092#1086#1088#1084#1072#1094#1080#1103
@@ -189,8 +185,6 @@ object FormChatRoom: TFormChatRoom
           Font.Style = []
           ParentFont = False
           Layout = tlCenter
-          ExplicitWidth = 95
-          ExplicitHeight = 20
         end
         object ButtonFlat2: TButtonFlat
           Left = 235
@@ -244,10 +238,6 @@ object FormChatRoom: TFormChatRoom
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 424
-    ExplicitTop = 264
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object PanelInfo: TPanel
       Left = 0
       Top = 0
@@ -258,7 +248,6 @@ object FormChatRoom: TFormChatRoom
       Color = 2826519
       ParentBackground = False
       TabOrder = 0
-      ExplicitWidth = 1030
       object LabelNick: TLabel
         Left = 10
         Top = 6
@@ -293,8 +282,6 @@ object FormChatRoom: TFormChatRoom
       Height = 475
       Align = alClient
       BorderWidth = 10
-      ExplicitTop = 0
-      ExplicitHeight = 530
     end
     object PanelSend: TPanel
       Left = 0
@@ -306,7 +293,6 @@ object FormChatRoom: TFormChatRoom
       Color = 2826519
       ParentBackground = False
       TabOrder = 2
-      ExplicitWidth = 1030
       object ButtonFlatAttachment: TButtonFlat
         Left = 689
         Top = 0
@@ -346,7 +332,6 @@ object FormChatRoom: TFormChatRoom
         SubTextFont.Height = -13
         SubTextFont.Name = 'Tahoma'
         SubTextFont.Style = []
-        ExplicitLeft = 980
       end
       object RichEditSend: TRichEdit
         Left = 0
@@ -371,7 +356,6 @@ object FormChatRoom: TFormChatRoom
         Zoom = 100
         OnKeyDown = RichEditSendKeyDown
         OnResizeRequest = RichEditSendResizeRequest
-        ExplicitWidth = 980
       end
     end
   end
@@ -380,7 +364,7 @@ object FormChatRoom: TFormChatRoom
     Left = 272
     Top = 128
     Bitmap = {
-      494C0101030018004C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103001800540010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -530,7 +514,7 @@ object FormChatRoom: TFormChatRoom
     Left = 352
     Top = 128
     Bitmap = {
-      494C010102002400580018001800FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010102002400600018001800FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000600000001800000001002000000000000024
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

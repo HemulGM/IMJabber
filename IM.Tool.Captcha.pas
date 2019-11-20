@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, sGroupBox, OleCtrls, SHDocVw;
+  Dialogs, StdCtrls, SHDocVw, Vcl.OleCtrls;
 
 type
   TFormCaptcha = class(TForm)

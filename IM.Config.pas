@@ -4,20 +4,19 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, sButton, ComCtrls, sPageControl, ExtCtrls, sPanel, FileCtrl,
-  inifiles, sCheckBox, sLabel;
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls, FileCtrl, inifiles;
 
 type
   TFormConfig = class(TForm)
-    sPanel1: TsPanel;
-    sButton1: TsButton;
+    sPanel1: TPanel;
+    sButton1: TButton;
     PageControl1: TPageControl;
     TabSheet2: TTabSheet;
-    sCheckBox1: TsCheckBox;
-    sCheckBox2: TsCheckBox;
-    sCheckBox3: TsCheckBox;
+    sCheckBox1: TCheckBox;
+    sCheckBox2: TCheckBox;
+    sCheckBox3: TCheckBox;
     TabSheet3: TTabSheet;
-    sLabel1: TsLabel;
+    sLabel1: TLabel;
     FileListBox2: TFileListBox;
     procedure sButton1Click(Sender: TObject);
     procedure sButton2Click(Sender: TObject);

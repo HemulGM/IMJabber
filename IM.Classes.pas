@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Types, System.Classes, Jabber.Types, Jabber, GmXml,
-  System.Generics.Collections, HGM.Controls.VirtualTable;
+  System.Generics.Collections, HGM.Controls.VirtualTable, Vcl.Imaging.pngimage,
+  Vcl.Graphics, HGM.Common.Utils, MD5Hash;
 
 type
   TSoundType = (sndError, sndOnline, sndMessage, sndOffline, sndSubscribe, sndWelcome, sndGroup);
@@ -13,7 +14,7 @@ type
   TRosterList = class(TTableData<TRosterItem>)
     procedure Delete(Index: Integer);
     function Update(Item: TRosterItem): Integer;
-    procedure Clear;
+    procedure Clear; override;
     function Find(JID: string): TRosterItem;
     function GetNick(JID: string): string;
   end;
@@ -46,7 +47,86 @@ type
   TBookmarkList = class(TTableData<TBookmarkItem>)
   end;
 
+const
+  DefaultColors: array[$0..$F] of TColor = ($00E6A330, $00B98843, $00874FCB, $00A6A441, $00C16579, $003B86DB, $005445DD, $0055AA63, $00D5D52B, $00AB5656, $00E6A330, $00B98843, $00874FCB, $00A6A441, $00C16579, $003B86DB);
+
+function CreateAvatar(Source: TGraphic; Mask: TPngImage): TPngImage;
+
+function CreateDefaultAvatar(JID, Name: string; Mask: TPngImage; Color: TColor = clNone): TPngImage;
+
+function SetDefaultAvatar(Item: TRosterItem; Mask: TPngImage): Boolean;
+
+function CreateColorFromJID(JID: string): TColor;
+
+function CreateShortName(JID, Name: string): string;
+
 implementation
+
+function CreateAvatar(Source: TGraphic; Mask: TPngImage): TPngImage;
+begin
+  Result := TPngImage.CreateBlank(COLOR_RGB, 16, Mask.Width, Mask.Height);
+  Result.Canvas.StretchDraw(Rect(0, 0, Mask.Width, Mask.Height), Source);
+  Result.CreateAlpha;
+  ApplyMask(0, 0, Mask, Result);
+end;
+
+function CreateShortName(JID, Name: string): string;
+var
+  i: Integer;
+begin
+  if Name.IsEmpty then
+    Result := Copy(JID, 1, 2)
+  else
+  begin
+    Result := Name[1];
+    i := Pos(' ', Name);
+    if (i > 0) and ((i + 1) < Length(Name)) then
+      Result := Result + Name[i + 1] //Инициалы
+    else if Name.Length > 1 then
+      Result := Copy(Name, 1, 2); //Первые две буквы
+  end;
+  Result := AnsiUpperCase(Result);
+end;
+
+function CreateColorFromJID(JID: string): TColor;
+var
+  Hash: string;
+begin
+  Hash := MD5(JID);
+  Result := DefaultColors[StrToInt('$' + Hash[Length(Hash)])];
+end;
+
+function CreateDefaultAvatar(JID, Name: string; Mask: TPngImage; Color: TColor): TPngImage;
+var
+  S: string;
+  R: TRect;
+begin
+  if Color = clNone then
+  begin
+    Color := CreateColorFromJID(JID);
+  end;
+  Result := TPngImage.CreateBlank(COLOR_RGBALPHA, 16, Mask.Width, Mask.Height);
+  PNGColored(0, 0, Mask, Result, Color);
+  with Result.Canvas do
+  begin
+    R := TRect.Create(0, 0, Mask.Width, Mask.Height);
+    R.Inflate(-4, -4);
+    Brush.Style := bsClear;
+    Font.Size := 16;
+    Font.Color := clWhite;
+    S := CreateShortName(JID, Name);
+    TextRect(R, S, [tfSingleLine, tfVerticalCenter, tfCenter]);
+  end;
+  ApplyMask(0, 0, Mask, Result);
+end;
+
+function SetDefaultAvatar(Item: TRosterItem; Mask: TPngImage): Boolean;
+begin
+  Item.Color := CreateColorFromJID(Item.JID);
+  Item.Avatar.Free;
+  Item.Avatar := CreateDefaultAvatar(Item.JID, Item.Name, Mask, Item.Color);
+  Result := True;
+end;
 
 { TRosterList }
 

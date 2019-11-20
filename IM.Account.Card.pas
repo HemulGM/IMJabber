@@ -4,10 +4,9 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, sMemo, ComCtrls, sPageControl, ExtCtrls, sPanel, sButton,
-  acProgressBar, ExtDlgs, ActnList, registry, Base64Unit, System.Actions,
-  Jabber.Types, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage, Vcl.Imaging.GIFImg,
-  Vcl.Grids, HGM.Controls.VirtualTable, HGM.Button, acPNG;
+  Dialogs, StdCtrls, ComCtrls, ExtCtrls, ExtDlgs, ActnList, Registry,
+  System.Actions, Jabber.Types, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage,
+  Vcl.Imaging.GIFImg, Vcl.Grids, HGM.Controls.VirtualTable, HGM.Button;
 
 type
   TEmailList = TTableData<TEmail>;
@@ -70,6 +69,10 @@ type
     ButtonFlatPhotoSaveAs: TButtonFlat;
     ButtonFlatPhotoSet: TButtonFlat;
     FileOpenDialog: TFileOpenDialog;
+    Panel3: TPanel;
+    ButtonFlatInfo: TButtonFlat;
+    ButtonFlatContacts: TButtonFlat;
+    ButtonFlatCommon: TButtonFlat;
     procedure ButtonCloseClick(Sender: TObject);
     procedure ButtonApplyClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -79,6 +82,9 @@ type
     procedure TableExAddressGetData(FCol, FRow: Integer; var Value: string);
     procedure ButtonFlat1Click(Sender: TObject);
     procedure ButtonFlatPhotoSetClick(Sender: TObject);
+    procedure ButtonFlatCommonClick(Sender: TObject);
+    procedure ButtonFlatContactsClick(Sender: TObject);
+    procedure ButtonFlatInfoClick(Sender: TObject);
   private
     FCard: TVCard;
     FAdr: TAdrList;
@@ -86,6 +92,7 @@ type
     FTels: TTelList;
     FImageType: string;
     FImageBin: string;
+    FRadio: TButtonRadioControl;
     procedure SetCard;
   public
     class function ShowCard(Card: TVCard): Boolean;
@@ -199,6 +206,24 @@ begin
   Item.Flags := [efWork, efInternet, efPref, efX400];
   Item.UserId := 'alinvip22@gmail.com';
   FEmails.Add(Item);
+end;
+
+procedure TFormAccountCard.ButtonFlatCommonClick(Sender: TObject);
+begin
+  FRadio.Selected := Sender as TButtonFlat;
+  PageControlCard.ActivePage := TabSheetGeneral;
+end;
+
+procedure TFormAccountCard.ButtonFlatContactsClick(Sender: TObject);
+begin
+  FRadio.Selected := Sender as TButtonFlat;
+  PageControlCard.ActivePage := TabSheetContacts;
+end;
+
+procedure TFormAccountCard.ButtonFlatInfoClick(Sender: TObject);
+begin
+  FRadio.Selected := Sender as TButtonFlat;
+  PageControlCard.ActivePage := TabSheetAbout;
 end;
 
 procedure TFormAccountCard.ButtonFlatPhotoSetClick(Sender: TObject);
@@ -360,6 +385,9 @@ end;
 
 procedure TFormAccountCard.FormCreate(Sender: TObject);
 begin
+  FRadio := TButtonRadioControl.Create($0021160E, $0078522B);
+  FRadio.Items.AddRange([ButtonFlatInfo, ButtonFlatContacts, ButtonFlatCommon]);
+  FRadio.Selected := ButtonFlatCommon;
   FTels := TTelList.Create(TableExTel);
   FEmails := TEmailList.Create(TableExEmail);
   FAdr := TAdrList.Create(TableExAddress);
@@ -367,6 +395,7 @@ end;
 
 procedure TFormAccountCard.FormDestroy(Sender: TObject);
 begin
+  FRadio.Free;
   FTels.Free;
   FEmails.Free;
   FAdr.Free;

@@ -6,15 +6,14 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Types, System.UITypes, System.Classes, Vcl.Graphics, Vcl.Forms,
   Vcl.Dialogs, Vcl.ActnList, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtDlgs,
-  Winapi.MMSystem, System.IniFiles, System.ImageList, System.Actions, Vcl.Menus,
-  Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.ImgList, Vcl.Controls, Vcl.Imaging.jpeg,
-  Jabber.Types, Jabber, GmXml, MD5Hash, System.Generics.Collections,
-  HGM.Controls.VirtualTable, HGM.Button, Vcl.WinXCtrls, Vcl.Grids,
-  Vcl.Imaging.pngimage, IM.ChatRoom, Direct2D, IM.Classes, IM.Conference;
+  Winapi.MMSystem, System.ImageList, System.Actions, Vcl.Menus, Vcl.ComCtrls,
+  Vcl.ExtCtrls, Vcl.ImgList, Vcl.Controls, Vcl.Imaging.jpeg, Jabber.Types,
+  Jabber, GmXml, MD5Hash, System.Generics.Collections, HGM.Controls.VirtualTable,
+  HGM.Button, Vcl.WinXCtrls, Vcl.Imaging.pngimage, IM.ChatRoom, Direct2D,
+  IM.Classes, IM.Conference, Vcl.Grids;
 
 type
   TFormMain = class(TForm)
-    ActionListMain: TActionList;
     ImageListStatuses: TImageList;
     TrayIcon: TTrayIcon;
     PopupMenuSys: TPopupMenu;
@@ -33,7 +32,6 @@ type
     MenuItemDisconnect: TMenuItem;
     MenuItemConsole: TMenuItem;
     MenuItemBookmarks: TMenuItem;
-    ActionGroupChat: TAction;
     PopupMenuContacts: TPopupMenu;
     MenuItemContactVCard: TMenuItem;
     MenuItemContactRename: TMenuItem;
@@ -51,21 +49,10 @@ type
     N35: TMenuItem;
     N36: TMenuItem;
     MenuItemConfList: TMenuItem;
-    ActionNewChat: TAction;
     MenuItemUserVCard: TMenuItem;
-    load_avatar: TAction;
-    ActionRequierAutorize: TAction;
-    ActionAutorization: TAction;
-    ActionRemoveAutorize: TAction;
-    ActionAccountCheck: TAction;
-    sort_contacts: TAction;
     MenuItemAddContactSys: TMenuItem;
     MenuItemGetVersion: TMenuItem;
     MenuItemIviteToConf: TMenuItem;
-    ActionAddInviteItem: TAction;
-    ActionStatusInConfs: TAction;
-    ActionAuthAndAdd: TAction;
-    ActionShowMain: TAction;
     MenuItemContactGroup: TMenuItem;
     MenuItemContactGroupAdd: TMenuItem;
     MenuItemAddToGroup: TMenuItem;
@@ -149,12 +136,9 @@ type
     procedure FormCreate(Sender: TObject);
     procedure MenuItemAddContactSysClick(Sender: TObject);
     procedure MenuItemGetVersionClick(Sender: TObject);
-    procedure ActionAddInviteItemExecute(Sender: TObject);
     procedure PopupMenuContactsPopup(Sender: TObject);
-    procedure ActionShowMainExecute(Sender: TObject);
     procedure MenuItemContactGroupAddClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ActionAuthAndAddExecute(Sender: TObject);
     procedure JabberClientConnecting(Sender: TObject);
     procedure TableExRosterItemClick(Sender: TObject; MouseButton: TMouseButton; const Index: Integer);
     procedure TableExRosterEdit(Sender: TObject; var Data: TTableEditStruct; ACol, ARow: Integer; var Allow: Boolean);
@@ -188,210 +172,20 @@ type
     function CheckAccount: Boolean;
     function CheckConnect: Boolean;
     procedure Start;
+    procedure Open;
   end;
 
 var
   FormMain: TFormMain;
-  DefaultColors: array[$0..$F] of TColor = ($00E6A330, $00B98843, $00874FCB, $00A6A441, $00C16579, $003B86DB, $005445DD, $0055AA63, $00D5D52B, $00AB5656, $00E6A330, $00B98843, $00874FCB, $00A6A441, $00C16579, $003B86DB);
-
-function CreateAvatar(Source: TGraphic; Mask: TPngImage): TPngImage;
-
-function CreateDefaultAvatar(JID, Name: string; Mask: TPngImage; Color: TColor = clNone): TPngImage;
-
-function SetDefaultAvatar(Item: TRosterItem; Mask: TPngImage): Boolean;
-
-function CreateColorFromJID(JID: string): TColor;
-
-function CreateShortName(JID, Name: string): string;
 
 implementation
 
 uses
   IM.Account, IM.Config, IM.About, IM.Tool.Console, IM.Conference.Invite,
   IM.Contact.Add, IM.Account.Card, IM.Tool.Captcha, HGM.Common.Utils,
-  System.NetEncoding, D2D1, System.DateUtils;
+  System.NetEncoding, D2D1, System.DateUtils, IM.Core, HGM.Common.Settings;
 
 {$R *.dfm}
-
-function CreateAvatar(Source: TGraphic; Mask: TPngImage): TPngImage;
-begin
-  Result := TPngImage.CreateBlank(COLOR_RGB, 16, Mask.Width, Mask.Height);
-  Result.Canvas.StretchDraw(Rect(0, 0, Mask.Width, Mask.Height), Source);
-  Result.CreateAlpha;
-  ApplyMask(0, 0, Mask, Result);
-end;
-
-function CreateShortName(JID, Name: string): string;
-var
-  i: Integer;
-begin
-  if Name.IsEmpty then
-    Result := Copy(JID, 1, 2)
-  else
-  begin
-    Result := Name[1];
-    i := Pos(' ', Name);
-    if (i > 0) and ((i + 1) < Length(Name)) then
-      Result := Result + Name[i + 1] //Инициалы
-    else if Name.Length > 1 then
-      Result := Copy(Name, 1, 2); //Первые две буквы
-  end;
-  Result := AnsiUpperCase(Result);
-end;
-
-function CreateColorFromJID(JID: string): TColor;
-var
-  Hash: string;
-begin
-  Hash := MD5(JID);
-  Result := DefaultColors[StrToInt('$' + Hash[Length(Hash)])];
-end;
-
-function CreateDefaultAvatar(JID, Name: string; Mask: TPngImage; Color: TColor): TPngImage;
-var
-  S: string;
-  R: TRect;
-begin
-  if Color = clNone then
-  begin
-    Color := CreateColorFromJID(JID);
-  end;
-  Result := TPngImage.CreateBlank(COLOR_RGBALPHA, 16, Mask.Width, Mask.Height);
-  PNGColored(0, 0, Mask, Result, Color);
-  with Result.Canvas do
-  begin
-    R := TRect.Create(0, 0, Mask.Width, Mask.Height);
-    R.Inflate(-4, -4);
-    Brush.Style := bsClear;
-    Font.Size := 16;
-    Font.Color := clWhite;
-    S := CreateShortName(JID, Name);
-    TextRect(R, S, [tfSingleLine, tfVerticalCenter, tfCenter]);
-  end;
-  ApplyMask(0, 0, Mask, Result);
-end;
-
-function SetDefaultAvatar(Item: TRosterItem; Mask: TPngImage): Boolean;
-begin
-  Item.Color := CreateColorFromJID(Item.JID);
-  Item.Avatar.Free;
-  Item.Avatar := CreateDefaultAvatar(Item.JID, Item.Name, Mask, Item.Color);
-  Result := True;
-end;
-
-function ReadIni(file_name, ASection, AString: string): string;
-var
-  sIniFile: TIniFile;
-begin
-  sIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + '\' + file_name + '.ini');
-  Result := sIniFile.ReadString(ASection, AString, '');
-  sIniFile.Free;
-end;
-
-procedure WriteIni(file_name, ASection, AString, AValue: string);
-var
-  sIniFile: TIniFile;
-begin
-  sIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + '\' + file_name + '.ini');
-  sIniFile.WriteString(ASection, AString, AValue);
-  sIniFile.Free;
-end;
-
-function ReadINISections(file_name: string; Strings: TStrings): bool;
-var
-  sIniFile: TIniFile;
-begin
-  sIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + '\' + file_name + '.ini');
-  sIniFile.ReadSections('', Strings);
-  sIniFile.Free;
-end;
-
-//Получение инфы по нику
-//info_type = [uname, group, groupid, jid]
-function nick2info(nick: string; info_type: string): string;
-var
-  LB: TStringList;
-  i: Integer;
-begin
-  LB := TStringList.Create;
-  ReadINISections('rostr', LB);
-  for i := 0 to LB.Count - 1 do
-  begin
-    if readini('rostr', LB.Strings[i], 'uname') = nick then
-    begin
-      Result := readini('rostr', LB.Strings[i], info_type);
-      Break;
-    end;
-  end;
-  LB.Free;
-end;
-
-//Получение инфы по джиду
-//InfoType = [uname, group, groupid, jid]
-function JIDToInfo(JID: string; InfoType: string): string;
-var
-  LB: TStringList;
-  i: Integer;
-begin
-  LB := TStringList.Create;
-  ReadINISections('rostr', LB);
-  for i := 0 to LB.Count - 1 do
-  begin
-    if LB.Strings[i] = JID then
-      Result := readini('rostr', LB.Strings[i], InfoType);
-    Application.ProcessMessages;
-  end;
-  LB.Free;
-end;
-
-//Проверка наличия JID
-function JIDexists(JID: string): bool;
-var
-  LB: TStringList;
-  i: Integer;
-begin
-  Result := False;
-  LB := TStringList.Create;
-  ReadINISections('rostr', LB);
-  for i := 0 to LB.Count - 1 do
-  begin
-    if AnsiLowerCase(LB.Strings[i]) = AnsiLowerCase(JID) then
-      Result := True;
-  end;
-  LB.Free;
-end;
-
-//Добавление пользователей в ростр
-function load_rostr(rostr: TListView; reload_rostr: bool): bool;
-var
-  LB: TStringList;
-  i: Integer;
-  Item: TlistItem;
-begin
-  Result := False;
-  LB := TStringList.Create;
-  ReadINISections('rostr', LB);
-
-  for i := 0 to LB.Count - 1 do
-  begin
-    //Добавляем контакт в группу
-    Item := rostr.Items.Add;
-    Item.Caption := readini('rostr', LB.Strings[i], 'uname'); // Имя контакта
-    try
-      Item.ImageIndex := strtoint(readini('rostr', LB.Strings[i], 'show'));
-      Item.SubItems.Insert(0, readini('rostr', LB.Strings[i], 'status'));
-      //Сохраняем индекс
-      WriteIni('rostr', LB.Strings[i], 'index', inttostr(Item.Index));
-      Item.GroupID := strtoint(readini('rostr', LB.Strings[i], 'groupid'));
-    except
-
-    end;
-
-    Result := true;
-  end;
-
-  LB.Free;
-end;
 
 procedure TFormMain.InviteConf(Sender: TObject);
 var
@@ -444,6 +238,13 @@ begin
   end;
 end;
 
+procedure TFormMain.Open;
+begin
+  ShowWindow(Application.Handle, SW_SHOW);
+  FormMain.Show;
+  FormMain.BringToFront;
+end;
+
 procedure TFormMain.OnBookmarkClick(Sender: TObject);
 begin
   ShowMessage(FBookmarkList[TMenuItem(Sender).Tag].Name + ' ' + FBookmarkList[TMenuItem(Sender).Tag].JID);
@@ -465,7 +266,7 @@ var
 begin
   if not MenuItemSound.Checked then
     Exit;
-  SoundFile := ExtractFilePath(ParamStr(0)) + 'sounds\' + readini('options', 'system', 'sounds');
+  SoundFile := ExtractFilePath(ParamStr(0)) + 'sounds\' + Core.Settings.GetStr('system', 'sounds', 'icq');
   case Sound of
     sndError:
       SoundFile := SoundFile + '\warning.wav';
@@ -590,26 +391,6 @@ begin
   end;
 end;
 
-procedure TFormMain.ActionAddInviteItemExecute(Sender: TObject);
-var
-  itm: TmenuItem;
-  i: integer;
-begin     {
-  for i := 0 to FormConference.sTabControl1.Tabs.Count - 1 do
-  begin
-    itm := TmenuItem.Create(Owner);
-    itm.Name := 'menu_' + md5(FormConference.sTabControl1.Tabs.Strings[i]);
-    itm.Caption := FormConference.sTabControl1.Tabs.Strings[i];
-    itm.OnClick := InviteConf;
-    PopupMenuContacts.Items[6].Insert(0, itm);
-  end;        }
-end;
-
-procedure TFormMain.ActionAuthAndAddExecute(Sender: TObject);
-begin
-  //
-end;
-
 procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := caHide;
@@ -660,9 +441,9 @@ begin
   JabberClient.Resource := 'jabbrel';
 
   try
-    LabelStatus.Caption := ReadIni('options', 'form', 'status');
+    LabelStatus.Caption := Core.Settings.GetStr('form', 'status', '');
     JabberClient.UserStatusText := LabelStatus.Caption;
-    if ReadIni('options', 'form', 'sound') = '1' then
+    if Core.Settings.GetStr('form', 'sound', '1') = '1' then
     begin
       MenuItemSound.Checked := True;
     end;
@@ -681,10 +462,7 @@ begin
   FGroupList.Free;
   FRosterList.Free;
   JabberClient.Free;
-  writeini('options', 'form', 'top', inttostr(FormMain.Top));
-  writeini('options', 'form', 'left', inttostr(FormMain.Left));
-  writeini('options', 'form', 'height', inttostr(FormMain.height));
-  writeini('options', 'form', 'width', inttostr(FormMain.width));
+  Core.Settings.SetParamWindow('form', Self, [wpsCoord, wpsSize]);
 end;
 
 procedure TFormMain.Image2Click(Sender: TObject);
@@ -1380,16 +1158,8 @@ end;
 
 procedure TFormMain.MenuItemSoundClick(Sender: TObject);
 begin
-  if MenuItemSound.Checked then
-  begin
-    MenuItemSound.Checked := false;
-    writeini('options', 'form', 'sound', '0');
-  end
-  else
-  begin
-    MenuItemSound.Checked := true;
-    writeini('options', 'form', 'sound', '1');
-  end;
+  MenuItemSound.Checked := not MenuItemSound.Checked;
+  Core.Settings.SetBool('form', 'sound', MenuItemSound.Checked);
 end;
 
 procedure TFormMain.MenuItemStatusOnlineClick(Sender: TObject);
@@ -1553,18 +1323,11 @@ begin
     CheckConnect;
 end;
 
-procedure TFormMain.ActionShowMainExecute(Sender: TObject);
-begin
-  ShowWindow(Application.Handle, sw_show);
-  FormMain.Show;
-  FormMain.BringToFront;
-end;
-
 procedure TFormMain.LabelStatusClick(Sender: TObject);
 begin
   LabelStatus.Caption := InputBox('Статус', 'Введите Ваш статус', LabelStatus.Caption);
   JabberClient.UserStatusText := LabelStatus.Caption;
-  WriteIni('options', 'form', 'status', LabelStatus.Caption);
+  Core.Settings.SetStr('form', 'status', LabelStatus.Caption);
 end;
 
 procedure TFormMain.TableExRosterDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
@@ -1695,7 +1458,7 @@ end;
 
 procedure TFormMain.TrayIconClick(Sender: TObject);
 begin
-  ActionShowMain.Execute;
+  Open;
 end;
 
 procedure TFormMain.MenuItemContactVCardClick(Sender: TObject);

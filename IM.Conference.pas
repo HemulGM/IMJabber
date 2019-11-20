@@ -4,13 +4,10 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, sPageControl, ExtCtrls, sSplitter, StdCtrls, sButton, sMemo,
-  sPanel, sListView, sTabControl, ActnList, Menus, OleCtrls, SHDocVw, Buttons,
-  sSpeedButton, mmsystem, MSHTML, inifiles, ExtDlgs, IdBaseComponent,
-  IdComponent, IdTCPConnection, IdTCPClient, IdHTTP, MD5Hash,
-  IdMultipartFormData, ImgList, System.ImageList, System.Actions, acPNG,
-  HGM.Button, Vcl.Grids, HGM.Controls.VirtualTable, Jabber.Types, IM.Classes,
-  GmXml, HGM.Controls.Labels, HGM.Controls.Chat;
+  Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, inifiles, ExtDlgs,
+  MD5Hash, ImgList, System.ImageList, System.Actions, HGM.Button, Vcl.Grids,
+  HGM.Controls.VirtualTable, Jabber.Types, IM.Classes, GmXml,
+  HGM.Controls.Labels, HGM.Controls.Chat;
 
 type
   TChatElement = class(TChatMessage)

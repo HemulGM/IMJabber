@@ -352,7 +352,6 @@ object FormConference: TFormConference
       Color = 2826519
       ParentBackground = False
       TabOrder = 0
-      ExplicitHeight = 394
       object TableExRoster: TTableEx
         Left = 0
         Top = 56
@@ -377,7 +376,7 @@ object FormConference: TFormConference
             MinWidth = 48
           end
           item
-            Width = 242
+            Width = 226
             MinWidth = 200
           end>
         DefaultDataDrawing = False
@@ -424,7 +423,6 @@ object FormConference: TFormConference
         Color = 2826519
         ParentBackground = False
         TabOrder = 1
-        ExplicitTop = 3
         object Label1: TButtonFlat
           AlignWithMargins = True
           Left = 0
@@ -471,9 +469,6 @@ object FormConference: TFormConference
           SubTextFont.Height = -13
           SubTextFont.Name = 'Tahoma'
           SubTextFont.Style = []
-          ExplicitTop = 0
-          ExplicitWidth = 290
-          ExplicitHeight = 41
         end
         object ButtonFlat3: TButtonFlat
           AlignWithMargins = True
@@ -522,8 +517,6 @@ object FormConference: TFormConference
           SubTextFont.Height = -13
           SubTextFont.Name = 'Tahoma'
           SubTextFont.Style = []
-          ExplicitTop = 0
-          ExplicitHeight = 41
         end
       end
     end
@@ -933,7 +926,7 @@ object FormConference: TFormConference
     Left = 72
     Top = 208
     Bitmap = {
-      494C010103001800500010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C010103001800580010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

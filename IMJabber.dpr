@@ -17,7 +17,7 @@ uses
   IM.Account.Card in 'IM.Account.Card.pas' {FormAccountCard},
   IM.Contact.Add in 'IM.Contact.Add.pas' {FormContactAdd},
   IM.Tool.Captcha in 'IM.Tool.Captcha.pas' {FormCaptcha},
-  Base64Unit in 'Base64Unit.pas',
+  CryptUnit in 'CryptUnit.pas',
   MD5Hash in 'MD5Hash.pas',
   IM.Form.Welcome in 'IM.Form.Welcome.pas' {FormWelcome},
   GmXml in '..\HGMJabberClient\GmXml.pas',
@@ -25,19 +25,34 @@ uses
   Jabber in '..\HGMJabberClient\Jabber.pas',
   Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas',
   IM.Classes in 'IM.Classes.pas',
-  VCLFlickerReduce in '..\#Fork\VCLFlickerReduce\VCLFlickerReduce.pas';
+  VCLFlickerReduce in '..\#Fork\VCLFlickerReduce\VCLFlickerReduce.pas',
+  IM.Core in 'IM.Core.pas';
 
 {$R *.res}
 
+var
+  MutexHandle: THandle;
+  MutexName: string = 'IMJabber HGM';
+
 begin
   //Запрещение запуска 2 копии программы
-  CreateFileMapping(HWND($FFFFFFFF), nil, PAGE_READWRITE, 0, 1024, 'IMJabber HGM');
-  if GetLastError <> ERROR_ALREADY_EXISTS then
+  MutexHandle := OpenMutex(MUTEX_ALL_ACCESS, True, PChar(MutexName));
+  if MutexHandle <> 0 then
   begin
-    Application.Initialize;
-    Application.ShowMainForm := True;
-    Application.Title := 'IMJabber';
-    Application.CreateForm(TFormMain, FormMain);
+    CloseHandle(MutexHandle);
+    Application.MessageBox('Можно запустить только одну копию программы IMJabber', 'Внимание!');
+    Exit;
+  end
+  else
+  begin
+    MutexHandle := CreateMutex(nil, False, PChar(MutexName));
+  end;
+  ReportMemoryLeaksOnShutdown := True;
+  Application.Initialize;
+  Application.ShowMainForm := True;
+  Application.Title := 'IMJabber';
+  Core := TIMCore.Create;
+  Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormConfig, FormConfig);
   Application.CreateForm(TFormAccount, FormAccount);
   Application.CreateForm(TFormConsole, FormConsole);
@@ -47,15 +62,11 @@ begin
   Application.CreateForm(TFormContactAdd, FormContactAdd);
   Application.CreateForm(TFormCaptcha, FormCaptcha);
   FormWelcome := TFormWelcome.Create(FormMain);
-    FormWelcome.Parent := FormMain.PanelClient;
-    FormWelcome.Show;
-    FormMain.Start;
-    Application.Run;
-  end
-  else
-  begin
-    Application.MessageBox('Можно запустить только одну копию программы IMJabber', 'Внимание!');
-    Halt;
-  end;
+  FormWelcome.Parent := FormMain.PanelClient;
+  FormWelcome.Show;
+  FormMain.Start;
+  Application.Run;
+  //Core.Free;
+  CloseHandle(MutexHandle);
 end.
 

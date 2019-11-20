@@ -47,7 +47,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure TableExMessagesDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
     procedure RichEditSendResizeRequest(Sender: TObject; Rect: TRect);
     procedure RichEditSendKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
@@ -194,106 +193,6 @@ begin
     FormMain.TrayIcon.Animate := True;
     FormMain.PlaySound(sndMessage);
   end;
-end;
-
-procedure TFormChatRoom.TableExMessagesDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
-var
-  R, TxtRect: TRect;
-  S: string;
-begin
-  {if not FMessages.IndexIn(ARow) then
-    Exit;
-
-  R := Rect;
-  with TableExMessages.Canvas do
-  begin
-    Font.Color := clWhite;
-    Font.Name := 'Segoe UI Emoji';
-    Font.Size := 10;
-    Brush.Style := bsSolid;
-    case FMessages[ARow].ElementType of
-      etChat:
-        begin
-          S := FMessages[ARow].MessageItem.Body;
-          //Если не от нас
-          if FMessages[ARow].MessageItem.From <> FormMain.JabberClient.JID then
-          begin
-            Brush.Color := $00332518;
-            R.Width := (TableExMessages.Width div 3) * 2;
-            TxtRect := R;
-            TextRect(TxtRect, S, [tfCalcRect, tfWordBreak, tfEndEllipsis]);
-
-            R.Width := TxtRect.Width;
-            R.Height := TxtRect.Height;
-            R.Inflate(5, 5);
-            R.Location := Point(Rect.Left, Rect.Top);
-
-            if TableExMessages.GetRowHeight(ARow) <> R.Height then
-            begin
-              TableExMessages.SetRowHeight(ARow, R.Height);
-              Exit;
-            end;
-
-            R.Width := R.Width + 40;
-            RoundRect(R, 5, 5);
-            Font.Color := $00847F7C;
-            TextOut(R.Right - 40, R.Bottom - 20, FormatDateTime('HH:MM', FMessages[ARow].Date));
-            TxtRect.Location := Point(R.Left + 4, R.CenterPoint.Y - TxtRect.Height div 2);
-            Brush.Style := bsClear;
-            Font.Color := clWhite;
-            TextRect(TxtRect, S, [tfWordBreak, tfEndEllipsis]);
-          end
-          else
-          begin
-            Brush.Color := $0078522B;
-            R.Width := (TableExMessages.Width div 3) * 2;
-            TxtRect := R;
-            TextRect(TxtRect, S, [tfCalcRect, tfWordBreak]);
-
-            R.Width := TxtRect.Width;
-            R.Height := TxtRect.Height;
-            R.Inflate(5, 5);
-            R.Location := Point(Rect.Width - R.Width, Rect.Top);
-
-            if TableExMessages.GetRowHeight(ARow) <> R.Height then
-            begin
-              TableExMessages.SetRowHeight(ARow, R.Height);
-              Exit;
-            end;
-            R.Width := R.Width + 16 + 40;
-            R.Offset(-56, 0);
-            RoundRect(R, 5, 5);
-            Font.Color := $00B48E6A;
-            TextOut(R.Right - 56, R.Bottom - 20, FormatDateTime('HH:MM', FMessages[ARow].Date));
-            TxtRect.Location := Point(R.Left + 4, R.CenterPoint.Y - TxtRect.Height div 2);
-            Brush.Style := bsClear;
-            Font.Color := clWhite;
-            TextRect(TxtRect, S, [tfWordBreak]);
-            if FMessages[ARow].MessageItem.Received then
-            begin
-              if not FMessages[ARow].MessageItem.Displayed then
-                ImageList24.Draw(TableExMessages.Canvas, R.Right - 24, R.Bottom - 18, 0, True)
-              else
-                ImageList24.Draw(TableExMessages.Canvas, R.Right - 24, R.Bottom - 18, 1, True);
-            end
-            else
-              ImageList24.Draw(TableExMessages.Canvas, R.Right - 24, R.Bottom - 18, 2, True);
-          end;
-        end;
-      etDate:
-        begin
-          Brush.Color := $003A2C1D;
-          R.Width := 80;
-          R.Height := 25;
-          TxtRect.Location := Point(R.Left + 3, R.Top + 3);
-          R.Location := TPoint.Create(Rect.CenterPoint.X - R.Width div 2, Rect.CenterPoint.Y - R.Height div 2);
-          RoundRect(R, 20, 20);
-          S := FormatDateTime('D mmmm', FMessages[ARow].Date);
-          Brush.Style := bsClear;
-          TextRect(R, S, [tfSingleLine, tfVerticalCenter, tfCenter]);
-        end;
-    end;
-  end;   }
 end;
 
 { TMessages }
