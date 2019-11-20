@@ -13,7 +13,6 @@ object FormAccount: TFormAccount
   Font.Style = []
   OldCreateOrder = False
   Position = poDesktopCenter
-  OnCreate = FormCreate
   PixelsPerInch = 96
   TextHeight = 13
   object sGroupBox1: TGroupBox
@@ -87,8 +86,7 @@ object FormAccount: TFormAccount
       Width = 190
       Height = 21
       TabOrder = 0
-      Text = 'Lamp IM'
-      TextHint = #1055#1088#1080#1084#1077#1088': Lamp-IM'
+      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': Pollty'
     end
     object EditLogin: TEdit
       Left = 69
@@ -103,8 +101,7 @@ object FormAccount: TFormAccount
       Font.Style = []
       ParentFont = False
       TabOrder = 1
-      Text = 'lamp-IM'
-      TextHint = #1055#1088#1080#1084#1077#1088': user'
+      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': user@jabber.com'
     end
     object EditServer: TEdit
       Left = 69
@@ -115,7 +112,7 @@ object FormAccount: TFormAccount
       ShowHint = True
       TabOrder = 2
       Text = 'jabber.ru'
-      TextHint = #1055#1088#1080#1084#1077#1088': jabber.ru'
+      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': jabber.com'
     end
     object EditPassword: TEdit
       Left = 69
@@ -131,8 +128,9 @@ object FormAccount: TFormAccount
       ParentFont = False
       PasswordChar = '*'
       TabOrder = 3
-      Text = 'cegthvty'
+      Text = '123456789123'
       TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1087#1072#1088#1086#1083#1100
+      OnChange = EditPasswordChange
     end
     object EditJabberPort: TEdit
       Left = 69
@@ -141,7 +139,7 @@ object FormAccount: TFormAccount
       Height = 21
       TabOrder = 4
       Text = '5222'
-      TextHint = #1055#1088#1080#1084#1077#1088': 5222'
+      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': 5222'
     end
   end
   object Panel1: TPanel

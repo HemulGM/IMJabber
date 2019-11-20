@@ -470,7 +470,7 @@ object FormConference: TFormConference
           SubTextFont.Name = 'Tahoma'
           SubTextFont.Style = []
         end
-        object ButtonFlat3: TButtonFlat
+        object ButtonFlatInvite: TButtonFlat
           AlignWithMargins = True
           Left = 249
           Top = 10
@@ -507,6 +507,7 @@ object FormConference: TFormConference
           ImageIndex = 4
           Images = FormMain.ImageListNormal
           ImagesOver = FormMain.ImageListOver
+          OnClick = ButtonFlatInviteClick
           RoundRectParam = 0
           ShowFocusRect = False
           TabOrder = 1
@@ -926,7 +927,7 @@ object FormConference: TFormConference
     Left = 72
     Top = 208
     Bitmap = {
-      494C010103001800580010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101030018005C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

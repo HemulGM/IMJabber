@@ -69,7 +69,7 @@ type
     Panel1: TPanel;
     ButtonFlat2: TButtonFlat;
     Label1: TButtonFlat;
-    ButtonFlat3: TButtonFlat;
+    ButtonFlatInvite: TButtonFlat;
     ButtonFlatSend: TButtonFlat;
     ButtonFlat5: TButtonFlat;
     Splitter1: TSplitter;
@@ -94,6 +94,7 @@ type
     procedure RichEditSendKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ButtonFlatLeaveClick(Sender: TObject);
     procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
+    procedure ButtonFlatInviteClick(Sender: TObject);
   private
     FMessages: TMessages;
     FRosterList: TRosterList;
@@ -121,7 +122,7 @@ implementation
 
 uses
   IM.Conference.Invite, IM.Main, IM.ChatRoom, ActiveX, IM.Account.Card,
-  IM.Account, System.DateUtils, Math, Jabber;
+  IM.Account, System.DateUtils, Math, Jabber, IM.Roster;
 
 {$R *.dfm}
 
@@ -333,6 +334,17 @@ begin
     ButtonSendClick(nil);
     Key := 0;
     Exit;
+  end;
+end;
+
+procedure TFormConference.ButtonFlatInviteClick(Sender: TObject);
+var
+  RItem: Integer;
+begin
+  if TFormRosterList.Execute(FormMain.RosterList, RItem) then
+  begin
+    if FormMain.RosterList.IndexIn(RItem) then
+      FormMain.JabberClient.SendInvite(FormMain.RosterList[RItem].JID, JID);
   end;
 end;
 

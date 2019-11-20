@@ -68,7 +68,7 @@ type
     ImageListOver: TImageList;
     MenuItemRemoveGroup: TMenuItem;
     ActivityIndicatorWork: TActivityIndicator;
-    Panel1: TPanel;
+    PanelAccountInfo: TPanel;
     ImageAvatar: TImage;
     LabelNick: TLabel;
     LabelStatusText: TLabel;
@@ -82,11 +82,9 @@ type
     N6: TMenuItem;
     Button1: TButtonFlat;
     Button2: TButtonFlat;
-    procedure Image2Click(Sender: TObject);
     procedure MenuItemQuitClick(Sender: TObject);
     procedure MenuItemAccountClick(Sender: TObject);
     procedure MenuItemSettingsClick(Sender: TObject);
-    procedure InviteConf(Sender: TObject);
     procedure OnAddToGroupClick(Sender: TObject);
     procedure MenuItemAboutClick(Sender: TObject);
     procedure sButton1Click(Sender: TObject);
@@ -173,6 +171,8 @@ type
     function CheckConnect: Boolean;
     procedure Start;
     procedure Open;
+    function SetAccount: Boolean;
+    property RosterList: TRosterList read FRosterList;
   end;
 
 var
@@ -186,24 +186,6 @@ uses
   System.NetEncoding, D2D1, System.DateUtils, IM.Core, HGM.Common.Settings;
 
 {$R *.dfm}
-
-procedure TFormMain.InviteConf(Sender: TObject);
-var
-  menuItem: TMenuItem;
-  conf: string;
-  i: integer;
-begin
-  i := random(777);
-  menuItem := TMenuItem(Sender);
-  conf := Format('%s', [menuItem.Caption]);
-  if conf <> '' then
-  begin
-    if FRosterList.IndexIn(TableExRoster.ItemIndex) then
-    begin
-      JabberClient.SendData('<message to="' + conf + '" id="inv' + inttostr(i) + '" >' + '<x xmlns="http://jabber.org/protocol/muc#user"><invite to="' + FRosterList[TableExRoster.ItemIndex].JID + '" /></x></message>');
-    end;
-  end;
-end;
 
 procedure TFormMain.OnAddToGroupClick(Sender: TObject);
 var
@@ -266,7 +248,7 @@ var
 begin
   if not MenuItemSound.Checked then
     Exit;
-  SoundFile := ExtractFilePath(ParamStr(0)) + 'sounds\' + Core.Settings.GetStr('system', 'sounds', 'icq');
+  SoundFile := ExtractFilePath(ParamStr(0)) + 'sounds\' + Core.Settings.GetStr('System', 'Sounds', 'icq');
   case Sound of
     sndError:
       SoundFile := SoundFile + '\warning.wav';
@@ -286,20 +268,6 @@ begin
 
   if FileExists(SoundFile) then
     Winapi.MMSystem.PlaySound(PChar(SoundFile), 0, SND_FILENAME or SND_ASYNC);
-end;
-
-//функция доступа к дочерным формам
-function GetFormByName(Owner: TComponent; AName: string): TForm;
-var
-  i: Integer;
-begin
-  AName := AnsiLowerCase(AName);
-  for i := 0 to Owner.ComponentCount - 1 do
-  begin
-    if (Owner.Components[i] is TForm) then
-      if AnsiLowerCase(Owner.Components[i].Name) = AName then
-        Exit(Owner.Components[i] as TForm);
-  end;
 end;
 
 function TFormMain.GetChatByJID(AJID: string; var Form: TFormChatRoom): Boolean;
@@ -333,61 +301,6 @@ begin
         Form := Components[i] as TFormConference;
         Exit(True);
       end;
-  end;
-end;
-
-//функция доступа к дочерным memo
-function GetMenuItemByName(Owner: TComponent; AName: string): Tmenuitem;
-var
-  i: Integer;
-begin
-  AName := AnsiLowerCase(AName);
-  for i := 0 to Owner.ComponentCount - 1 do
-  begin
-    if AnsiLowerCase(Owner.Components[i].Name) = AName then
-      if (Owner.Components[i] is Tmemo) then
-        Exit(Owner.Components[i] as TmenuItem);
-  end;
-end;
-
-//функция доступа к дочерным memo
-function GetMemoByName(Owner: TComponent; AName: string): Tmemo;
-var
-  i: Integer;
-begin
-  AName := AnsiLowerCase(AName);
-  for i := 0 to Owner.ComponentCount - 1 do
-  begin
-    if AnsiLowerCase(Owner.Components[i].Name) = AName then
-      if (Owner.Components[i] is Tmemo) then
-        Exit(Owner.Components[i] as Tmemo);
-  end;
-end;
-
-function ExistComponentByName(Owner: TComponent; AName: string): Bool;
-var
-  i: Integer;
-begin
-  Result := false;
-  AName := AnsiLowerCase(AName);
-  for i := 0 to Owner.ComponentCount - 1 do
-  begin
-    if AnsiLowerCase(Owner.Components[i].Name) = AName then
-      Exit(True);
-  end;
-end;
-
-function ExistFormByName(Owner: TComponent; AName: string): Bool;
-var
-  i: Integer;
-begin
-  Result := False;
-  AName := AnsiLowerCase(AName);
-  for i := 0 to Owner.ComponentCount - 1 do
-  begin
-    if Owner.Components[i] is TForm then
-      if AnsiLowerCase(Owner.Components[i].Name) = AName then
-        Exit(True);
   end;
 end;
 
@@ -440,10 +353,16 @@ begin
   JabberClient.UserServer := 'jabber.ru';
   JabberClient.Resource := 'jabbrel';
 
+  JabberClient.JID := Core.Settings.GetStr('Account', 'JID');
+  JabberClient.UserServer := Core.Settings.GetStr('Account', 'Server', JabberClient.UserServer);
+  JabberClient.JabberPort := Core.Settings.GetInt('Account', 'Port', 5222);
+  JabberClient.UserNick := Core.Settings.GetStr('Account', 'Nick', JabberClient.UserNick);
+  JabberClient.AuthHash := Core.Settings.GetStr('Account', 'Password');
+
   try
-    LabelStatus.Caption := Core.Settings.GetStr('form', 'status', '');
+    LabelStatus.Caption := Core.Settings.GetStr('Account', 'Status');
     JabberClient.UserStatusText := LabelStatus.Caption;
-    if Core.Settings.GetStr('form', 'sound', '1') = '1' then
+    if Core.Settings.GetStr('System', 'Sound', '1') = '1' then
     begin
       MenuItemSound.Checked := True;
     end;
@@ -462,12 +381,7 @@ begin
   FGroupList.Free;
   FRosterList.Free;
   JabberClient.Free;
-  Core.Settings.SetParamWindow('form', Self, [wpsCoord, wpsSize]);
-end;
-
-procedure TFormMain.Image2Click(Sender: TObject);
-begin
-  PopupMenuSys.Popup(FormMain.left + 10, FormMain.top + FormMain.Height - 310);
+  Core.Settings.SetParamWindow('Form', Self, [wpsCoord, wpsSize]);
 end;
 
 procedure TFormMain.JabberClientConnect(Sender: TObject);
@@ -995,7 +909,7 @@ end;
 
 procedure TFormMain.MenuItemAccountClick(Sender: TObject);
 begin
-  FormAccount.show;
+  //FormAccount.show;
 end;
 
 procedure TFormMain.MenuItemContactRenameClick(Sender: TObject);
@@ -1159,7 +1073,7 @@ end;
 procedure TFormMain.MenuItemSoundClick(Sender: TObject);
 begin
   MenuItemSound.Checked := not MenuItemSound.Checked;
-  Core.Settings.SetBool('form', 'sound', MenuItemSound.Checked);
+  Core.Settings.SetBool('System', 'Sound', MenuItemSound.Checked);
 end;
 
 procedure TFormMain.MenuItemStatusOnlineClick(Sender: TObject);
@@ -1283,18 +1197,7 @@ begin
   if not JabberClient.CheckAccount then
   begin
     TFormChatRoom.SwowPopupWnd('Введите данные Вашей учетной записи!');
-    if FormAccount.ShowModal = mrOk then
-    begin
-      JabberClient.JID := FormAccount.EditLogin.Text;
-      JabberClient.Password := FormAccount.EditPassword.Text;
-      JabberClient.UserServer := FormAccount.EditServer.Text;
-      try
-        JabberClient.JabberPort := StrToInt(FormAccount.EditJabberPort.Text);
-      except
-        JabberClient.JabberPort := 5222;
-      end;
-      Result := True;
-    end;
+    Result := SetAccount;
   end
   else
     Result := True;
@@ -1320,6 +1223,8 @@ begin
   FormConsole.Show;
   {$ENDIF}
   if JabberClient.CheckAccount then
+    CheckConnect
+  else if CheckAccount then
     CheckConnect;
 end;
 
@@ -1327,7 +1232,7 @@ procedure TFormMain.LabelStatusClick(Sender: TObject);
 begin
   LabelStatus.Caption := InputBox('Статус', 'Введите Ваш статус', LabelStatus.Caption);
   JabberClient.UserStatusText := LabelStatus.Caption;
-  Core.Settings.SetStr('form', 'status', LabelStatus.Caption);
+  Core.Settings.SetStr('Account', 'Status', LabelStatus.Caption);
 end;
 
 procedure TFormMain.TableExRosterDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
@@ -1364,6 +1269,34 @@ begin
           end;
         end;
     end;
+  end;
+end;
+
+function TFormMain.SetAccount: Boolean;
+var
+  JID, Nick, Password, Server, Port: string;
+begin
+  Result := False;
+  JID := JabberClient.JID;
+  Server := JabberClient.UserServer;
+  Nick := JabberClient.UserNick;
+  Password := JabberClient.AuthHash;
+  Port := JabberClient.JabberPort.ToString;
+  if TFormAccount.Execute(JID, Nick, Password, Server, Port) then
+  begin
+    JabberClient.JID := JID;
+    JabberClient.UserServer := Server;
+    JabberClient.UserNick := Nick;
+    if Password <> JabberClient.AuthHash then
+      JabberClient.AuthHash := GetAuthHash(JabberClient.UserName, JabberClient.UserServer, Password);
+    JabberClient.JabberPort := StrToIntDef(Port, 5222);
+
+    Core.Settings.SetStr('Account', 'Nick', JabberClient.UserNick);
+    Core.Settings.SetInt('Account', 'Port', JabberClient.JabberPort);
+    Core.Settings.SetStr('Account', 'JID', JabberClient.JID);
+    Core.Settings.SetStr('Account', 'Password', JabberClient.AuthHash);
+    Core.Settings.SetStr('Account', 'Server', JabberClient.UserServer);
+    Result := True;
   end;
 end;
 

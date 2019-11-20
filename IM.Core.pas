@@ -13,9 +13,9 @@ uses
   HGM.Common.Settings;
 
 type
-  TIMCore = class
+  TIMCore = class(TComponent)
     Settings: TSettingsIni;
-    constructor Create;
+    constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
   end;
 
@@ -26,14 +26,16 @@ implementation
 
 { TIMCore }
 
-constructor TIMCore.Create;
+constructor TIMCore.Create(AOwner: TComponent);
 begin
+  inherited;
   Settings := TSettingsIni.Create(ExtractFilePath(Application.ExeName) + '\options.ini');
 end;
 
 destructor TIMCore.Destroy;
 begin
   Settings.Free;
+  inherited;
 end;
 
 end.

@@ -26,7 +26,8 @@ uses
   Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas',
   IM.Classes in 'IM.Classes.pas',
   VCLFlickerReduce in '..\#Fork\VCLFlickerReduce\VCLFlickerReduce.pas',
-  IM.Core in 'IM.Core.pas';
+  IM.Core in 'IM.Core.pas',
+  IM.Roster in 'IM.Roster.pas' {FormRosterList};
 
 {$R *.res}
 
@@ -35,7 +36,6 @@ var
   MutexName: string = 'IMJabber HGM';
 
 begin
-  //Запрещение запуска 2 копии программы
   MutexHandle := OpenMutex(MUTEX_ALL_ACCESS, True, PChar(MutexName));
   if MutexHandle <> 0 then
   begin
@@ -51,22 +51,21 @@ begin
   Application.Initialize;
   Application.ShowMainForm := True;
   Application.Title := 'IMJabber';
-  Core := TIMCore.Create;
+  Core := TIMCore.Create(Application);
   Application.CreateForm(TFormMain, FormMain);
   Application.CreateForm(TFormConfig, FormConfig);
-  Application.CreateForm(TFormAccount, FormAccount);
   Application.CreateForm(TFormConsole, FormConsole);
   Application.CreateForm(TFormConfInvite, FormConfInvite);
   Application.CreateForm(TFormNotify, FormNotify);
   Application.CreateForm(TFormAccountCard, FormAccountCard);
   Application.CreateForm(TFormContactAdd, FormContactAdd);
   Application.CreateForm(TFormCaptcha, FormCaptcha);
+  Application.CreateForm(TFormRosterList, FormRosterList);
   FormWelcome := TFormWelcome.Create(FormMain);
   FormWelcome.Parent := FormMain.PanelClient;
   FormWelcome.Show;
   FormMain.Start;
   Application.Run;
-  //Core.Free;
   CloseHandle(MutexHandle);
 end.
 

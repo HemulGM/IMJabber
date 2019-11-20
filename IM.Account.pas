@@ -24,11 +24,11 @@ type
     ButtonSave: TButton;
     procedure ButtonCancelClick(Sender: TObject);
     procedure ButtonSaveClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure EditPasswordChange(Sender: TObject);
   private
-    { Private declarations }
+    FPasswordChanged: Boolean;
   public
-    { Public declarations }
+    class function Execute(var JID, Nick, Password, Server, Port: string): Boolean;
   end;
 
 var
@@ -37,45 +37,46 @@ var
 implementation
 
 uses
-  IM.Main, CryptUnit, IM.Core;
+  IM.Main, CryptUnit, IM.Core, Jabber;
 
 {$R *.dfm}
-
-procedure TFormAccount.FormCreate(Sender: TObject);
-begin
-  EditPassword.Text := Decrypt(Core.Settings.GetStr('account', 'pass'), PKey);
-  EditLogin.Text := Core.Settings.GetStr('account', 'jid');
-  EditServer.Text := Core.Settings.GetStr('account', 'server');
-  EditJabberPort.Text := Core.Settings.GetStr('account', 'port');
-  EditNick.Text := Core.Settings.GetStr('account', 'nick');
-
-  FormMain.JabberClient.JID := EditLogin.Text;
-  FormMain.JabberClient.UserServer := EditServer.Text;
-  FormMain.JabberClient.Password := EditPassword.Text;
-  FormMain.JabberClient.UserNick := EditNick.Text;
-  FormMain.JabberClient.JabberPort := StrToIntDef(EditJabberPort.Text, 5222);
-end;
 
 procedure TFormAccount.ButtonSaveClick(Sender: TObject);
 begin
   if (EditNick.Text <> '') and (EditLogin.Text <> '') and (EditServer.Text <> '') then
   begin
-    Core.Settings.SetStr('account', 'nick', EditNick.Text);
-    Core.Settings.SetStr('account', 'port', EditJabberPort.Text);
-    Core.Settings.SetStr('account', 'jid', EditLogin.Text);
-    Core.Settings.SetStr('account', 'pass', Encrypt(EditPassword.Text, PKey));
-    Core.Settings.SetStr('account', 'server', EditServer.Text);
-
-    FormMain.JabberClient.JID := EditLogin.Text;
-    FormMain.JabberClient.UserServer := EditServer.Text;
-    FormMain.JabberClient.Password := EditPassword.Text;
-    FormMain.JabberClient.UserNick := EditNick.Text;
-    FormMain.JabberClient.JabberPort := StrToIntDef(EditJabberPort.Text, 5222);
-    Close;
     ModalResult := mrOk;
   end
   else
     ShowMessage('Не все поля заполнены!');
+end;
+
+procedure TFormAccount.EditPasswordChange(Sender: TObject);
+begin
+  FPasswordChanged := True;
+end;
+
+class function TFormAccount.Execute(var JID, Nick, Password, Server, Port: string): Boolean;
+begin
+  with TFormAccount.Create(nil) do
+  begin
+    EditLogin.Text := JID;
+    EditServer.Text := Server;
+    EditJabberPort.Text := Port;
+    EditNick.Text := Nick;
+    if Password <> '' then
+      EditPassword.Text := '123456789123';
+    FPasswordChanged := False;
+    Result := ShowModal = mrOK;
+
+    JID := EditLogin.Text;
+    Server := EditServer.Text;
+    Port := EditJabberPort.Text;
+    Nick := EditNick.Text;
+    if FPasswordChanged then
+      Password := EditPassword.Text;
+    Free;
+  end;
 end;
 
 procedure TFormAccount.ButtonCancelClick(Sender: TObject);
