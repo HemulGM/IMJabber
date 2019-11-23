@@ -4,7 +4,7 @@ object FormWelcome: TFormWelcome
   Align = alClient
   BorderStyle = bsNone
   ClientHeight = 427
-  ClientWidth = 497
+  ClientWidth = 472
   Color = 2168334
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -14,13 +14,12 @@ object FormWelcome: TFormWelcome
   Font.Style = []
   OldCreateOrder = False
   DesignSize = (
-    497
+    472
     427)
   PixelsPerInch = 96
   TextHeight = 13
   object Label2: TLabelEx
-    AlignWithMargins = True
-    Left = 120
+    Left = 107
     Top = 203
     Width = 275
     Height = 22
@@ -37,5 +36,6 @@ object FormWelcome: TFormWelcome
     TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter, tfWordBreak, tfWordEllipsis]
     IgnorBounds = True
     EllipseRectVertical = False
+    ExplicitLeft = 120
   end
 end

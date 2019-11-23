@@ -63,9 +63,13 @@ function CreateShortName(JID, Name: string): string;
 implementation
 
 function CreateAvatar(Source: TGraphic; Mask: TPngImage): TPngImage;
+var
+  BMPSmooth: TBitmap;
 begin
+  BMPSmooth := SmoothStrechDraw(Source, TSize.Create(Mask.Width, Mask.Height));
   Result := TPngImage.CreateBlank(COLOR_RGB, 16, Mask.Width, Mask.Height);
-  Result.Canvas.StretchDraw(Rect(0, 0, Mask.Width, Mask.Height), Source);
+  Result.Canvas.Draw(0, 0, BMPSmooth);
+  BMPSmooth.Free;
   Result.CreateAlpha;
   ApplyMask(0, 0, Mask, Result);
 end;

@@ -19,7 +19,6 @@ type
     sLabel1: TLabel;
     FileListBox2: TFileListBox;
     procedure sButton1Click(Sender: TObject);
-    procedure sButton2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure sCheckBox1Click(Sender: TObject);
     procedure sCheckBox2Click(Sender: TObject);
@@ -122,11 +121,6 @@ end;
 procedure TFormConfig.sButton1Click(Sender: TObject);
 begin
   close;
-end;
-
-procedure TFormConfig.sButton2Click(Sender: TObject);
-begin
-//form1.sSkinManager1.SkinName
 end;
 
 procedure TFormConfig.sCheckBox1Click(Sender: TObject);

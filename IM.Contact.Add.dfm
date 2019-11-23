@@ -108,7 +108,7 @@ object FormContactAdd: TFormContactAdd
     ColorOver = 3680799
     ColorPressed = 4403489
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 13344113
+    Font.Color = 15905386
     Font.Height = -13
     Font.Name = 'Segoe UI Semibold'
     Font.Style = []
@@ -147,7 +147,7 @@ object FormContactAdd: TFormContactAdd
     ColorOver = 3680799
     ColorPressed = 4403489
     Font.Charset = DEFAULT_CHARSET
-    Font.Color = 13344113
+    Font.Color = 15905386
     Font.Height = -13
     Font.Name = 'Segoe UI Semibold'
     Font.Style = []

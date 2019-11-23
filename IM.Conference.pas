@@ -73,6 +73,8 @@ type
     ButtonFlatSend: TButtonFlat;
     ButtonFlat5: TButtonFlat;
     Splitter1: TSplitter;
+    LabelExAff: TLabelEx;
+    LabelExRole: TLabelEx;
     procedure N2Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -95,6 +97,7 @@ type
     procedure ButtonFlatLeaveClick(Sender: TObject);
     procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
     procedure ButtonFlatInviteClick(Sender: TObject);
+    procedure TableExRosterItemClick(Sender: TObject; MouseButton: TMouseButton; const Index: Integer);
   private
     FMessages: TMessages;
     FRosterList: TRosterList;
@@ -102,17 +105,21 @@ type
     FNick: string;
     FLoading: Boolean;
     FDiconnected: Boolean;
-    procedure SetJID(const Value: string);
     procedure ButtonSendClick(Sender: TObject);
     procedure MessageMarkers(Item: TJabberMessage);
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
+    function GetFullJID: string;
   public
     procedure OnDisconnect;
     procedure OnConnect;
     procedure NewMessage(Item: TJabberMessage);
     procedure SetData(AJID, ANick: string);
     procedure OnPresence(Sender: TObject; QueryNode: TGmXmlNode);
-    property JID: string read FJID write SetJID;
+    procedure OnKickYou(Reason, ErrorCode, Actor: string);
+    property JID: string read FJID; //room@conference.jabber.ru
+    property Nick: string read FNick; //Пупка
+    property FullJID: string read GetFullJID;
+    property Disconnected: Boolean read FDiconnected;
   end;
 
 var
@@ -122,7 +129,8 @@ implementation
 
 uses
   IM.Conference.Invite, IM.Main, IM.ChatRoom, ActiveX, IM.Account.Card,
-  IM.Account, System.DateUtils, Math, Jabber, IM.Roster;
+  IM.Account, System.DateUtils, Math, Jabber, IM.Roster, HGM.Common.Utils,
+  Vcl.Imaging.pngimage;
 
 {$R *.dfm}
 
@@ -131,8 +139,21 @@ var
   ChatItem: TChatElement;
   From: TRosterItem;
 begin
+  //Если от комнаты
+  if Item.From = JID then
+  begin
+    if Item.MessageType = 'error' then
+    begin
+      with FMessages.AddInfo do
+      begin
+        Date := Now;
+        Text := Item.Error.Text;
+      end;
+      Exit;
+    end
+  end;
   //Если это про нас
-  if Item.From = FJID + '/' + FNick then
+  if Item.From = FullJID then
   begin
     if not Item.Delay then
     begin
@@ -156,6 +177,7 @@ begin
     Exit;
   end;
   From := FRosterList.Find(Item.From);
+  //Добавление сообщения
   ChatItem := TChatElement.Create(FMessages);
   if Assigned(From) then
   begin
@@ -176,10 +198,11 @@ begin
     ChatItem.Date := Now;
   FMessages.Add(ChatItem);
   hChatMessages.Repaint;
+  //////////
   if (not Active) or (not Visible) then
   begin
     FormMain.TrayIcon.Animate := True;
-    FormMain.PlaySound(sndMessage);
+    FormMain.PlaySounds(sndGroup);
   end;
 end;
 
@@ -207,6 +230,11 @@ end;
 procedure TFormConference.FormShow(Sender: TObject);
 begin
   FLoading := False;
+end;
+
+function TFormConference.GetFullJID: string;
+begin
+  Result := FJID + '/' + FNick;
 end;
 
 procedure TFormConference.N10Click(Sender: TObject);
@@ -380,43 +408,129 @@ end;
 
 procedure TFormConference.OnConnect;
 begin
-  FDiconnected := False;
-  SetData(FJID, FNick);
+  if FDiconnected then
+    SetData(FJID, FNick);
 end;
 
 procedure TFormConference.OnDisconnect;
 begin
   FDiconnected := True;
+
+  LabelExAff.Visible := False;
+  LabelExRole.Visible := False;
+end;
+
+procedure TFormConference.OnKickYou(Reason, ErrorCode, Actor: string);
+begin
+  Reason := Actor + ' выгнал вас из комнаты. Причина: ' + Reason;
+  if ErrorCode = '307' then
+    Reason := Reason + '. Временно! Вы можете читать сообщения, но не можете писать';
+
+  LabelExAff.Pen.Color := $00D8E218;
+  LabelExAff.Caption := 'Бан';
+  LabelExAff.Visible := True;
+  LabelExRole.Visible := False;
+  with FMessages.AddInfo do
+  begin
+    Date := Now;
+    Text := Reason;
+    FillColor := $005454B7;
+  end;
+  hChatMessages.Repaint;
 end;
 
 procedure TFormConference.OnPresence(Sender: TObject; QueryNode: TGmXmlNode);
 var
   Item: TChatInfo;
   RItem: TRosterItem;
-  tmpItem, xmlItem2: TGmXmlNode;
-  a: integer;
-  fromTYPE, fromJID, JID, conf_nick, confONLY, ErrorCode: string;
+  Pic: TPicture;
+  PNG: TPngImage;
+  PresenceType, PresenceFrom, PresenceNick, ErrorCode, Reason, Actor, S: string;
 begin
-  fromJID := QueryNode.Params.Values['from'];
-  conf_nick := copy(fromJID, Pos('/', fromJID) + 1, length(fromJID));
-  fromTYPE := LowerCase(QueryNode.Params.Values['type']);
+  PresenceFrom := QueryNode.Params.Values['from'];
+  PresenceNick := NickFromConfJID(PresenceFrom);
+  PresenceType := LowerCase(QueryNode.Params.Values['type']);
 
-  RItem := FRosterList.Find(fromJID);
+  if PresenceFrom = FullJID then
+  begin
+    if PresenceType = 'unavailable' then
+    begin
+      if QueryNode.Children.NodeWithParamExists('x', 'xmlns', XMLNS_MUCUSER) then
+        with QueryNode.Children.NodeWithParam('x', 'xmlns', XMLNS_MUCUSER) do
+        begin
+          if Children.NodeExists('item') then
+            with Children.NodeByName['item'] do
+            begin
+              if Children.NodeExists('actor') then
+                Actor := Children.NodeByName['actor'].Params.Values['nick'];
+              if Children.NodeExists('reason') then
+                Reason := Children.NodeByName['reason'].AsString;
+            end;
+          if Children.NodeExists('status') then
+            with Children.NodeByName['status'] do
+            begin
+              ErrorCode := Params.Values['code'];
+            end;
+        end;
+      OnKickYou(Reason, ErrorCode, Actor);
+      Exit;
+    end;
+    //Получаем права юзеров в конфе
+    if QueryNode.Children.NodeWithParamExists('x', 'xmlns', XMLNS_MUCUSER) then
+      with QueryNode.Children.NodeWithParam('x', 'xmlns', XMLNS_MUCUSER) do
+      begin
+        if Children.NodeExists('item') then
+          with Children.NodeByName['item'] do
+          begin
+            S := Params.Values['affiliation'];
+            if (not S.IsEmpty) and (S <> 'none') then
+            begin
+              LabelExAff.Pen.Color := AffiliationInfo(S, S);
+              LabelExAff.Caption := S;
+              LabelExAff.Visible := True;
+            end;
+            S := Params.Values['role'];
+            if (not S.IsEmpty) and (S <> 'none') then
+            begin
+              LabelExRole.Pen.Color := RoleInfo(S, S);
+              LabelExRole.Caption := S;
+              LabelExRole.Visible := True;
+            end;
+          end;
+      end;
+    {
+    <presence
+      from="!!!заходите!!!@conference.jabber.ru/Пупка"
+      to="hemulgm@jabber.ru/jabbrel"
+      type="unavailable">
+      <x xmlns="http://jabber.org/protocol/muc#user">
+          <item affiliation="none" role="none">
+                  <actor nick="Flack_Fearl"/>
+                  <reason>Flack_Fearl: маты ф топку!</reason>
+          </item>
+          <status code="307"/>
+      </x>
+    </presence>
+    }
+    Exit;
+  end;
+  RItem := FRosterList.Find(PresenceFrom);
   if not Assigned(RItem) then
   begin
     RItem := TRosterItem.Create;
-    RItem.JID := fromJID;
-    RItem.Name := NickFromConfJID(fromJID);
+    RItem.JID := PresenceFrom;
+    RItem.Name := NickFromConfJID(PresenceFrom);
     SetDefaultAvatar(RItem, FormMain.FStatusMask);
     FRosterList.Add(RItem);
   end;
-  if QueryNode.Params.Values['type'] = 'unavailable' then
+  if PresenceType = 'unavailable' then
   begin
     RItem.Status := stOffline;
-    Item := TChatInfo.Create(FMessages);
-    Item.Date := Now;
-    Item.Text := 'Отключился ' + conf_nick;
-    FMessages.Add(Item);
+    with FMessages.AddInfo do
+    begin
+      Date := Now;
+      Text := 'Отключился ' + PresenceNick;
+    end;
     hChatMessages.Repaint;
   end
   else
@@ -424,10 +538,11 @@ begin
     if not FLoading then
       if RItem.Status = stOffline then
       begin
-        Item := TChatInfo.Create(FMessages);
-        Item.Date := Now;
-        Item.Text := 'Подключился ' + conf_nick;
-        FMessages.Add(Item);
+        with FMessages.AddInfo do
+        begin
+          Date := Now;
+          Text := 'Подключился ' + PresenceNick;
+        end;
         hChatMessages.Repaint;
       end;
 
@@ -443,9 +558,37 @@ begin
     if QueryNode.Children.NodeWithParamExists('x', 'xmlns', XMLNS_MUCUSER) then
       with QueryNode.Children.NodeWithParam('x', 'xmlns', XMLNS_MUCUSER) do
       begin
-        RItem.GroupData.Affiliation := Params.Values['affiliation'];
-        RItem.GroupData.Affiliation := Params.Values['role'];
+        if Children.NodeExists('item') then
+          with Children.NodeByName['item'] do
+          begin
+            RItem.GroupData.Affiliation := Params.Values['affiliation'];
+            RItem.GroupData.Role := Params.Values['role'];
+          end;
       end;
+    if QueryNode.Children.NodeWithParamExists('x', 'xmlns', XMLNS_VCARDUPDATE) then
+      with QueryNode.Children.NodeWithParam('x', 'xmlns', XMLNS_VCARDUPDATE) do
+        if Children.NodeExists('photo') then
+          with Children.NodeByName['photo'] do
+            if RItem.Photo <> AsString then
+            begin
+              RItem.Photo := AsString;
+              with FormMain.JabberClient.GetVCard(RItem.JID) do
+              begin
+                if Photo.PhotoType <> '' then
+                begin
+                  Pic := TPicture.Create;
+                  if SetImageFromBinVal(Photo.BinVal, Photo.PhotoType, Pic) then
+                  begin
+                    PNG := CreateAvatar(Pic.Graphic, FormMain.FStatusMask);
+                    RItem.Avatar.Assign(PNG);
+                    PNG.Free;
+                  end;
+                  Pic.Free;
+                end
+                else
+                  RItem.Photo := '';
+              end;
+            end;
   end;
   FRosterList.UpdateTable;
 end;
@@ -467,11 +610,7 @@ begin
     ShowMessage(Respone.ErrorData.Text);
     Exit;
   end;
-end;
-
-procedure TFormConference.SetJID(const Value: string);
-begin
-  FJID := Value;
+  FDiconnected := False;
 end;
 
 procedure TFormConference.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
@@ -492,6 +631,10 @@ begin
 end;
 
 procedure TFormConference.TableExRosterDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
+var
+  R, RT: TRect;
+  Offset: Integer;
+  S: string;
 begin
   if not FRosterList.IndexIn(ARow) then
     Exit;
@@ -507,25 +650,82 @@ begin
         end;
       1:
         begin
+          Brush.Style := bsClear;
+          //Ник
           Font.Name := 'Segoe UI';
           Font.Color := clWhite;
           if FRosterList[ARow].Name.IsEmpty then
-            TextOut(Rect.Left, Rect.Top + 3, FRosterList[ARow].JID)
+            S := FRosterList[ARow].JID
           else
-            TextOut(Rect.Left, Rect.Top + 3, FRosterList[ARow].Name);
+            S := FRosterList[ARow].Name;
+          R := TRect.Create(Rect.Left, Rect.Top + 3, Rect.Right, Rect.Bottom);
+          TextRect(R, S, [tfSingleLine, tfCalcRect, tfLeft]);
+          Offset := R.Right + 10;
+          TextRect(R, S, [tfSingleLine, tfLeft]);
+          //Субтекст
           Font.Color := $00CFCFCF;
+          R := TRect.Create(Rect.Left, Rect.Top + 22, Rect.Right, Rect.Bottom);
           if FRosterList[ARow].LastMessage.Unread then
           begin
-            TextOut(Rect.Left, Rect.Top + 22, FRosterList[ARow].LastMessage.Body);
+            S := FRosterList[ARow].LastMessage.Body;
             FormMain.ImageListStatuses.Draw(TableExRoster.Canvas, Rect.Right - 20, Rect.Top + 2, 7, True);
           end
           else
           begin
-            TextOut(Rect.Left, Rect.Top + 22, FRosterList[ARow].StatusText);
+            S := FRosterList[ARow].StatusText;
+          end;
+          TextRect(R, S, [tfSingleLine, tfLeft, tfEndEllipsis]);
+          //Affiliation
+          R := Rect;
+          R.Top := R.Top + 4;
+          R.Bottom := R.Top + 20;
+          R.Left := Offset;
+          S := FRosterList[ARow].GroupData.Affiliation;
+          if (not S.IsEmpty) and (S <> 'none') then
+          begin
+            Pen.Color := AffiliationInfo(S, S);
+
+            TextRect(R, S, [tfSingleLine, tfLeft, tfCalcRect]);
+            Offset := R.Right + 15;
+            Brush.Color := ColorDarker(Pen.Color);
+            Brush.Style := bsClear;
+
+            RT := R;
+            RT.Inflate(5, 0);
+            //Brush.Style := bsSolid;
+            RoundRect(RT, 2, 2);
+            R.Offset(0, -2);
+            TextRect(R, S, [tfSingleLine, tfLeft]);
+          end;
+          //role
+          R := Rect;
+          R.Top := R.Top + 4;
+          R.Bottom := R.Top + 20;
+          R.Left := Offset;
+          S := FRosterList[ARow].GroupData.Role;
+          if (not S.IsEmpty) and (S <> 'none') then
+          begin
+            Pen.Color := RoleInfo(S, S);
+            TextRect(R, S, [tfSingleLine, tfLeft, tfCalcRect]);
+            //Offset := R.Right + 10;
+            Brush.Color := ColorDarker(Pen.Color);
+            Brush.Style := bsClear;
+
+            RT := R;
+            RT.Inflate(5, 0);
+            //Brush.Style := bsSolid;
+            RoundRect(RT, 2, 2);
+            R.Offset(0, -2);
+            TextRect(R, S, [tfSingleLine, tfLeft]);
           end;
         end;
     end;
   end;
+end;
+
+procedure TFormConference.TableExRosterItemClick(Sender: TObject; MouseButton: TMouseButton; const Index: Integer);
+begin
+  TableExRoster.ItemIndex := -1;
 end;
 
 procedure TFormConference.WMSize(var Message: TWMSize);

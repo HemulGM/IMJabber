@@ -6,6 +6,7 @@ object FormConfig: TFormConfig
   ClientHeight = 361
   ClientWidth = 311
   Color = clBtnFace
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
@@ -23,8 +24,6 @@ object FormConfig: TFormConfig
     Height = 41
     Align = alBottom
     TabOrder = 0
-    ExplicitTop = 287
-    ExplicitWidth = 229
     object sButton1: TButton
       Left = 230
       Top = 7
@@ -44,15 +43,13 @@ object FormConfig: TFormConfig
     ActivePage = TabSheet2
     Align = alClient
     TabOrder = 1
-    ExplicitLeft = 0
-    ExplicitTop = 0
-    ExplicitWidth = 229
-    ExplicitHeight = 287
     object TabSheet2: TTabSheet
       Caption = #1056#1072#1079#1085#1086#1077
       ImageIndex = 1
-      ExplicitWidth = 221
-      ExplicitHeight = 259
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sCheckBox1: TCheckBox
         Left = 3
         Top = 3
@@ -84,6 +81,10 @@ object FormConfig: TFormConfig
     object TabSheet3: TTabSheet
       Caption = #1047#1074#1091#1082#1080
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object sLabel1: TLabel
         Left = 18
         Top = 7

@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Types, System.UITypes, System.Classes, Vcl.Graphics, Vcl.Forms,
   Vcl.Dialogs, Vcl.ActnList, Vcl.StdCtrls, Vcl.Buttons, Vcl.ExtDlgs,
-  Winapi.MMSystem, System.IniFiles, System.ImageList, System.Actions, Vcl.Menus,
+  System.IniFiles, System.ImageList, System.Actions, Vcl.Menus,
   Vcl.ComCtrls, Vcl.ExtCtrls, Vcl.ImgList, Vcl.Controls, Vcl.Imaging.jpeg,
   Jabber.Types, Jabber, GmXml, MD5Hash, System.Generics.Collections,
   Vcl.Imaging.pngimage, IM.ChatRoom, IM.Classes, IM.Conference,

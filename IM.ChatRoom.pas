@@ -46,7 +46,6 @@ type
     procedure ButtonSendClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
     procedure RichEditSendResizeRequest(Sender: TObject; Rect: TRect);
     procedure RichEditSendKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
@@ -70,7 +69,7 @@ var
 implementation
 
 uses
-  IM.Main, IM.Notifycation, IM.Account, System.DateUtils, Jabber, Math;
+  IM.Main, IM.Account, System.DateUtils, Jabber, Math;
 
 {$R *.dfm}
 
@@ -78,16 +77,6 @@ class procedure TFormChatRoom.SwowPopupWnd(text: string);
 begin
   FormMain.TrayIcon.BalloonHint := text;
   FormMain.TrayIcon.ShowBalloonHint;
-end;
-
-procedure HidePopupWnd;
-begin
-  FormNotify.Hide;
-end;
-
-procedure TFormChatRoom.Button2Click(Sender: TObject);
-begin
-  HidePopupWnd;
 end;
 
 procedure TFormChatRoom.FormCreate(Sender: TObject);
@@ -191,7 +180,7 @@ begin
   if (not Active) or (not Visible) then
   begin
     FormMain.TrayIcon.Animate := True;
-    FormMain.PlaySound(sndMessage);
+    FormMain.PlaySounds(sndMessage);
   end;
 end;
 

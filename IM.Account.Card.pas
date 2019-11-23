@@ -121,41 +121,56 @@ var
   JPG: TJPEGImage;
   GIF: TGIFImage;
 begin
+  Result := False;
   ImageBytes := TNetEncoding.Base64.DecodeStringToBytes(BinVal);
   ImageType := LowerCase(ImageType);
   PhotoStream := TMemoryStream.Create;
   try
-    PhotoStream.Write(ImageBytes, Length(ImageBytes));
-    PhotoStream.Position := 0;
-    Result := True;
-    if ImageType = 'image/png' then
-    begin
-      PNG := TPngImage.Create;
-      PNG.LoadFromStream(PhotoStream);
-      Target.Assign(PNG);
-      PNG.Free;
-    end
-    else if (ImageType = 'image/jpg') or (ImageType = 'image/jpeg') then
-    begin
-      JPG := TJPEGImage.Create;
-      JPG.LoadFromStream(PhotoStream);
-      Target.Assign(JPG);
-      JPG.Free;
-    end
-    else if ImageType = 'image/gif' then
-    begin
-      GIF := TGIFImage.Create;
-      GIF.LoadFromStream(PhotoStream);
-      Target.Assign(GIF);
-      GIF.Free;
-    end
-    else
-    begin
-      Target.Assign(nil);
-      Result := False;
+    try
+      PhotoStream.Write(ImageBytes, Length(ImageBytes));
+      PhotoStream.Position := 0;
+      if ImageType = 'image/png' then
+      begin
+        PNG := TPngImage.Create;
+        try
+          PNG.LoadFromStream(PhotoStream);
+          Target.Assign(PNG);
+          Result := True;
+        finally
+          PNG.Free;
+        end;
+      end
+      else if (ImageType = 'image/jpg') or (ImageType = 'image/jpeg') then
+      begin
+        JPG := TJPEGImage.Create;
+        try
+          JPG.LoadFromStream(PhotoStream);
+          Target.Assign(JPG);
+          Result := True;
+        finally
+          JPG.Free;
+        end;
+      end
+      else if ImageType = 'image/gif' then
+      begin
+        GIF := TGIFImage.Create;
+        try
+          GIF.LoadFromStream(PhotoStream);
+          Target.Assign(GIF);
+          Result := True;
+        finally
+          GIF.Free;
+        end;
+      end
+      else
+      begin
+        Target.Assign(nil);
+      end;
+    finally
+      PhotoStream.Free;
     end;
-  finally
-    PhotoStream.Free;
+  except
+
   end;
 end;
 

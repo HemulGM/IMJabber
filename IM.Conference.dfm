@@ -370,6 +370,7 @@ object FormConference: TFormConference
         TabOrder = 0
         OnDrawCellData = TableExRosterDrawCellData
         ItemIndex = -1
+        OnItemClick = TableExRosterItemClick
         Columns = <
           item
             Width = 48
@@ -386,7 +387,7 @@ object FormConference: TFormConference
         LineColor = 2826519
         LineColorXor = 2826519
         LineHotColor = 3549984
-        LineSelColor = 7885355
+        LineSelColor = 3549984
         FontHotLine.Charset = DEFAULT_CHARSET
         FontHotLine.Color = clWhite
         FontHotLine.Height = -13
@@ -536,8 +537,8 @@ object FormConference: TFormConference
       ParentBackground = False
       TabOrder = 1
       object LabelConfName: TLabel
-        Left = 101
-        Top = 83
+        Left = 99
+        Top = 71
         Width = 159
         Height = 19
         AutoSize = False
@@ -551,8 +552,8 @@ object FormConference: TFormConference
         ParentFont = False
       end
       object LabelConfSubject: TLabel
-        Left = 101
-        Top = 108
+        Left = 99
+        Top = 96
         Width = 159
         Height = 17
         AutoSize = False
@@ -577,6 +578,44 @@ object FormConference: TFormConference
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWhite
         Font.Height = -29
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter, tfWordBreak, tfWordEllipsis]
+        IgnorBounds = True
+        EllipseRectVertical = False
+      end
+      object LabelExAff: TLabelEx
+        Left = 99
+        Top = 116
+        Width = 88
+        Height = 20
+        Brush.Color = 2826519
+        Pen.Color = 14325556
+        Shape = stRoundRect
+        Visible = False
+        Caption = #1059#1095#1072#1089#1090#1085#1080#1082
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
+        Font.Name = 'Tahoma'
+        Font.Style = []
+        TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter, tfWordBreak, tfWordEllipsis]
+        IgnorBounds = True
+        EllipseRectVertical = False
+      end
+      object LabelExRole: TLabelEx
+        Left = 193
+        Top = 116
+        Width = 88
+        Height = 20
+        Brush.Color = 2826519
+        Pen.Color = 14325556
+        Shape = stRoundRect
+        Visible = False
+        Caption = #1059#1095#1072#1089#1090#1085#1080#1082
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWhite
+        Font.Height = -13
         Font.Name = 'Tahoma'
         Font.Style = []
         TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter, tfWordBreak, tfWordEllipsis]
@@ -927,7 +966,7 @@ object FormConference: TFormConference
     Left = 72
     Top = 208
     Bitmap = {
-      494C0101030018005C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
+      494C0101030018006C0010001000FFFFFFFF2110FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

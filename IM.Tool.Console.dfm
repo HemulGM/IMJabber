@@ -31,6 +31,10 @@ object FormConsole: TFormConsole
     object TabSheetLog: TTabSheet
       Caption = #1051#1086#1075
       TabVisible = False
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object RichEditConsole: TRichEdit
         Left = 0
         Top = 0

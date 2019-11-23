@@ -7,6 +7,7 @@ object FormAccountCard: TFormAccountCard
   ClientHeight = 457
   ClientWidth = 703
   Color = 2168334
+  DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWhite
   Font.Height = -11
@@ -59,13 +60,13 @@ object FormAccountCard: TFormAccountCard
     Align = alClient
     Style = tsButtons
     TabOrder = 1
-    ExplicitTop = 33
-    ExplicitHeight = 379
     object TabSheetGeneral: TTabSheet
       Caption = #1054#1073#1097#1077#1077
       TabVisible = False
-      ExplicitTop = 27
-      ExplicitHeight = 376
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 238
         Top = 51
@@ -473,7 +474,9 @@ object FormAccountCard: TFormAccountCard
     object TabSheetContacts: TTabSheet
       Caption = #1050#1086#1085#1090#1072#1082#1090#1099
       TabVisible = False
+      ExplicitLeft = 0
       ExplicitTop = 27
+      ExplicitWidth = 0
       ExplicitHeight = 335
       object Label4: TLabel
         Left = 16
@@ -982,7 +985,9 @@ object FormAccountCard: TFormAccountCard
     object TabSheetAbout: TTabSheet
       Caption = #1054#1073#1086' '#1084#1085#1077
       TabVisible = False
+      ExplicitLeft = 0
       ExplicitTop = 27
+      ExplicitWidth = 0
       ExplicitHeight = 376
       object RichEditDesc: TRichEdit
         Left = 0
@@ -1001,7 +1006,6 @@ object FormAccountCard: TFormAccountCard
         ScrollBars = ssVertical
         TabOrder = 0
         Zoom = 100
-        ExplicitHeight = 376
       end
     end
   end
@@ -1053,9 +1057,6 @@ object FormAccountCard: TFormAccountCard
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
-      ExplicitLeft = 1
-      ExplicitTop = 1
-      ExplicitHeight = 39
     end
     object ButtonFlatContacts: TButtonFlat
       Left = 81
@@ -1095,9 +1096,6 @@ object FormAccountCard: TFormAccountCard
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
-      ExplicitLeft = 9
-      ExplicitTop = 2
-      ExplicitHeight = 39
     end
     object ButtonFlatCommon: TButtonFlat
       Left = 0
@@ -1137,9 +1135,6 @@ object FormAccountCard: TFormAccountCard
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
-      ExplicitLeft = 9
-      ExplicitTop = 2
-      ExplicitHeight = 39
     end
   end
   object SaveDialog1: TSaveDialog

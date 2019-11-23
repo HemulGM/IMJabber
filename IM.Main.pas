@@ -57,17 +57,14 @@ type
     MenuItemContactGroupAdd: TMenuItem;
     MenuItemAddToGroup: TMenuItem;
     PanelMenu: TPanel;
-    LabelStatus: TLabel;
     PanelContacts: TPanel;
     PanelClient: TPanel;
     PanelLeft: TPanel;
-    Shape1: TShape;
     TableExRoster: TTableEx;
     ButtonFlatMenu: TButtonFlat;
     ImageListNormal: TImageList;
     ImageListOver: TImageList;
     MenuItemRemoveGroup: TMenuItem;
-    ActivityIndicatorWork: TActivityIndicator;
     PanelAccountInfo: TPanel;
     ImageAvatar: TImage;
     LabelNick: TLabel;
@@ -82,6 +79,12 @@ type
     N6: TMenuItem;
     Button1: TButtonFlat;
     Button2: TButtonFlat;
+    PanelSearch: TPanel;
+    EditSearch: TEdit;
+    ButtonFlatSearchClear: TButtonFlat;
+    ActivityIndicatorWork: TActivityIndicator;
+    ImageList16: TImageList;
+    Splitter1: TSplitter;
     procedure MenuItemQuitClick(Sender: TObject);
     procedure MenuItemAccountClick(Sender: TObject);
     procedure MenuItemSettingsClick(Sender: TObject);
@@ -111,7 +114,6 @@ type
     procedure MenuItemStatusXaClick(Sender: TObject);
     procedure MenuItemStatusDNDClick(Sender: TObject);
     procedure MenuItemStatusInvisClick(Sender: TObject);
-    procedure LabelStatusClick(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
     procedure N31Click(Sender: TObject);
     procedure N32Click(Sender: TObject);
@@ -149,6 +151,11 @@ type
     procedure MenuItemSendAttontionClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure ButtonFlatSearchClearClick(Sender: TObject);
+    procedure LabelStatusTextClick(Sender: TObject);
+    procedure EditSearchChange(Sender: TObject);
+    procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer;
+      var Accept: Boolean);
   private
     FActiveChatForm: TForm;
     FRosterList: TRosterList;
@@ -162,15 +169,19 @@ type
     procedure OnAttention(Item: TJabberMessage);
     procedure EnterToGroupchat(ConfJID, Nick: string);
     procedure WMSize(var Message: TWMSize); message WM_SIZE;
+    procedure WMEnterSizeMove(var Message: TWMMove); message WM_ENTERSIZEMOVE;
+    procedure WMExitSizeMove(var Message: TWMMove); message WM_EXITSIZEMOVE;
+    procedure Load;
   public
     JabberClient: TJabberClient;
     FStatusMask: TPNGImage;
     FFullMask: TPNGImage;
-    procedure PlaySound(Sound: TSoundType); overload;
+    procedure PlaySounds(Sound: TSoundType); overload;
     function CheckAccount: Boolean;
     function CheckConnect: Boolean;
     procedure Start;
     procedure Open;
+    procedure Save;
     function SetAccount: Boolean;
     property RosterList: TRosterList read FRosterList;
   end;
@@ -183,7 +194,8 @@ implementation
 uses
   IM.Account, IM.Config, IM.About, IM.Tool.Console, IM.Conference.Invite,
   IM.Contact.Add, IM.Account.Card, IM.Tool.Captcha, HGM.Common.Utils,
-  System.NetEncoding, D2D1, System.DateUtils, IM.Core, HGM.Common.Settings;
+  System.NetEncoding, D2D1, System.DateUtils, IM.Core, HGM.Common.Settings,
+  System.Math;
 
 {$R *.dfm}
 
@@ -242,13 +254,14 @@ begin
   end;
 end;
 
-procedure TFormMain.PlaySound(Sound: TSoundType);
+procedure TFormMain.PlaySounds(Sound: TSoundType);
 var
   SoundFile: string;
 begin
   if not MenuItemSound.Checked then
     Exit;
-  SoundFile := ExtractFilePath(ParamStr(0)) + 'sounds\' + Core.Settings.GetStr('System', 'Sounds', 'icq');
+  Exit;
+  SoundFile := ExtractFilePath(Application.ExeName) + 'sounds\' + Core.Settings.GetStr('System', 'Sounds', 'icq');
   case Sound of
     sndError:
       SoundFile := SoundFile + '\warning.wav';
@@ -267,7 +280,7 @@ begin
   end;
 
   if FileExists(SoundFile) then
-    Winapi.MMSystem.PlaySound(PChar(SoundFile), 0, SND_FILENAME or SND_ASYNC);
+    PlaySound(PChar(SoundFile), 0, SND_FILENAME or SND_ASYNC);
 end;
 
 function TFormMain.GetChatByJID(AJID: string; var Form: TFormChatRoom): Boolean;
@@ -306,8 +319,8 @@ end;
 
 procedure TFormMain.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Action := caHide;
-  FormMain.Hide;
+  Action := caNone;
+  Hide;
 end;
 
 procedure TFormMain.FormCreate(Sender: TObject);
@@ -327,8 +340,12 @@ begin
     ColorImages(ImageListOver, i, clWhite);
   end;
 
-  LabelNick.Caption := 'Пожалуйста подождите...';
-  LabelStatusText.Caption := '';
+  ColorImages(ImageList16, 0, $00C18852);
+  ColorImages(ImageList16, 1, $00C18852);
+  ColorImages(ImageList16, 2, $00C18852);
+
+  LabelNick.Caption := '';
+  LabelStatusText.Caption := 'Загрузка...';
 
   JabberClient := TJabberClient.Create(nil);
   JabberClient.Name := 'JabberClient';
@@ -353,24 +370,10 @@ begin
   JabberClient.UserServer := 'jabber.ru';
   JabberClient.Resource := 'jabbrel';
 
-  JabberClient.JID := Core.Settings.GetStr('Account', 'JID');
-  JabberClient.UserServer := Core.Settings.GetStr('Account', 'Server', JabberClient.UserServer);
-  JabberClient.JabberPort := Core.Settings.GetInt('Account', 'Port', 5222);
-  JabberClient.UserNick := Core.Settings.GetStr('Account', 'Nick', JabberClient.UserNick);
-  JabberClient.AuthHash := Core.Settings.GetStr('Account', 'Password');
+  Load;
 
-  try
-    LabelStatus.Caption := Core.Settings.GetStr('Account', 'Status');
-    JabberClient.UserStatusText := LabelStatus.Caption;
-    if Core.Settings.GetStr('System', 'Sound', '1') = '1' then
-    begin
-      MenuItemSound.Checked := True;
-    end;
-  finally
-
-  end;
   //Звук запуска
-  PlaySound(sndWelcome);
+  PlaySounds(sndWelcome);
 end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
@@ -381,7 +384,7 @@ begin
   FGroupList.Free;
   FRosterList.Free;
   JabberClient.Free;
-  Core.Settings.SetParamWindow('Form', Self, [wpsCoord, wpsSize]);
+  Save;
 end;
 
 procedure TFormMain.JabberClientConnect(Sender: TObject);
@@ -399,7 +402,7 @@ end;
 procedure TFormMain.JabberClientConnectError(Sender: TObject);
 begin
   ActivityIndicatorWork.Animate := False;
-  PlaySound(sndError);
+  PlaySounds(sndError);
   FormConsole.AddLog('JabberClientConnectError: Connect error!' + #10#13, $00FEB043);
   TFormChatRoom.SwowPopupWnd('Ошибка подключения!');
 end;
@@ -412,7 +415,7 @@ begin
   ActivityIndicatorWork.Animate := False;
   BytesSend := 0;
   BytesReceive := 0;
-  PlaySound(sndOffline);
+  PlaySounds(sndOffline);
   FRosterList.Clear;
   MenuItemAddContactSys.Enabled := False;
   MenuItemUserVCard.Enabled := False;
@@ -526,7 +529,7 @@ begin
   SetImageStatus(JabberClient.UserStatus, ImageShowType.Picture);
   LabelNick.Caption := JabberClient.UserNick;
   LabelStatusText.Caption := JabberClient.UserStatusText;
-  PlaySound(sndOnline);
+  PlaySounds(sndOnline);
   for i := 0 to ComponentCount - 1 do
     if Components[i] is TFormConference then
     begin
@@ -538,7 +541,7 @@ end;
 procedure TFormMain.JabberClientLoginError(Sender: TObject; Error: string);
 begin
   ActivityIndicatorWork.Animate := False;
-  PlaySound(sndError);
+  PlaySounds(sndError);
   FormConsole.AddLog('JabberClientLoginError: Login error!' + #10#13, $00FEB043);
   TFormChatRoom.SwowPopupWnd('Ошибка авторизации!! Проверьте ваш логин/пароль...');
 end;
@@ -623,6 +626,18 @@ begin
     end;
   end;
 
+  //MSG error
+  if (Item.MessageType = 'error') then
+  begin
+    if GetGroupChatByJID(LoginFromJID(Item.From), GroupChatRoom) then
+    begin
+      GroupChatRoom.NewMessage(Item);
+      Exit;
+    end
+    else
+      ShowMessage(Item.From + #13#13 + Item.Error.Text);
+  end;
+
   //Запрос проверки каптчи
   if (Item.MessageType = '') or (Item.MessageType = 'normal') then
   begin
@@ -680,7 +695,18 @@ end;
 procedure TFormMain.WMSize(var Message: TWMSize);
 begin
   inherited;
-  Invalidate;
+  RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
+end;
+
+procedure TFormMain.WMEnterSizeMove(var Message: TWMMove);
+begin
+  //SendMessage(Handle, WM_SETREDRAW, 0, 0);
+end;
+
+procedure TFormMain.WMExitSizeMove(var Message: TWMMove);
+begin
+  //SendMessage(Handle, WM_SETREDRAW, 1, 0);
+  //RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
 end;
 
 procedure TFormMain.JabberClientPresence(Sender: TObject; QueryNode: TGmXmlNode);
@@ -826,7 +852,7 @@ var
   JIDExists: Boolean;
   i: Integer;
 begin
-  PlaySound(sndSubscribe);
+  PlaySounds(sndSubscribe);
 
   if MessageDlg('Подтвердить авторизацию от ' + From + '? ', mtConfirmation, mbYesNo, 1) = mrYes then
   begin
@@ -909,7 +935,12 @@ end;
 
 procedure TFormMain.MenuItemAccountClick(Sender: TObject);
 begin
-  //FormAccount.show;
+  if SetAccount then
+  begin
+    if JabberClient.Online then
+      JabberClient.Disconnect;
+    JabberClient.Connect;
+  end;
 end;
 
 procedure TFormMain.MenuItemContactRenameClick(Sender: TObject);
@@ -1020,7 +1051,7 @@ end;
 procedure TFormMain.MenuItemQuitClick(Sender: TObject);
 begin
   JabberClient.Disconnect;
-  application.Terminate;
+  Application.Terminate;
 end;
 
 procedure TFormMain.MenuItemAddContactSysClick(Sender: TObject);
@@ -1113,7 +1144,7 @@ begin
   end;
   MenuItemAddToGroup.Visible := MenuItemAddToGroup.Count > 0;
 
-  //Группы
+  //Группы (в которых состоит пользователь)
   ItemGroups := FRosterList[TableExRoster.ItemIndex].Groups;
   MenuItemRemoveGroup.Clear;
   for i := 0 to ItemGroups.Count - 1 do
@@ -1144,6 +1175,31 @@ begin
   end;
 end;
 
+procedure TFormMain.Save;
+begin
+  Core.Settings.SetParamWindow('Form', Self, [wpsCoord, wpsSize]);
+end;
+
+procedure TFormMain.LabelStatusTextClick(Sender: TObject);
+begin
+  JabberClient.UserStatusText := InputBox('Статус', 'Введите Ваш статус', JabberClient.UserStatusText);
+  Core.Settings.SetStr('Account', 'Status', JabberClient.UserStatusText);
+end;
+
+procedure TFormMain.Load;
+begin
+  JabberClient.JID := Core.Settings.GetStr('Account', 'JID');
+  JabberClient.UserServer := Core.Settings.GetStr('Account', 'Server', JabberClient.UserServer);
+  JabberClient.JabberPort := Core.Settings.GetInt('Account', 'Port', 5222);
+  JabberClient.UserNick := Core.Settings.GetStr('Account', 'Nick', JabberClient.UserNick);
+  JabberClient.AuthHash := Core.Settings.GetStr('Account', 'Password');
+  JabberClient.UserStatusText := Core.Settings.GetStr('Account', 'Status');
+
+  MenuItemSound.Checked := Core.Settings.GetBool('System', 'Sound', True);
+
+  Core.Settings.GetParamWindow('Form', Self, [wpsCoord, wpsSize]);
+end;
+
 procedure TFormMain.Button1Click(Sender: TObject);
 begin
   EnterToGroupchat('зона@conference.jabber.ru', 'Пупка2');
@@ -1152,6 +1208,11 @@ end;
 procedure TFormMain.Button2Click(Sender: TObject);
 begin
   EnterToGroupchat('!!!заходите!!!@conference.jabber.ru', 'Пупка');
+end;
+
+procedure TFormMain.EditSearchChange(Sender: TObject);
+begin
+  ButtonFlatSearchClear.Visible := EditSearch.Text <> '';
 end;
 
 procedure TFormMain.EnterToGroupchat(ConfJID, Nick: string);
@@ -1171,8 +1232,11 @@ begin
   begin
     FormChat := TFormConference.Create(Self);
     FormChat.Parent := PanelClient;
-  end;
-  FormChat.SetData(ConfJID, Nick);
+    FormChat.SetData(ConfJID, Nick);
+  end
+  else if FormChat.Disconnected then
+    FormChat.SetData(ConfJID, Nick);
+
   FormChat.Show;
   FormChat.BringToFront;
   FActiveChatForm := FormChat;
@@ -1190,9 +1254,13 @@ begin
   PopupMenuSys.Popup(PT.X, PT.Y);
 end;
 
+procedure TFormMain.ButtonFlatSearchClearClick(Sender: TObject);
+begin
+  EditSearch.Clear;
+end;
+
 function TFormMain.CheckAccount: Boolean;
 begin
-  Result := False;
   //Проверка данных аккаунта
   if not JabberClient.CheckAccount then
   begin
@@ -1226,13 +1294,7 @@ begin
     CheckConnect
   else if CheckAccount then
     CheckConnect;
-end;
-
-procedure TFormMain.LabelStatusClick(Sender: TObject);
-begin
-  LabelStatus.Caption := InputBox('Статус', 'Введите Ваш статус', LabelStatus.Caption);
-  JabberClient.UserStatusText := LabelStatus.Caption;
-  Core.Settings.SetStr('Account', 'Status', LabelStatus.Caption);
+  Show;
 end;
 
 procedure TFormMain.TableExRosterDrawCellData(Sender: TObject; ACol, ARow: Integer; Rect: TRect; State: TGridDrawState);
@@ -1308,6 +1370,12 @@ begin
   ImageListStatuses.GetIcon(Ord(Status), Icon);
   ImageShowType.Picture.Assign(Icon);
   Icon.Free;
+end;
+
+procedure TFormMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer;
+  var Accept: Boolean);
+begin
+  NewSize := Max(PanelLeft.Constraints.MinWidth, Min(NewSize, PanelLeft.Constraints.MaxWidth));
 end;
 
 procedure TFormMain.TableExRosterEdit(Sender: TObject; var Data: TTableEditStruct; ACol, ARow: Integer; var Allow: Boolean);
