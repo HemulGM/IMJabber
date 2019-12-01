@@ -1,10 +1,10 @@
 object FormConfInvite: TFormConfInvite
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  BorderIcons = [biSystemMenu]
   Caption = #1042#1093#1086#1076' '#1074' '#1082#1086#1085#1092#1077#1088#1077#1085#1094#1080#1102
-  ClientHeight = 517
-  ClientWidth = 451
+  ClientHeight = 537
+  ClientWidth = 439
   Color = 2826519
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -16,28 +16,49 @@ object FormConfInvite: TFormConfInvite
   Position = poMainFormCenter
   PixelsPerInch = 96
   TextHeight = 13
+  object Shape6: TShape
+    Left = 0
+    Top = 486
+    Width = 439
+    Height = 1
+    Align = alBottom
+    Brush.Color = 2169104
+    Pen.Color = 2169104
+    ExplicitTop = 427
+    ExplicitWidth = 327
+  end
+  object Shape7: TShape
+    Left = 0
+    Top = 41
+    Width = 439
+    Height = 1
+    Align = alTop
+    Brush.Color = 2169104
+    Pen.Color = 2169104
+    ExplicitLeft = -32
+    ExplicitTop = 82
+    ExplicitWidth = 327
+  end
   object GroupBoxList: TPanel
     Left = 0
-    Top = 0
-    Width = 451
-    Height = 476
+    Top = 42
+    Width = 439
+    Height = 444
     Align = alClient
     BevelOuter = bvNone
     ParentColor = True
     TabOrder = 0
-    ExplicitLeft = 8
     ExplicitTop = 8
-    ExplicitWidth = 435
-    ExplicitHeight = 455
+    ExplicitHeight = 456
     object LabelConfs: TLabel
       Left = 16
-      Top = 45
-      Width = 155
-      Height = 13
+      Top = 58
+      Width = 181
+      Height = 16
       Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1092#1077#1088#1077#1085#1094#1080#1081' '#1089#1077#1088#1074#1077#1088#1072':'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
+      Font.Color = clSilver
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
@@ -46,68 +67,68 @@ object FormConfInvite: TFormConfInvite
     object Label2: TLabel
       Left = 16
       Top = 21
-      Width = 41
-      Height = 13
+      Width = 48
+      Height = 16
       Caption = #1057#1077#1088#1074#1077#1088':'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
+      Font.Color = clSilver
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       Transparent = True
     end
     object Label1: TLabel
-      Left = 16
+      Left = 13
       Top = 352
-      Width = 47
-      Height = 13
+      Width = 54
+      Height = 16
       Caption = #1050#1086#1084#1085#1072#1090#1072':'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
+      Font.Color = clSilver
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       Transparent = True
     end
     object Label3: TLabel
-      Left = 256
+      Left = 253
       Top = 352
-      Width = 34
-      Height = 13
+      Width = 40
+      Height = 16
       Caption = #1051#1086#1075#1080#1085':'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
+      Font.Color = clSilver
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       Transparent = True
     end
     object Label4: TLabel
-      Left = 249
+      Left = 246
       Top = 390
-      Width = 41
-      Height = 13
+      Width = 48
+      Height = 16
       Caption = #1055#1072#1088#1086#1083#1100':'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
+      Font.Color = clSilver
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       Transparent = True
     end
     object Label5: TLabel
-      Left = 40
+      Left = 37
       Top = 390
-      Width = 23
-      Height = 13
+      Width = 26
+      Height = 16
       Caption = #1053#1080#1082':'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWhite
-      Font.Height = -11
+      Font.Color = clSilver
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
@@ -155,21 +176,22 @@ object FormConfInvite: TFormConfInvite
     end
     object ListViewConfs: TListView
       Left = 16
-      Top = 64
+      Top = 80
       Width = 404
-      Height = 233
+      Height = 217
       BorderStyle = bsNone
       Color = 2169362
       Columns = <
         item
           Caption = #1050#1086#1085#1092#1077#1088#1077#1085#1094#1080#1103
-          Width = 200
+          Width = 180
         end
         item
           Caption = #1054#1087#1080#1089#1072#1085#1080#1077
           Width = 200
         end>
       ReadOnly = True
+      ShowColumnHeaders = False
       TabOrder = 0
       ViewStyle = vsReport
       OnDblClick = ListViewConfsDblClick
@@ -318,26 +340,29 @@ object FormConfInvite: TFormConfInvite
       SubTextFont.Style = []
     end
   end
-  object Panel1: TPanel
+  object PanelBottom: TPanel
     Left = 0
-    Top = 476
-    Width = 451
-    Height = 41
+    Top = 487
+    Width = 439
+    Height = 50
     Align = alBottom
     BevelOuter = bvNone
     Color = 2826519
     ParentBackground = False
     TabOrder = 1
-    ExplicitLeft = 136
-    ExplicitTop = 232
-    ExplicitWidth = 185
+    ExplicitTop = 467
+    ExplicitWidth = 451
     object ButtonFlatOK: TButtonFlat
       AlignWithMargins = True
-      Left = 352
-      Top = 3
+      Left = 339
+      Top = 8
       Width = 96
-      Height = 35
+      Height = 34
       Cursor = crDefault
+      Margins.Left = 4
+      Margins.Top = 8
+      Margins.Right = 4
+      Margins.Bottom = 8
       Align = alRight
       Caption = #1044#1054#1041#1040#1042#1048#1058#1068
       ColorNormal = 2760985
@@ -371,16 +396,21 @@ object FormConfInvite: TFormConfInvite
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
-      ExplicitLeft = 324
-      ExplicitTop = 6
+      ExplicitLeft = 352
+      ExplicitTop = 3
+      ExplicitHeight = 35
     end
     object ButtonFlatCancel: TButtonFlat
       AlignWithMargins = True
-      Left = 266
-      Top = 3
+      Left = 251
+      Top = 8
       Width = 80
-      Height = 35
+      Height = 34
       Cursor = crDefault
+      Margins.Left = 4
+      Margins.Top = 8
+      Margins.Right = 4
+      Margins.Bottom = 8
       Align = alRight
       Caption = #1054#1058#1052#1045#1053#1040
       ColorNormal = 2760985
@@ -392,12 +422,12 @@ object FormConfInvite: TFormConfInvite
       Font.Name = 'Segoe UI Semibold'
       Font.Style = []
       FontOver.Charset = DEFAULT_CHARSET
-      FontOver.Color = 13344113
+      FontOver.Color = 15905386
       FontOver.Height = -13
       FontOver.Name = 'Segoe UI Semibold'
       FontOver.Style = []
       FontDown.Charset = DEFAULT_CHARSET
-      FontDown.Color = 13344113
+      FontDown.Color = 15905386
       FontDown.Height = -13
       FontDown.Name = 'Segoe UI Semibold'
       FontDown.Style = []
@@ -414,8 +444,43 @@ object FormConfInvite: TFormConfInvite
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
-      ExplicitLeft = 238
-      ExplicitTop = 6
+      ExplicitLeft = 266
+      ExplicitTop = 3
+      ExplicitHeight = 35
+    end
+  end
+  object PanelTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 439
+    Height = 41
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 2826519
+    ParentBackground = False
+    TabOrder = 2
+    ExplicitLeft = 8
+    ExplicitTop = 8
+    ExplicitWidth = 295
+    object Label6: TLabel
+      AlignWithMargins = True
+      Left = 15
+      Top = 3
+      Width = 409
+      Height = 35
+      Margins.Left = 15
+      Margins.Right = 15
+      Align = alClient
+      Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1075#1088#1091#1087#1087#1086#1074#1086#1075#1086' '#1095#1072#1090#1072
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -16
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = []
+      ParentFont = False
+      Layout = tlCenter
+      ExplicitWidth = 221
+      ExplicitHeight = 21
     end
   end
 end

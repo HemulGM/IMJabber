@@ -65,13 +65,18 @@ class function TFormRosterList.Execute(Roster: TRosterList; var Index: Integer):
 begin
   with TFormRosterList.Create(nil) do
   begin
+    //Prepare
     RosterList := Roster;
     RosterList.AddTable(TableExRoster);
     RosterList.UnCheckAll;
     RosterList.UpdateTable;
+    TableExRoster.UpdateMaxColumn;
+    //Show
     Result := ShowModal = mrOk;
+    //Apply
     Index := TableExRoster.ItemIndex;
     RosterList.UnAssignTable(TableExRoster);
+    //Final
     Free;
   end;
 end;

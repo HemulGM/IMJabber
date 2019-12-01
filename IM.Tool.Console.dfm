@@ -31,10 +31,6 @@ object FormConsole: TFormConsole
     object TabSheetLog: TTabSheet
       Caption = #1051#1086#1075
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object RichEditConsole: TRichEdit
         Left = 0
         Top = 0
@@ -75,6 +71,7 @@ object FormConsole: TFormConsole
         ParentFont = False
         TabOrder = 0
         ItemIndex = -1
+        OnItemClick = TableExXMPPItemsItemClick
         GetData = TableExXMPPItemsGetData
         ProcEmpty = True
         Columns = <
@@ -181,12 +178,19 @@ object FormConsole: TFormConsole
     end
     object SpinEditMaxLines: TlkSpinEdit
       Left = 96
-      Top = 65
+      Top = 64
       Width = 57
-      Height = 21
+      Height = 23
+      AutoSize = False
+      BorderStyle = bsNone
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvNone
+      BevelWidth = 2
+      Color = 2168334
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
+      Font.Color = clWhite
+      Font.Height = -13
       Font.Name = 'Tahoma'
       Font.Style = []
       MaxValue = 0
@@ -194,6 +198,7 @@ object FormConsole: TFormConsole
       ParentFont = False
       TabOrder = 2
       Value = 5000
+      LightButtons = True
     end
     object ButtonFlatSend: TButtonFlat
       Left = 688

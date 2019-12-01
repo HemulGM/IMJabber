@@ -22,7 +22,7 @@ type
     EditLogin: TEdit;
     EditPass: TEdit;
     ComboBoxNick: TEdit;
-    Panel1: TPanel;
+    PanelBottom: TPanel;
     ButtonFlatOK: TButtonFlat;
     ButtonFlatCancel: TButtonFlat;
     Shape1: TShape;
@@ -31,6 +31,10 @@ type
     Shape4: TShape;
     Shape5: TShape;
     ButtonFlatUpdate: TButtonFlat;
+    Shape6: TShape;
+    PanelTop: TPanel;
+    Label6: TLabel;
+    Shape7: TShape;
     procedure ListViewConfsDblClick(Sender: TObject);
     procedure ButtonFlatCancelClick(Sender: TObject);
     procedure ButtonFlatOKClick(Sender: TObject);
@@ -68,7 +72,9 @@ begin
     EditRoom.Text := '';
     EditPass.Text := '';
     EditLogin.Text := Jabber.UserName;
+
     Result := ShowModal = mrOK;
+
     Conf := EditRoom.Text + '@' + EditServer.Text;
     Nick := ComboBoxNick.Text;
     Free;

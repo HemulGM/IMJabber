@@ -1,14 +1,14 @@
 object FormAccount: TFormAccount
   Left = 0
   Top = 0
-  BorderStyle = bsDialog
+  BorderIcons = [biSystemMenu]
   Caption = #1059#1095#1077#1090#1085#1072#1103' '#1079#1072#1087#1080#1089#1100
-  ClientHeight = 248
-  ClientWidth = 303
-  Color = clBtnFace
+  ClientHeight = 432
+  ClientWidth = 295
+  Color = 2760985
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
-  Font.Color = clWindowText
+  Font.Color = clWhite
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
@@ -16,162 +16,385 @@ object FormAccount: TFormAccount
   Position = poDesktopCenter
   PixelsPerInch = 96
   TextHeight = 13
-  object sGroupBox1: TGroupBox
-    AlignWithMargins = True
-    Left = 10
-    Top = 10
-    Width = 283
-    Height = 187
-    Margins.Left = 10
-    Margins.Top = 10
-    Margins.Right = 10
-    Margins.Bottom = 10
-    Align = alClient
-    Caption = #1055#1072#1088#1072#1084#1077#1090#1088#1099' '#1091#1095#1077#1090#1085#1086#1081' '#1079#1072#1087#1080#1089#1080' '
-    TabOrder = 0
-    object Label1: TLabel
-      Left = 40
-      Top = 24
-      Width = 23
-      Height = 13
-      Caption = #1053#1080#1082':'
-      Transparent = True
-    end
-    object sLabel1: TLabel
-      Left = 29
-      Top = 51
-      Width = 34
-      Height = 13
-      Caption = #1051#1086#1075#1080#1085':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2171169
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      Transparent = True
-    end
-    object sLabel2: TLabel
-      Left = 22
-      Top = 124
-      Width = 41
-      Height = 13
-      Caption = #1057#1077#1088#1074#1077#1088':'
-      Transparent = True
-    end
-    object sLabel3: TLabel
-      Left = 22
-      Top = 78
-      Width = 41
-      Height = 13
-      Caption = #1055#1072#1088#1086#1083#1100':'
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = 2171169
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      Transparent = True
-    end
-    object sLabel5: TLabel
-      Left = 34
-      Top = 151
-      Width = 29
-      Height = 13
-      Caption = #1055#1086#1088#1090':'
-      Transparent = True
-    end
-    object EditNick: TEdit
-      Left = 69
-      Top = 21
-      Width = 190
-      Height = 21
-      TabOrder = 0
-      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': Pollty'
-    end
-    object EditLogin: TEdit
-      Left = 69
-      Top = 48
-      Width = 190
-      Height = 21
-      Color = clWhite
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': user@jabber.com'
-    end
-    object EditServer: TEdit
-      Left = 69
-      Top = 121
-      Width = 190
-      Height = 21
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 2
-      Text = 'jabber.ru'
-      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': jabber.com'
-    end
-    object EditPassword: TEdit
-      Left = 69
-      Top = 75
-      Width = 190
-      Height = 21
-      Color = clWhite
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clBlack
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      PasswordChar = '*'
-      TabOrder = 3
-      Text = '123456789123'
-      TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1087#1072#1088#1086#1083#1100
-      OnChange = EditPasswordChange
-    end
-    object EditJabberPort: TEdit
-      Left = 69
-      Top = 148
-      Width = 190
-      Height = 21
-      TabOrder = 4
-      Text = '5222'
-      TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': 5222'
-    end
+  object Label1: TLabel
+    Left = 36
+    Top = 66
+    Width = 26
+    Height = 16
+    Caption = #1053#1080#1082':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
   end
-  object Panel1: TPanel
+  object sLabel1: TLabel
+    Left = 36
+    Top = 120
+    Width = 40
+    Height = 16
+    Caption = #1051#1086#1075#1080#1085':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
+  end
+  object sLabel2: TLabel
+    Left = 36
+    Top = 243
+    Width = 48
+    Height = 16
+    Caption = #1057#1077#1088#1074#1077#1088':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
+  end
+  object sLabel3: TLabel
+    Left = 36
+    Top = 174
+    Width = 48
+    Height = 16
+    Caption = #1055#1072#1088#1086#1083#1100':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
+  end
+  object sLabel5: TLabel
+    Left = 36
+    Top = 297
+    Width = 33
+    Height = 16
+    Caption = #1055#1086#1088#1090':'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clSilver
+    Font.Height = -13
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Transparent = True
+  end
+  object Shape1: TShape
     Left = 0
-    Top = 207
-    Width = 303
-    Height = 41
+    Top = 381
+    Width = 295
+    Height = 1
+    Align = alBottom
+    Brush.Color = 2169104
+    Pen.Color = 2169104
+    ExplicitTop = 427
+    ExplicitWidth = 327
+  end
+  object Shape2: TShape
+    Left = 36
+    Top = 114
+    Width = 222
+    Height = 1
+    Brush.Color = 4078653
+    Pen.Color = 4078653
+  end
+  object Shape3: TShape
+    Left = 36
+    Top = 170
+    Width = 222
+    Height = 1
+    Brush.Color = 4078653
+    Pen.Color = 4078653
+  end
+  object Shape4: TShape
+    Left = 36
+    Top = 220
+    Width = 222
+    Height = 1
+    Brush.Color = 4078653
+    Pen.Color = 4078653
+  end
+  object Shape5: TShape
+    Left = 36
+    Top = 291
+    Width = 222
+    Height = 1
+    Brush.Color = 4078653
+    Pen.Color = 4078653
+  end
+  object Shape6: TShape
+    Left = 36
+    Top = 345
+    Width = 222
+    Height = 1
+    Brush.Color = 4078653
+    Pen.Color = 4078653
+  end
+  object Shape7: TShape
+    Left = 0
+    Top = 41
+    Width = 295
+    Height = 1
+    Align = alTop
+    Brush.Color = 2169104
+    Pen.Color = 2169104
+    ExplicitLeft = -32
+    ExplicitTop = 82
+    ExplicitWidth = 327
+  end
+  object PanelBottom: TPanel
+    Left = 0
+    Top = 382
+    Width = 295
+    Height = 50
     Align = alBottom
     BevelOuter = bvNone
-    TabOrder = 1
-    object ButtonCancel: TButton
-      Left = 218
+    Color = 2760985
+    ParentBackground = False
+    TabOrder = 0
+    ExplicitTop = 378
+    ExplicitWidth = 377
+    object ButtonFlatSave: TButtonFlat
+      AlignWithMargins = True
+      Left = 195
       Top = 8
-      Width = 75
-      Height = 25
-      Caption = #1054#1090#1084#1077#1085#1072
-      ModalResult = 2
+      Width = 96
+      Height = 34
+      Cursor = crDefault
+      Margins.Left = 4
+      Margins.Top = 8
+      Margins.Right = 4
+      Margins.Bottom = 8
+      Align = alRight
+      Caption = #1057#1054#1061#1056#1040#1053#1048#1058#1068
+      ColorNormal = 2760985
+      ColorOver = 3680799
+      ColorPressed = 4403489
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15905386
+      Font.Height = -13
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = []
+      FontOver.Charset = DEFAULT_CHARSET
+      FontOver.Color = 15905386
+      FontOver.Height = -13
+      FontOver.Name = 'Segoe UI Semibold'
+      FontOver.Style = []
+      FontDown.Charset = DEFAULT_CHARSET
+      FontDown.Color = 15905386
+      FontDown.Height = -13
+      FontDown.Name = 'Segoe UI Semibold'
+      FontDown.Style = []
+      IgnorBounds = True
+      OnClick = ButtonFlatSaveClick
+      RoundRectParam = 0
+      Shape = stRoundRect
+      ShowFocusRect = False
       TabOrder = 0
-      WordWrap = True
-      OnClick = ButtonCancelClick
+      TabStop = True
+      TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+      SubTextFont.Charset = DEFAULT_CHARSET
+      SubTextFont.Color = clWhite
+      SubTextFont.Height = -13
+      SubTextFont.Name = 'Tahoma'
+      SubTextFont.Style = []
+      ExplicitLeft = 193
+      ExplicitTop = 6
+      ExplicitHeight = 35
     end
-    object ButtonSave: TButton
-      Left = 137
+    object ButtonFlatCancel: TButtonFlat
+      AlignWithMargins = True
+      Left = 107
       Top = 8
-      Width = 75
-      Height = 25
-      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
-      Default = True
+      Width = 80
+      Height = 34
+      Cursor = crDefault
+      Margins.Left = 4
+      Margins.Top = 8
+      Margins.Right = 4
+      Margins.Bottom = 8
+      Align = alRight
+      Caption = #1054#1058#1052#1045#1053#1040
+      ColorNormal = 2760985
+      ColorOver = 3680799
+      ColorPressed = 4403489
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15905386
+      Font.Height = -13
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = []
+      FontOver.Charset = DEFAULT_CHARSET
+      FontOver.Color = 15905386
+      FontOver.Height = -13
+      FontOver.Name = 'Segoe UI Semibold'
+      FontOver.Style = []
+      FontDown.Charset = DEFAULT_CHARSET
+      FontDown.Color = 15905386
+      FontDown.Height = -13
+      FontDown.Name = 'Segoe UI Semibold'
+      FontDown.Style = []
+      IgnorBounds = True
+      OnClick = ButtonFlatCancelClick
+      RoundRectParam = 0
+      Shape = stRoundRect
+      ShowFocusRect = False
       TabOrder = 1
-      WordWrap = True
-      OnClick = ButtonSaveClick
+      TabStop = True
+      TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+      SubTextFont.Charset = DEFAULT_CHARSET
+      SubTextFont.Color = clWhite
+      SubTextFont.Height = -13
+      SubTextFont.Name = 'Tahoma'
+      SubTextFont.Style = []
+      ExplicitTop = 6
+      ExplicitHeight = 35
+    end
+  end
+  object EditNick: TEdit
+    Left = 36
+    Top = 88
+    Width = 222
+    Height = 26
+    BevelInner = bvSpace
+    BevelKind = bkSoft
+    BevelOuter = bvNone
+    BevelWidth = 3
+    BorderStyle = bsNone
+    Color = 2760985
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 1
+    TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': Pollty'
+  end
+  object EditLogin: TEdit
+    Left = 36
+    Top = 142
+    Width = 222
+    Height = 26
+    BevelInner = bvSpace
+    BevelKind = bkSoft
+    BevelOuter = bvNone
+    BevelWidth = 3
+    BorderStyle = bsNone
+    Color = 2760985
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 2
+    TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': user@jabber.com'
+  end
+  object EditServer: TEdit
+    Left = 36
+    Top = 265
+    Width = 222
+    Height = 26
+    BevelInner = bvSpace
+    BevelKind = bkSoft
+    BevelOuter = bvNone
+    BevelWidth = 3
+    BorderStyle = bsNone
+    Color = 2760985
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 3
+    Text = 'jabber.ru'
+    TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': jabber.com'
+  end
+  object EditPassword: TEdit
+    Left = 36
+    Top = 194
+    Width = 222
+    Height = 26
+    BevelInner = bvSpace
+    BevelKind = bkSoft
+    BevelOuter = bvNone
+    BevelWidth = 3
+    BorderStyle = bsNone
+    Color = 2760985
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    PasswordChar = '*'
+    TabOrder = 4
+    Text = '123456789123'
+    TextHint = #1042#1074#1077#1076#1080#1090#1077' '#1087#1072#1088#1086#1083#1100
+    OnChange = EditPasswordChange
+  end
+  object EditJabberPort: TEdit
+    Left = 36
+    Top = 319
+    Width = 222
+    Height = 26
+    BevelInner = bvSpace
+    BevelKind = bkSoft
+    BevelOuter = bvNone
+    BevelWidth = 3
+    BorderStyle = bsNone
+    Color = 2760985
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWhite
+    Font.Height = -15
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    TabOrder = 5
+    Text = '5222'
+    TextHint = #1053#1072#1087#1088#1080#1084#1077#1088': 5222'
+  end
+  object PanelTop: TPanel
+    Left = 0
+    Top = 0
+    Width = 295
+    Height = 41
+    Align = alTop
+    BevelOuter = bvNone
+    Color = 2826519
+    ParentBackground = False
+    TabOrder = 6
+    ExplicitLeft = -32
+    ExplicitWidth = 327
+    object Label2: TLabel
+      AlignWithMargins = True
+      Left = 15
+      Top = 3
+      Width = 265
+      Height = 35
+      Margins.Left = 15
+      Margins.Right = 15
+      Align = alClient
+      Caption = #1040#1082#1082#1072#1091#1085#1090' Jabber'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWhite
+      Font.Height = -16
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = []
+      ParentFont = False
+      Layout = tlCenter
+      ExplicitWidth = 112
+      ExplicitHeight = 21
     end
   end
 end

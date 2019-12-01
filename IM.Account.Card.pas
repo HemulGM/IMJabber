@@ -16,12 +16,9 @@ type
   TAdrList = TTableData<TAddress>;
 
   TFormAccountCard = class(TForm)
-    sPanel1: TPanel;
     PageControlCard: TPageControl;
     TabSheetGeneral: TTabSheet;
     TabSheetAbout: TTabSheet;
-    ButtonClose: TButton;
-    ButtonApply: TButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -73,8 +70,10 @@ type
     ButtonFlatInfo: TButtonFlat;
     ButtonFlatContacts: TButtonFlat;
     ButtonFlatCommon: TButtonFlat;
-    procedure ButtonCloseClick(Sender: TObject);
-    procedure ButtonApplyClick(Sender: TObject);
+    PanelBottom: TPanel;
+    ButtonFlatCancel: TButtonFlat;
+    ButtonFlatOK: TButtonFlat;
+    Shape1: TShape;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure TableExEmailGetData(FCol, FRow: Integer; var Value: string);
@@ -85,6 +84,8 @@ type
     procedure ButtonFlatCommonClick(Sender: TObject);
     procedure ButtonFlatContactsClick(Sender: TObject);
     procedure ButtonFlatInfoClick(Sender: TObject);
+    procedure ButtonFlatCancelClick(Sender: TObject);
+    procedure ButtonFlatOKClick(Sender: TObject);
   private
     FCard: TVCard;
     FAdr: TAdrList;
@@ -174,7 +175,39 @@ begin
   end;
 end;
 
-procedure TFormAccountCard.ButtonApplyClick(Sender: TObject);
+procedure TFormAccountCard.ButtonFlat1Click(Sender: TObject);
+var
+  Item: TEmail;
+begin
+  Item.Flags := [efWork, efInternet, efPref, efX400];
+  Item.UserId := 'alinvip22@gmail.com';
+  FEmails.Add(Item);
+end;
+
+procedure TFormAccountCard.ButtonFlatCancelClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFormAccountCard.ButtonFlatCommonClick(Sender: TObject);
+begin
+  FRadio.Selected := Sender as TButtonFlat;
+  PageControlCard.ActivePage := TabSheetGeneral;
+end;
+
+procedure TFormAccountCard.ButtonFlatContactsClick(Sender: TObject);
+begin
+  FRadio.Selected := Sender as TButtonFlat;
+  PageControlCard.ActivePage := TabSheetContacts;
+end;
+
+procedure TFormAccountCard.ButtonFlatInfoClick(Sender: TObject);
+begin
+  FRadio.Selected := Sender as TButtonFlat;
+  PageControlCard.ActivePage := TabSheetAbout;
+end;
+
+procedure TFormAccountCard.ButtonFlatOKClick(Sender: TObject);
 var
   i: Integer;
 begin
@@ -207,38 +240,6 @@ begin
   FCard.Photo.PhotoType := FImageType;
   FCard.Photo.BinVal := FImageBin;
   ModalResult := mrOk;
-end;
-
-procedure TFormAccountCard.ButtonCloseClick(Sender: TObject);
-begin
-  Close;
-end;
-
-procedure TFormAccountCard.ButtonFlat1Click(Sender: TObject);
-var
-  Item: TEmail;
-begin
-  Item.Flags := [efWork, efInternet, efPref, efX400];
-  Item.UserId := 'alinvip22@gmail.com';
-  FEmails.Add(Item);
-end;
-
-procedure TFormAccountCard.ButtonFlatCommonClick(Sender: TObject);
-begin
-  FRadio.Selected := Sender as TButtonFlat;
-  PageControlCard.ActivePage := TabSheetGeneral;
-end;
-
-procedure TFormAccountCard.ButtonFlatContactsClick(Sender: TObject);
-begin
-  FRadio.Selected := Sender as TButtonFlat;
-  PageControlCard.ActivePage := TabSheetContacts;
-end;
-
-procedure TFormAccountCard.ButtonFlatInfoClick(Sender: TObject);
-begin
-  FRadio.Selected := Sender as TButtonFlat;
-  PageControlCard.ActivePage := TabSheetAbout;
 end;
 
 procedure TFormAccountCard.ButtonFlatPhotoSetClick(Sender: TObject);
@@ -323,7 +324,7 @@ begin
   begin
     FCard := Card;
     SetCard;
-    ButtonApply.Visible := False;
+    ButtonFlatOK.Visible := False;
     ShowModal;
     Result := True;
     Free;
@@ -334,7 +335,7 @@ function TFormAccountCard.ShowModal(var Card: TVCard): Integer;
 begin
   FCard := Card;
   SetCard;
-  ButtonApply.Visible := True;
+  ButtonFlatOK.Visible := True;
   Result := ShowModal;
   if Result = mrOK then
     Card := FCard;

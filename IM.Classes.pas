@@ -12,7 +12,8 @@ type
   TSoundType = (sndError, sndOnline, sndMessage, sndOffline, sndSubscribe, sndWelcome, sndGroup);
 
   TRosterList = class(TTableData<TRosterItem>)
-    procedure Delete(Index: Integer);
+    procedure Delete(Index: Integer); overload;
+    procedure Delete(JID: string); overload;
     function Update(Item: TRosterItem): Integer;
     procedure Clear; override;
     function Find(JID: string): TRosterItem;
@@ -27,6 +28,7 @@ type
     function Add(Value: TGroupItem): Integer; overload; override;
     function Add(GroupName: string): Integer; overload;
     function Add(Groups: TStringList): Boolean; overload;
+    function ToList(CheckedOnly: Boolean): TArray<string>;
   end;
 
   TBookmarkType = (btConference, btUrl);
@@ -66,11 +68,12 @@ function CreateAvatar(Source: TGraphic; Mask: TPngImage): TPngImage;
 var
   BMPSmooth: TBitmap;
 begin
-  BMPSmooth := SmoothStrechDraw(Source, TSize.Create(Mask.Width, Mask.Height));
+  BMPSmooth := SmoothStrechDraw(Source, TRect.Create(0, 0, Mask.Width - 1, Mask.Height - 1));
   Result := TPngImage.CreateBlank(COLOR_RGB, 16, Mask.Width, Mask.Height);
+  //DrawBitmapTo(0, 0, BMPSmooth, Result);
   Result.Canvas.Draw(0, 0, BMPSmooth);
-  BMPSmooth.Free;
   Result.CreateAlpha;
+  BMPSmooth.Free;
   ApplyMask(0, 0, Mask, Result);
 end;
 
@@ -127,7 +130,8 @@ end;
 function SetDefaultAvatar(Item: TRosterItem; Mask: TPngImage): Boolean;
 begin
   Item.Color := CreateColorFromJID(Item.JID);
-  Item.Avatar.Free;
+  if Assigned(Item.Avatar) then
+    Item.Avatar.Free;
   Item.Avatar := CreateDefaultAvatar(Item.JID, Item.Name, Mask, Item.Color);
   Result := True;
 end;
@@ -147,6 +151,18 @@ procedure TRosterList.Delete(Index: Integer);
 begin
   Items[Index].Free;
   inherited Delete(Index);
+end;
+
+procedure TRosterList.Delete(JID: string);
+var
+  i: Integer;
+begin
+  for i := 0 to Count - 1 do
+    if Items[i].JID = JID then
+    begin
+      Delete(i);
+      Exit
+    end;
 end;
 
 function TRosterList.Find(JID: string): TRosterItem;
@@ -223,6 +239,23 @@ begin
     Item.Name := Groups[i];
     if Add(Item) >= 0 then
       Result := True;
+  end;
+end;
+
+function TGroupList.ToList(CheckedOnly: Boolean): TArray<string>;
+var
+  i: Integer;
+begin
+  SetLength(Result, Count);
+  for i := 0 to Count - 1 do
+  begin
+    if CheckedOnly then
+    begin
+      if Checked[i] then
+        Result[i] := Items[i].Name;
+    end
+    else
+      Result[i] := Items[i].Name;
   end;
 end;
 

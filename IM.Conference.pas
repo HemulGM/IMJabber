@@ -4,8 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, inifiles, ExtDlgs,
-  MD5Hash, ImgList, System.ImageList, System.Actions, HGM.Button, Vcl.Grids,
+  Dialogs, ComCtrls, ExtCtrls, StdCtrls, Menus, Buttons, ExtDlgs, ImgList,
+  System.ImageList, System.Actions, HGM.Button, Vcl.Grids,
   HGM.Controls.VirtualTable, Jabber.Types, IM.Classes, GmXml,
   HGM.Controls.Labels, HGM.Controls.Chat;
 
@@ -128,8 +128,8 @@ var
 implementation
 
 uses
-  IM.Conference.Invite, IM.Main, IM.ChatRoom, ActiveX, IM.Account.Card,
-  IM.Account, System.DateUtils, Math, Jabber, IM.Roster, HGM.Common.Utils,
+  IM.Conference.Invite, IM.Main, IM.ChatRoom, IM.Account.Card, IM.Account,
+  System.DateUtils, Math, Jabber, IM.Roster, HGM.Common.Utils,
   Vcl.Imaging.pngimage;
 
 {$R *.dfm}
@@ -199,7 +199,7 @@ begin
   FMessages.Add(ChatItem);
   hChatMessages.Repaint;
   //////////
-  if (not Active) or (not Visible) then
+  if ((not Active) or (not Visible)) and (not FLoading) then
   begin
     FormMain.TrayIcon.Animate := True;
     FormMain.PlaySounds(sndGroup);
@@ -498,20 +498,6 @@ begin
             end;
           end;
       end;
-    {
-    <presence
-      from="!!!заходите!!!@conference.jabber.ru/Пупка"
-      to="hemulgm@jabber.ru/jabbrel"
-      type="unavailable">
-      <x xmlns="http://jabber.org/protocol/muc#user">
-          <item affiliation="none" role="none">
-                  <actor nick="Flack_Fearl"/>
-                  <reason>Flack_Fearl: маты ф топку!</reason>
-          </item>
-          <status code="307"/>
-      </x>
-    </presence>
-    }
     Exit;
   end;
   RItem := FRosterList.Find(PresenceFrom);

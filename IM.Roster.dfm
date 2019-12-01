@@ -3,8 +3,8 @@ object FormRosterList: TFormRosterList
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = #1057#1087#1080#1089#1086#1082' '#1082#1086#1085#1090#1072#1082#1090#1086#1074
-  ClientHeight = 526
-  ClientWidth = 313
+  ClientHeight = 479
+  ClientWidth = 327
   Color = 2826519
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object FormRosterList: TFormRosterList
   object Shape1: TShape
     Left = 0
     Top = 82
-    Width = 313
+    Width = 327
     Height = 1
     Align = alTop
     Brush.Color = 2169104
@@ -28,8 +28,8 @@ object FormRosterList: TFormRosterList
   end
   object Shape2: TShape
     Left = 0
-    Top = 475
-    Width = 313
+    Top = 428
+    Width = 327
     Height = 1
     Align = alBottom
     Brush.Color = 2169104
@@ -40,8 +40,8 @@ object FormRosterList: TFormRosterList
   object TableExRoster: TTableEx
     Left = 0
     Top = 83
-    Width = 313
-    Height = 392
+    Width = 327
+    Height = 345
     Align = alClient
     BorderStyle = bsNone
     Color = 2826519
@@ -62,7 +62,7 @@ object FormRosterList: TFormRosterList
         MinWidth = 48
       end
       item
-        Width = 249
+        Width = 279
         MinWidth = 200
       end>
     DefaultDataDrawing = False
@@ -73,7 +73,7 @@ object FormRosterList: TFormRosterList
     LineColor = 2826519
     LineColorXor = 2826519
     LineHotColor = 3549984
-    LineSelColor = 7885355
+    LineSelColor = 3549984
     FontHotLine.Charset = DEFAULT_CHARSET
     FontHotLine.Color = clWhite
     FontHotLine.Height = -13
@@ -100,18 +100,19 @@ object FormRosterList: TFormRosterList
   object PanelTop: TPanel
     Left = 0
     Top = 0
-    Width = 313
+    Width = 327
     Height = 41
     Align = alTop
     BevelOuter = bvNone
     Color = 2826519
     ParentBackground = False
     TabOrder = 1
+    ExplicitWidth = 313
     object Label1: TLabel
       AlignWithMargins = True
       Left = 15
       Top = 3
-      Width = 283
+      Width = 297
       Height = 35
       Margins.Left = 15
       Margins.Right = 15
@@ -131,18 +132,19 @@ object FormRosterList: TFormRosterList
   object PanelTopSearch: TPanel
     Left = 0
     Top = 41
-    Width = 313
+    Width = 327
     Height = 41
     Align = alTop
     BevelOuter = bvNone
     Color = 2826519
     ParentBackground = False
     TabOrder = 2
+    ExplicitWidth = 313
     object PanelSearch: TPanel
       AlignWithMargins = True
       Left = 10
       Top = 6
-      Width = 293
+      Width = 307
       Height = 29
       Margins.Left = 10
       Margins.Top = 6
@@ -156,11 +158,12 @@ object FormRosterList: TFormRosterList
       ParentBackground = False
       TabOrder = 0
       TabStop = True
+      ExplicitWidth = 293
       object EditSearch: TEdit
         AlignWithMargins = True
         Left = 34
         Top = 0
-        Width = 225
+        Width = 239
         Height = 29
         Margins.Left = 5
         Margins.Top = 0
@@ -182,9 +185,10 @@ object FormRosterList: TFormRosterList
         TabOrder = 0
         TextHint = #1055#1086#1080#1089#1082
         OnChange = EditSearchChange
+        ExplicitWidth = 225
       end
       object ButtonFlatSearchClear: TButtonFlat
-        Left = 264
+        Left = 278
         Top = 0
         Width = 29
         Height = 29
@@ -229,6 +233,7 @@ object FormRosterList: TFormRosterList
         SubTextFont.Name = 'Tahoma'
         SubTextFont.Style = []
         Visible = False
+        ExplicitLeft = 264
       end
       object ButtonFlat1: TButtonFlat
         Left = 0
@@ -278,17 +283,19 @@ object FormRosterList: TFormRosterList
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 476
-    Width = 313
+    Top = 429
+    Width = 327
     Height = 50
     Align = alBottom
     BevelOuter = bvNone
     Color = 2826519
     ParentBackground = False
     TabOrder = 3
+    ExplicitTop = 476
+    ExplicitWidth = 313
     object ButtonFlatOK: TButtonFlat
       AlignWithMargins = True
-      Left = 213
+      Left = 227
       Top = 8
       Width = 96
       Height = 34
@@ -308,12 +315,12 @@ object FormRosterList: TFormRosterList
       Font.Name = 'Segoe UI Semibold'
       Font.Style = []
       FontOver.Charset = DEFAULT_CHARSET
-      FontOver.Color = 13344113
+      FontOver.Color = 15905386
       FontOver.Height = -13
       FontOver.Name = 'Segoe UI Semibold'
       FontOver.Style = []
       FontDown.Charset = DEFAULT_CHARSET
-      FontDown.Color = 13344113
+      FontDown.Color = 15905386
       FontDown.Height = -13
       FontDown.Name = 'Segoe UI Semibold'
       FontDown.Style = []
@@ -330,10 +337,11 @@ object FormRosterList: TFormRosterList
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
+      ExplicitLeft = 213
     end
     object ButtonFlatCancel: TButtonFlat
       AlignWithMargins = True
-      Left = 125
+      Left = 139
       Top = 8
       Width = 80
       Height = 34
@@ -353,12 +361,12 @@ object FormRosterList: TFormRosterList
       Font.Name = 'Segoe UI Semibold'
       Font.Style = []
       FontOver.Charset = DEFAULT_CHARSET
-      FontOver.Color = 13344113
+      FontOver.Color = 15905386
       FontOver.Height = -13
       FontOver.Name = 'Segoe UI Semibold'
       FontOver.Style = []
       FontDown.Charset = DEFAULT_CHARSET
-      FontDown.Color = 13344113
+      FontDown.Color = 15905386
       FontDown.Height = -13
       FontDown.Name = 'Segoe UI Semibold'
       FontDown.Style = []
@@ -375,6 +383,7 @@ object FormRosterList: TFormRosterList
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
+      ExplicitLeft = 125
     end
   end
 end

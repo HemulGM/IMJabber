@@ -25,7 +25,8 @@ uses
   GmXml in '..\HGMJabberClient\GmXml.pas',
   Jabber.Actions in '..\HGMJabberClient\Jabber.Actions.pas',
   Jabber in '..\HGMJabberClient\Jabber.pas',
-  Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas';
+  Jabber.Types in '..\HGMJabberClient\Jabber.Types.pas',
+  VCLFlickerReduce in '..\#Fork\VCLFlickerReduce\VCLFlickerReduce.pas';
 
 {$R *.res}
 
@@ -52,7 +53,6 @@ begin
   Application.Title := 'HGMJabber';
   Core := TImCore.Create(Application);
   Application.CreateForm(TFormMain, FormMain);
- // Application.CreateForm(TFormConfig, FormConfig);
   Application.CreateForm(TFormConsole, FormConsole);
   FormWelcome := TFormWelcome.Create(FormMain);
   FormWelcome.Parent := FormMain.PanelClient;

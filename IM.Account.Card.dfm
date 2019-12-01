@@ -19,39 +19,24 @@ object FormAccountCard: TFormAccountCard
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object sPanel1: TPanel
+  object Shape1: TShape
     Left = 0
-    Top = 417
+    Top = 406
     Width = 703
-    Height = 40
+    Height = 1
     Align = alBottom
-    BevelOuter = bvNone
-    TabOrder = 0
-    object ButtonClose: TButton
-      Left = 623
-      Top = 8
-      Width = 75
-      Height = 25
-      Caption = #1047#1072#1082#1088#1099#1090#1100
-      TabOrder = 0
-      OnClick = ButtonCloseClick
-    end
-    object ButtonApply: TButton
-      Left = 542
-      Top = 8
-      Width = 75
-      Height = 25
-      Caption = #1055#1088#1080#1084#1077#1085#1080#1090#1100
-      TabOrder = 1
-      OnClick = ButtonApplyClick
-    end
+    Brush.Color = 2169104
+    Pen.Color = 2169104
+    ExplicitLeft = -5
+    ExplicitTop = 343
+    ExplicitWidth = 327
   end
   object PageControlCard: TPageControl
     AlignWithMargins = True
     Left = 5
     Top = 28
     Width = 693
-    Height = 389
+    Height = 378
     Margins.Left = 5
     Margins.Top = 0
     Margins.Right = 5
@@ -59,14 +44,12 @@ object FormAccountCard: TFormAccountCard
     ActivePage = TabSheetGeneral
     Align = alClient
     Style = tsButtons
-    TabOrder = 1
+    TabOrder = 0
+    ExplicitHeight = 389
     object TabSheetGeneral: TTabSheet
       Caption = #1054#1073#1097#1077#1077
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitHeight = 379
       object Label1: TLabel
         Left = 238
         Top = 51
@@ -474,10 +457,7 @@ object FormAccountCard: TFormAccountCard
     object TabSheetContacts: TTabSheet
       Caption = #1050#1086#1085#1090#1072#1082#1090#1099
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 27
-      ExplicitWidth = 0
-      ExplicitHeight = 335
+      ExplicitHeight = 328
       object Label4: TLabel
         Left = 16
         Top = 3
@@ -517,7 +497,7 @@ object FormAccountCard: TFormAccountCard
           end
           item
             Caption = #1040#1076#1088#1077#1089
-            Width = 213
+            Width = 232
           end>
         ItemCount = 1
         LineColor = 15198440
@@ -561,7 +541,7 @@ object FormAccountCard: TFormAccountCard
           end
           item
             Caption = #1053#1086#1084#1077#1088
-            Width = 175
+            Width = 194
           end>
         ItemCount = 1
         LineColor = 15198440
@@ -621,7 +601,7 @@ object FormAccountCard: TFormAccountCard
           end
           item
             Caption = 'COUNTRY'
-            Width = 60
+            Width = 216
           end>
         ItemCount = 1
         LineColor = 15198440
@@ -985,15 +965,12 @@ object FormAccountCard: TFormAccountCard
     object TabSheetAbout: TTabSheet
       Caption = #1054#1073#1086' '#1084#1085#1077
       TabVisible = False
-      ExplicitLeft = 0
-      ExplicitTop = 27
-      ExplicitWidth = 0
-      ExplicitHeight = 376
+      ExplicitHeight = 328
       object RichEditDesc: TRichEdit
         Left = 0
         Top = 0
         Width = 685
-        Height = 379
+        Height = 368
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = RUSSIAN_CHARSET
@@ -1006,6 +983,7 @@ object FormAccountCard: TFormAccountCard
         ScrollBars = ssVertical
         TabOrder = 0
         Zoom = 100
+        ExplicitHeight = 328
       end
     end
   end
@@ -1016,9 +994,9 @@ object FormAccountCard: TFormAccountCard
     Height = 28
     Align = alTop
     BevelOuter = bvNone
-    Color = 7885355
+    Color = 2826519
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 1
     object ButtonFlatInfo: TButtonFlat
       Left = 162
       Top = 0
@@ -1135,6 +1113,112 @@ object FormAccountCard: TFormAccountCard
       SubTextFont.Height = -13
       SubTextFont.Name = 'Tahoma'
       SubTextFont.Style = []
+    end
+  end
+  object PanelBottom: TPanel
+    Left = 0
+    Top = 407
+    Width = 703
+    Height = 50
+    Align = alBottom
+    BevelOuter = bvNone
+    Color = 2826519
+    ParentBackground = False
+    TabOrder = 2
+    ExplicitLeft = 8
+    ExplicitTop = 310
+    ExplicitWidth = 322
+    object ButtonFlatCancel: TButtonFlat
+      AlignWithMargins = True
+      Left = 515
+      Top = 8
+      Width = 80
+      Height = 34
+      Cursor = crDefault
+      Margins.Left = 4
+      Margins.Top = 8
+      Margins.Right = 4
+      Margins.Bottom = 8
+      Align = alRight
+      Caption = #1054#1058#1052#1045#1053#1040
+      ColorNormal = 2760985
+      ColorOver = 3680799
+      ColorPressed = 4403489
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15905386
+      Font.Height = -13
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = []
+      FontOver.Charset = DEFAULT_CHARSET
+      FontOver.Color = 13344113
+      FontOver.Height = -13
+      FontOver.Name = 'Segoe UI Semibold'
+      FontOver.Style = []
+      FontDown.Charset = DEFAULT_CHARSET
+      FontDown.Color = 13344113
+      FontDown.Height = -13
+      FontDown.Name = 'Segoe UI Semibold'
+      FontDown.Style = []
+      IgnorBounds = True
+      OnClick = ButtonFlatCancelClick
+      RoundRectParam = 0
+      Shape = stRoundRect
+      ShowFocusRect = False
+      TabOrder = 0
+      TabStop = True
+      TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+      SubTextFont.Charset = DEFAULT_CHARSET
+      SubTextFont.Color = clWhite
+      SubTextFont.Height = -13
+      SubTextFont.Name = 'Tahoma'
+      SubTextFont.Style = []
+      ExplicitLeft = 134
+    end
+    object ButtonFlatOK: TButtonFlat
+      AlignWithMargins = True
+      Left = 603
+      Top = 8
+      Width = 96
+      Height = 34
+      Cursor = crDefault
+      Margins.Left = 4
+      Margins.Top = 8
+      Margins.Right = 4
+      Margins.Bottom = 8
+      Align = alRight
+      Caption = #1057#1054#1061#1056#1040#1053#1048#1058#1068
+      ColorNormal = 2760985
+      ColorOver = 3680799
+      ColorPressed = 4403489
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 15905386
+      Font.Height = -13
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = []
+      FontOver.Charset = DEFAULT_CHARSET
+      FontOver.Color = 13344113
+      FontOver.Height = -13
+      FontOver.Name = 'Segoe UI Semibold'
+      FontOver.Style = []
+      FontDown.Charset = DEFAULT_CHARSET
+      FontDown.Color = 13344113
+      FontDown.Height = -13
+      FontDown.Name = 'Segoe UI Semibold'
+      FontDown.Style = []
+      IgnorBounds = True
+      OnClick = ButtonFlatOKClick
+      RoundRectParam = 0
+      Shape = stRoundRect
+      ShowFocusRect = False
+      TabOrder = 1
+      TabStop = True
+      TextFormat = [tfCenter, tfSingleLine, tfVerticalCenter]
+      SubTextFont.Charset = DEFAULT_CHARSET
+      SubTextFont.Color = clWhite
+      SubTextFont.Height = -13
+      SubTextFont.Name = 'Tahoma'
+      SubTextFont.Style = []
+      ExplicitLeft = 222
     end
   end
   object SaveDialog1: TSaveDialog

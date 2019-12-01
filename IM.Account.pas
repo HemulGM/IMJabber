@@ -4,27 +4,35 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls;
+  Dialogs, StdCtrls, ExtCtrls, HGM.Button;
 
 type
   TFormAccount = class(TForm)
-    sGroupBox1: TGroupBox;
+    PanelBottom: TPanel;
     Label1: TLabel;
-    EditNick: TEdit;
-    EditLogin: TEdit;
-    EditServer: TEdit;
-    EditPassword: TEdit;
     sLabel1: TLabel;
     sLabel2: TLabel;
     sLabel3: TLabel;
     sLabel5: TLabel;
+    EditNick: TEdit;
+    EditLogin: TEdit;
+    EditServer: TEdit;
+    EditPassword: TEdit;
     EditJabberPort: TEdit;
-    Panel1: TPanel;
-    ButtonCancel: TButton;
-    ButtonSave: TButton;
-    procedure ButtonCancelClick(Sender: TObject);
-    procedure ButtonSaveClick(Sender: TObject);
+    ButtonFlatSave: TButtonFlat;
+    ButtonFlatCancel: TButtonFlat;
+    Shape1: TShape;
+    Shape2: TShape;
+    Shape3: TShape;
+    Shape4: TShape;
+    Shape5: TShape;
+    Shape6: TShape;
+    PanelTop: TPanel;
+    Label2: TLabel;
+    Shape7: TShape;
     procedure EditPasswordChange(Sender: TObject);
+    procedure ButtonFlatSaveClick(Sender: TObject);
+    procedure ButtonFlatCancelClick(Sender: TObject);
   private
     FPasswordChanged: Boolean;
   public
@@ -41,7 +49,12 @@ uses
 
 {$R *.dfm}
 
-procedure TFormAccount.ButtonSaveClick(Sender: TObject);
+procedure TFormAccount.ButtonFlatCancelClick(Sender: TObject);
+begin
+  Close;
+end;
+
+procedure TFormAccount.ButtonFlatSaveClick(Sender: TObject);
 begin
   if (EditNick.Text <> '') and (EditLogin.Text <> '') and (EditServer.Text <> '') then
   begin
@@ -67,6 +80,7 @@ begin
     if Password <> '' then
       EditPassword.Text := '123456789123';
     FPasswordChanged := False;
+
     Result := ShowModal = mrOK;
 
     JID := EditLogin.Text;
@@ -77,11 +91,6 @@ begin
       Password := EditPassword.Text;
     Free;
   end;
-end;
-
-procedure TFormAccount.ButtonCancelClick(Sender: TObject);
-begin
-  Close;
 end;
 
 end.

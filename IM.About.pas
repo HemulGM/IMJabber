@@ -8,9 +8,9 @@ uses
 
 type
   TFormAbout = class(TForm)
-    Image1: TImage;
     Label1: TLabel;
-    ButtonFlatOK: TButtonFlat;
+    ButtonFlatClose: TButtonFlat;
+    Label2: TLabel;
     procedure ButtonFlatOKClick(Sender: TObject);
   private
     { Private declarations }

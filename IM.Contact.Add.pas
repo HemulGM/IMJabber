@@ -19,6 +19,11 @@ type
     Label1: TLabel;
     Shape1: TShape;
     Shape2: TShape;
+    PanelBottom: TPanel;
+    Shape3: TShape;
+    PanelTop: TPanel;
+    Label2: TLabel;
+    Shape4: TShape;
     procedure ButtonFlatCancelClick(Sender: TObject);
     procedure ButtonFlatOKClick(Sender: TObject);
     procedure TableExGroupsGetData(FCol, FRow: Integer; var Value: string);
@@ -46,7 +51,10 @@ begin
   begin
     FGroups := Groups;
     Groups.AddTable(TableExGroups);
+    Groups.UpdateTable;
+
     Result := ShowModal = mrOk;
+
     JID := EditJID.Text;
     Nick := EditNick.Text;
     Groups.UnAssignTable(TableExGroups);

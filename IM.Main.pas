@@ -17,19 +17,11 @@ type
     ImageListStatuses: TImageList;
     TrayIcon: TTrayIcon;
     PopupMenuSys: TPopupMenu;
-    PopupMenuStatus: TPopupMenu;
     MenuItemAccount: TMenuItem;
     MenuItemSettings: TMenuItem;
     MenuItemQuit: TMenuItem;
     MenuItemAbout: TMenuItem;
     MenuItemSound: TMenuItem;
-    MenuItemStatusOnline: TMenuItem;
-    MenuItemStatusChat: TMenuItem;
-    MenuItemStatusAway: TMenuItem;
-    MenuItemStatusXa: TMenuItem;
-    MenuItemStatusDND: TMenuItem;
-    MenuItemStatusInvis: TMenuItem;
-    MenuItemDisconnect: TMenuItem;
     MenuItemConsole: TMenuItem;
     MenuItemBookmarks: TMenuItem;
     PopupMenuContacts: TPopupMenu;
@@ -41,18 +33,17 @@ type
     MenuItemContactAuthRemove: TMenuItem;
     MenuItemContactAuthRequest: TMenuItem;
     MenuItemStatuses: TMenuItem;
-    N30: TMenuItem;
-    N31: TMenuItem;
-    N32: TMenuItem;
-    N33: TMenuItem;
-    N34: TMenuItem;
-    N35: TMenuItem;
-    N36: TMenuItem;
+    MenuItemStOnline: TMenuItem;
+    MenuItemStChat: TMenuItem;
+    MenuItemStAway: TMenuItem;
+    MenuItemStXA: TMenuItem;
+    MenuItemStDND: TMenuItem;
+    MenuItemStInvisible: TMenuItem;
+    MenuItemStOffline: TMenuItem;
     MenuItemConfList: TMenuItem;
     MenuItemUserVCard: TMenuItem;
     MenuItemAddContactSys: TMenuItem;
     MenuItemGetVersion: TMenuItem;
-    MenuItemIviteToConf: TMenuItem;
     MenuItemContactGroup: TMenuItem;
     MenuItemContactGroupAdd: TMenuItem;
     MenuItemAddToGroup: TMenuItem;
@@ -70,7 +61,6 @@ type
     LabelNick: TLabel;
     LabelStatusText: TLabel;
     ImageShowType: TImage;
-    N1: TMenuItem;
     N2: TMenuItem;
     MenuItemSendAttontion: TMenuItem;
     N3: TMenuItem;
@@ -85,19 +75,20 @@ type
     ActivityIndicatorWork: TActivityIndicator;
     ImageList16: TImageList;
     Splitter1: TSplitter;
+    N1: TMenuItem;
+    N7: TMenuItem;
+    N8: TMenuItem;
     procedure MenuItemQuitClick(Sender: TObject);
     procedure MenuItemAccountClick(Sender: TObject);
     procedure MenuItemSettingsClick(Sender: TObject);
     procedure OnAddToGroupClick(Sender: TObject);
     procedure MenuItemAboutClick(Sender: TObject);
-    procedure sButton1Click(Sender: TObject);
     procedure MenuItemConsoleClick(Sender: TObject);
     procedure JabberClientConnect(Sender: TObject);
     procedure JabberClientConnectError(Sender: TObject);
     procedure JabberClientDisconnect(Sender: TObject);
     procedure JabberClientGetBookMarks(Sender: TObject; QueryNode: TGmXmlNode);
     procedure JabberClientGetRoster(Sender: TObject; QueryNode: TGmXmlNode);
-    procedure MenuItemStatusOnlineClick(Sender: TObject);
     procedure JabberClientIQ(Sender: TObject; QueryNode: TGmXmlNode);
     procedure JabberClientJabberOnline(Sender: TObject);
     procedure JabberClientLoginError(Sender: TObject; Error: string);
@@ -108,19 +99,13 @@ type
     procedure JabberClientPresence(Sender: TObject; QueryNode: TGmXmlNode);
     procedure JabberClientReceiveData(Sender: TObject; SendStr: string; Handled: Boolean);
     procedure JabberClientSendData(Sender: TObject; SendStr: string);
-    procedure MenuItemDisconnectClick(Sender: TObject);
-    procedure MenuItemStatusChatClick(Sender: TObject);
-    procedure MenuItemStatusAwayClick(Sender: TObject);
-    procedure MenuItemStatusXaClick(Sender: TObject);
-    procedure MenuItemStatusDNDClick(Sender: TObject);
-    procedure MenuItemStatusInvisClick(Sender: TObject);
     procedure TrayIconClick(Sender: TObject);
-    procedure N31Click(Sender: TObject);
-    procedure N32Click(Sender: TObject);
-    procedure N33Click(Sender: TObject);
-    procedure N34Click(Sender: TObject);
-    procedure N35Click(Sender: TObject);
-    procedure N36Click(Sender: TObject);
+    procedure MenuItemStChatClick(Sender: TObject);
+    procedure MenuItemStAwayClick(Sender: TObject);
+    procedure MenuItemStXAClick(Sender: TObject);
+    procedure MenuItemStDNDClick(Sender: TObject);
+    procedure MenuItemStInvisibleClick(Sender: TObject);
+    procedure MenuItemStOfflineClick(Sender: TObject);
     procedure MenuItemConfListClick(Sender: TObject);
     procedure OnIviteToConfClick(Sender: TObject);
     procedure OnBookmarkClick(Sender: TObject);
@@ -154,8 +139,8 @@ type
     procedure ButtonFlatSearchClearClick(Sender: TObject);
     procedure LabelStatusTextClick(Sender: TObject);
     procedure EditSearchChange(Sender: TObject);
-    procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer;
-      var Accept: Boolean);
+    procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
+    procedure MenuItemStOnlineClick(Sender: TObject);
   private
     FActiveChatForm: TForm;
     FRosterList: TRosterList;
@@ -168,9 +153,6 @@ type
     procedure UpdateUserInfo(Card: TVCard);
     procedure OnAttention(Item: TJabberMessage);
     procedure EnterToGroupchat(ConfJID, Nick: string);
-    procedure WMSize(var Message: TWMSize); message WM_SIZE;
-    procedure WMEnterSizeMove(var Message: TWMMove); message WM_ENTERSIZEMOVE;
-    procedure WMExitSizeMove(var Message: TWMMove); message WM_EXITSIZEMOVE;
     procedure Load;
   public
     JabberClient: TJabberClient;
@@ -199,35 +181,39 @@ uses
 
 {$R *.dfm}
 
-procedure TFormMain.OnAddToGroupClick(Sender: TObject);
-var
-  MenuItem: TMenuItem absolute Sender;
-begin
-  if FRosterList.IndexIn(TableExRoster.ItemIndex) then
-  begin
-    if FGroupList.IndexIn(MenuItem.Tag) then
-    begin
-      FRosterList[TableExRoster.ItemIndex].Groups.Add(FGroupList[MenuItem.Tag].Name);
-      JabberClient.RenameContact(FRosterList[TableExRoster.ItemIndex]);
-    end;
-  end;
-end;
-
 procedure TFormMain.OnAttention(Item: TJabberMessage);
 begin
   ShowMessage('Вас окликнули ' + Item.From + #13#10 + Item.Body);
 end;
 
-procedure TFormMain.OnRemoveFromGroupClick(Sender: TObject);
+procedure TFormMain.OnAddToGroupClick(Sender: TObject);
 var
   MenuItem: TMenuItem absolute Sender;
+  Item: TRosterItem;
 begin
   if FRosterList.IndexIn(TableExRoster.ItemIndex) then
   begin
-    if MenuItem.Tag < FRosterList[TableExRoster.ItemIndex].Groups.Count then
+    if FGroupList.IndexIn(MenuItem.Tag) then
     begin
-      FRosterList[TableExRoster.ItemIndex].Groups.Delete(MenuItem.Tag);
-      JabberClient.RenameContact(FRosterList[TableExRoster.ItemIndex]);
+      Item := FRosterList[TableExRoster.ItemIndex];
+      Item.Groups.Add(FGroupList[MenuItem.Tag].Name);
+      JabberClient.RenameContact(Item);
+    end;
+  end;
+end;
+
+procedure TFormMain.OnRemoveFromGroupClick(Sender: TObject);
+var
+  MenuItem: TMenuItem absolute Sender;
+  Item: TRosterItem;
+begin
+  if FRosterList.IndexIn(TableExRoster.ItemIndex) then
+  begin
+    Item := FRosterList[TableExRoster.ItemIndex];
+    if MenuItem.Tag < Item.Groups.Count then
+    begin
+      Item.Groups.Delete(MenuItem.Tag);
+      JabberClient.RenameContact(Item);
     end;
   end;
 end;
@@ -240,8 +226,10 @@ begin
 end;
 
 procedure TFormMain.OnBookmarkClick(Sender: TObject);
+var
+  MenuItem: TMenuItem absolute Sender;
 begin
-  ShowMessage(FBookmarkList[TMenuItem(Sender).Tag].Name + ' ' + FBookmarkList[TMenuItem(Sender).Tag].JID);
+  ShowMessage(FBookmarkList[MenuItem.Tag].Name + ' ' + FBookmarkList[MenuItem.Tag].JID);
 end;
 
 procedure TFormMain.OnIviteToConfClick(Sender: TObject);
@@ -260,7 +248,6 @@ var
 begin
   if not MenuItemSound.Checked then
     Exit;
-  Exit;
   SoundFile := ExtractFilePath(Application.ExeName) + 'sounds\' + Core.Settings.GetStr('System', 'Sounds', 'icq');
   case Sound of
     sndError:
@@ -268,7 +255,13 @@ begin
     sndOnline:
       SoundFile := SoundFile + '\online.wav';
     sndOffline:
-      SoundFile := SoundFile + '\disconnect.wav';
+      begin
+        //А здесь воспроизведём не асинхронно
+        SoundFile := SoundFile + '\disconnect.wav';
+        if FileExists(SoundFile) then
+          PlaySound(PChar(SoundFile), 0, SND_FILENAME);
+        Exit;
+      end;
     sndSubscribe:
       SoundFile := SoundFile + '\subscr.wav';
     sndWelcome:
@@ -292,7 +285,7 @@ begin
   for i := 0 to ComponentCount - 1 do
   begin
     if (Components[i] is TFormChatRoom) then
-      if (Components[i] as TFormChatRoom).JID = AJID then
+      if AnsiLowerCase((Components[i] as TFormChatRoom).JID) = AJID then
       begin
         Form := Components[i] as TFormChatRoom;
         Exit(True);
@@ -309,7 +302,7 @@ begin
   for i := 0 to ComponentCount - 1 do
   begin
     if (Components[i] is TFormConference) then
-      if (Components[i] as TFormConference).JID = AJID then
+      if AnsiLowerCase((Components[i] as TFormConference).JID) = AJID then
       begin
         Form := Components[i] as TFormConference;
         Exit(True);
@@ -334,11 +327,10 @@ begin
   FStatusMask.LoadFromResourceName(HInstance, 'statusmask');
   FFullMask := TPngImage.Create;
   FFullMask.LoadFromResourceName(HInstance, 'fullmask');
+
   ImageListOver.AddImages(ImageListNormal);
   for i := 0 to ImageListOver.Count - 1 do
-  begin
     ColorImages(ImageListOver, i, clWhite);
-  end;
 
   ColorImages(ImageList16, 0, $00C18852);
   ColorImages(ImageList16, 1, $00C18852);
@@ -378,13 +370,14 @@ end;
 
 procedure TFormMain.FormDestroy(Sender: TObject);
 begin
+  Save;
+
   FStatusMask.Free;
   FFullMask.Free;
   FBookmarkList.Free;
   FGroupList.Free;
   FRosterList.Free;
   JabberClient.Free;
-  Save;
 end;
 
 procedure TFormMain.JabberClientConnect(Sender: TObject);
@@ -475,39 +468,36 @@ var
   Group: TGroupItem;
   i, j: integer;
 begin
-  if Assigned(QueryNode) then
+  FRosterList.BeginUpdate;
+  FRosterList.Clear;
+  FGroupList.BeginUpdate;
+  FGroupList.Clear;
+  for i := 0 to QueryNode.Children.Count - 1 do
   begin
-    FRosterList.BeginUpdate;
-    FRosterList.Clear;
-    FGroupList.BeginUpdate;
-    FGroupList.Clear;
-    for i := 0 to QueryNode.Children.Count - 1 do
+    RosterItem := QueryNode.Children.Node[i];
+    if RosterItem.Name = 'item' then
     begin
-      RosterItem := QueryNode.Children.Node[i];
-      if RosterItem.Name = 'item' then
+      //Секция группа
+      Item := TRosterItem.Create;
+      Item.JID := RosterItem.Params.Values['jid'];
+      Item.Name := RosterItem.Params.Values['name'];
+      if Item.Name.IsEmpty then
+        Item.Name := NickFromJID(Item.JID);
+      Item.Status := stOffline;
+      SetDefaultAvatar(Item, FStatusMask);
+      for j := 0 to RosterItem.Children.Count - 1 do
       begin
-        //Секция группа
-        Item := TRosterItem.Create;
-        Item.JID := RosterItem.Params.Values['jid'];
-        Item.Name := RosterItem.Params.Values['name'];
-        if Item.Name.IsEmpty then
-          Item.Name := NickFromJID(Item.JID);
-        Item.Status := stOffline;
-        SetDefaultAvatar(Item, FStatusMask);
-        for j := 0 to RosterItem.Children.Count - 1 do
-        begin
-          Group.Name := RosterItem.Children.Node[j].AsString;
-          Item.Groups.Add(Group.Name);
-          if Group.Name <> '' then
-            FGroupList.Add(Group);
-        end;
-        FRosterList.Add(Item);
+        Group.Name := RosterItem.Children.Node[j].AsString;
+        Item.Groups.Add(Group.Name);
+        if Group.Name <> '' then
+          FGroupList.Add(Group);
       end;
+      FRosterList.Add(Item);
     end;
-    FRosterList.EndUpdate;
-    FGroupList.EndUpdate;
-    FormConsole.AddLog('JabberClientGetRoster: Roster loaded!' + #10#13, $005656FE);
   end;
+  FRosterList.EndUpdate;
+  FGroupList.EndUpdate;
+  FormConsole.AddLog('JabberClientGetRoster: Roster loaded!' + #10#13, $005656FE);
 end;
 
 procedure TFormMain.JabberClientIQ(Sender: TObject; QueryNode: TGmXmlNode);
@@ -548,7 +538,7 @@ end;
 
 procedure TFormMain.JabberClientMessage(Sender: TObject; Item: TJabberMessage);
 var
-  JID, JIDmd: string;
+  JID: string;
   ChatRoom: TFormChatRoom;
   GroupChatRoom: TFormConference;
   Roster: TRosterItem;
@@ -564,7 +554,6 @@ begin
   //Чат сообщение
   if Item.MessageType = 'chat' then
   begin
-    JIDmd := MD5(AnsiLowerCase(JID));
     if Assigned(FRosterList.Find(JID)) then
     begin
       Roster := FRosterList.Find(JID);
@@ -647,21 +636,6 @@ begin
       TFormCaptcha.Execute(Item.XMLNS_XOOB.URL);
       Exit;
     end;
-        {
-    //парсинг инвайта
-    if (XMLNode.Name = 'x') and (XMLNode.Params.Values['xmlns'] = 'jabber:x:conference') then
-    begin
-      TFormChatRoom.SwowPopupWnd(From + ' приглашает посетить конференцию ' + XMLNode.Params.Values['jid']);
-      //выдергивание джида пославшего инвайт (вариант 2)
-      if invite_from = '' then
-        invite_from := XMLItem.Params.Values['from'];
-
-      if Application.MessageBox(pchar(invite_from + ' приглашает посетить конференцию ' + XMLNode.Params.Values['jid']), 'Приглашение', MB_YESNO) = IDYES then
-      begin
-        FormConfInvite.sGroupBox1.Caption := XMLNode.Params.Values['jid'];
-        FormConfInvite.Show;
-      end;
-    end; }
   end;
 end;
 
@@ -685,28 +659,11 @@ begin
     end
     else
     begin
-      PNG := CreateDefaultAvatar(JabberClient.JID, JabberClient.UserNick, FStatusMask);
+      PNG := CreateDefaultAvatar(JabberClient.JID, JabberClient.UserNick, FStatusMask, CreateColorFromJID(JabberClient.JID));
       ImageAvatar.Picture.Assign(PNG);
       PNG.Free;
     end;
   end;
-end;
-
-procedure TFormMain.WMSize(var Message: TWMSize);
-begin
-  inherited;
-  RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
-end;
-
-procedure TFormMain.WMEnterSizeMove(var Message: TWMMove);
-begin
-  //SendMessage(Handle, WM_SETREDRAW, 0, 0);
-end;
-
-procedure TFormMain.WMExitSizeMove(var Message: TWMMove);
-begin
-  //SendMessage(Handle, WM_SETREDRAW, 1, 0);
-  //RedrawWindow(Handle, nil, 0, RDW_INVALIDATE or RDW_UPDATENOW or RDW_ALLCHILDREN);
 end;
 
 procedure TFormMain.JabberClientPresence(Sender: TObject; QueryNode: TGmXmlNode);
@@ -836,6 +793,13 @@ end;
 
 procedure TFormMain.JabberClientRosterSet(Sender: TObject; Item: TRosterItem);
 begin
+  if Item.Subscription = 'remove' then
+  begin
+    FRosterList.Delete(Item.JID);
+    Exit;
+  end;
+  if not Assigned(Item.Avatar) then
+    SetDefaultAvatar(Item, FStatusMask);
   FRosterList.Update(Item);
   FGroupList.Add(Item.Groups);
   FormConsole.AddLog('JabberClientRosterSet: ' + Item.JID + #10#13, $005656FE);
@@ -854,7 +818,7 @@ var
 begin
   PlaySounds(sndSubscribe);
 
-  if MessageDlg('Подтвердить авторизацию от ' + From + '? ', mtConfirmation, mbYesNo, 1) = mrYes then
+  if MessageDlg('Подтвердить авторизацию ' + From + '? ', mtConfirmation, mbYesNo, 1) = mrYes then
   begin
     JIDExists := False;
     for i := 0 to FRosterList.Count - 1 do
@@ -898,41 +862,6 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure TFormMain.MenuItemStatusChatClick(Sender: TObject);
-begin
-  JabberClient.UserStatus := stChat;
-  CheckConnect;
-end;
-
-procedure TFormMain.MenuItemStatusAwayClick(Sender: TObject);
-begin
-  JabberClient.UserStatus := stAway;
-  CheckConnect;
-end;
-
-procedure TFormMain.MenuItemStatusXaClick(Sender: TObject);
-begin
-  JabberClient.UserStatus := stXa;
-  CheckConnect;
-end;
-
-procedure TFormMain.MenuItemStatusDNDClick(Sender: TObject);
-begin
-  JabberClient.UserStatus := stDnd;
-  CheckConnect;
-end;
-
-procedure TFormMain.MenuItemStatusInvisClick(Sender: TObject);
-begin
-  JabberClient.UserStatus := stInvisible;
-  CheckConnect;
-end;
-
-procedure TFormMain.MenuItemDisconnectClick(Sender: TObject);
-begin
-  JabberClient.Disconnect;
-end;
-
 procedure TFormMain.MenuItemAccountClick(Sender: TObject);
 begin
   if SetAccount then
@@ -959,7 +888,6 @@ end;
 
 procedure TFormMain.MenuItemContactAuthAcceptClick(Sender: TObject);
 begin
-  //Авторизируем
   if FRosterList.IndexIn(TableExRoster.ItemIndex) then
   begin
     JabberClient.SendSubscribeAccept(FRosterList[TableExRoster.ItemIndex].JID);
@@ -970,7 +898,6 @@ procedure TFormMain.MenuItemContactAuthRemoveClick(Sender: TObject);
 var
   JID: string;
 begin
-  //Удаляем авторизизацию юзера
   if FRosterList.IndexIn(TableExRoster.ItemIndex) then
   begin
     JID := FRosterList[TableExRoster.ItemIndex].JID;
@@ -982,7 +909,6 @@ end;
 
 procedure TFormMain.MenuItemContactAuthRequestClick(Sender: TObject);
 begin
-  //Отправляем запрос на авторизацию
   if FRosterList.IndexIn(TableExRoster.ItemIndex) then
   begin
     JabberClient.SendAuthRequest(FRosterList[TableExRoster.ItemIndex].JID);
@@ -993,46 +919,54 @@ procedure TFormMain.MenuItemSendAttontionClick(Sender: TObject);
 begin
   if FRosterList.IndexIn(TableExRoster.ItemIndex) then
   begin
-    if JabberClient.Online then
-    begin
-      JabberClient.SendAttention(FRosterList[TableExRoster.ItemIndex].JID);
-    end;
+    JabberClient.SendAttention(FRosterList[TableExRoster.ItemIndex].JID);
   end;
 end;
 
 procedure TFormMain.MenuItemSettingsClick(Sender: TObject);
 begin
-  FormConfig.show;
+  TFormConfig.Execute;
 end;
 
-procedure TFormMain.N31Click(Sender: TObject);
+procedure TFormMain.MenuItemStOnlineClick(Sender: TObject);
 begin
-  MenuItemStatusChat.Click;
+  JabberClient.UserStatus := stNormal;
+  CheckConnect;
 end;
 
-procedure TFormMain.N32Click(Sender: TObject);
+procedure TFormMain.MenuItemStChatClick(Sender: TObject);
 begin
-  MenuItemStatusAway.Click;
+  JabberClient.UserStatus := stChat;
+  CheckConnect;
 end;
 
-procedure TFormMain.N33Click(Sender: TObject);
+procedure TFormMain.MenuItemStAwayClick(Sender: TObject);
 begin
-  MenuItemStatusXa.Click;
+  JabberClient.UserStatus := stAway;
+  CheckConnect;
 end;
 
-procedure TFormMain.N34Click(Sender: TObject);
+procedure TFormMain.MenuItemStXAClick(Sender: TObject);
 begin
-  MenuItemStatusDND.Click;
+  JabberClient.UserStatus := stXa;
+  CheckConnect;
 end;
 
-procedure TFormMain.N35Click(Sender: TObject);
+procedure TFormMain.MenuItemStDNDClick(Sender: TObject);
 begin
-  MenuItemStatusInvis.Click;
+  JabberClient.UserStatus := stDnd;
+  CheckConnect;
 end;
 
-procedure TFormMain.N36Click(Sender: TObject);
+procedure TFormMain.MenuItemStInvisibleClick(Sender: TObject);
 begin
-  MenuItemDisconnect.Click;
+  JabberClient.UserStatus := stInvisible;
+  CheckConnect;
+end;
+
+procedure TFormMain.MenuItemStOfflineClick(Sender: TObject);
+begin
+  JabberClient.Disconnect;
 end;
 
 procedure TFormMain.MenuItemConfListClick(Sender: TObject);
@@ -1064,9 +998,9 @@ begin
     Item := TRosterItem.Create;
     Item.JID := AJID;
     Item.Name := ANick;
-    //Item.Groups := edit2.Text;
+    Item.Groups.AddStrings(FGroupList.ToList(True));
     if FormMain.JabberClient.AddContact(Item) then
-      ShowMessage('OK');
+      ShowMessage('Контакт добавлен');
     Item.Free;
   end;
 end;
@@ -1077,7 +1011,7 @@ begin
   begin
     if JabberClient.Online then
     begin
-      ShowMessage(JabberClient.GetVersion(FRosterList[TableExRoster.ItemIndex].JID).Version);
+      ShowMessage(JabberClient.GetVersion(FRosterList[TableExRoster.ItemIndex].JID).ToString);
     end;
   end;
 end;
@@ -1090,13 +1024,15 @@ end;
 procedure TFormMain.MenuItemContactGroupAddClick(Sender: TObject);
 var
   GroupName: string;
+  Item: TRosterItem;
 begin
   if InputQuery('Добавление новой группы', 'Название группы: ', GroupName) and (GroupName <> '') then
   begin
     if FRosterList.IndexIn(TableExRoster.ItemIndex) then
     begin
-      FRosterList[TableExRoster.ItemIndex].Groups.Add(GroupName);
-      JabberClient.RenameContact(FRosterList[TableExRoster.ItemIndex]);
+      Item := FRosterList[TableExRoster.ItemIndex];
+      Item.Groups.Add(GroupName);
+      JabberClient.RenameContact(Item);
     end;
   end;
 end;
@@ -1107,31 +1043,12 @@ begin
   Core.Settings.SetBool('System', 'Sound', MenuItemSound.Checked);
 end;
 
-procedure TFormMain.MenuItemStatusOnlineClick(Sender: TObject);
-begin
-  JabberClient.UserStatus := stNormal;
-  CheckConnect;
-end;
-
 procedure TFormMain.PopupMenuContactsPopup(Sender: TObject);
 var
   MenuItem: TMenuItem;
   ItemGroups: TStringList;
   i: integer;
 begin
-  //Пригласить в ...
-  MenuItemIviteToConf.Clear;
-  for i := 0 to FBookmarkList.Count - 1 do
-  begin
-    if FBookmarkList[i].BookmarkType <> btConference then
-      Continue;
-    MenuItem := PopupMenuContacts.CreateMenuItem;
-    MenuItem.Caption := FBookmarkList[i].Name;
-    MenuItem.OnClick := OnIviteToConfClick;
-    MenuItem.Tag := i;
-    MenuItemIviteToConf.Add(MenuItem);
-  end;
-
   //Группы
   MenuItemAddToGroup.Clear;
   for i := 0 to FGroupList.Count - 1 do
@@ -1187,6 +1104,8 @@ begin
 end;
 
 procedure TFormMain.Load;
+var
+  PNG: TPngImage;
 begin
   JabberClient.JID := Core.Settings.GetStr('Account', 'JID');
   JabberClient.UserServer := Core.Settings.GetStr('Account', 'Server', JabberClient.UserServer);
@@ -1198,6 +1117,13 @@ begin
   MenuItemSound.Checked := Core.Settings.GetBool('System', 'Sound', True);
 
   Core.Settings.GetParamWindow('Form', Self, [wpsCoord, wpsSize]);
+
+  LabelNick.Caption := JabberClient.UserNick;
+  LabelStatusText.Caption := JabberClient.UserStatusText;
+  PNG := CreateDefaultAvatar(JabberClient.JID, JabberClient.UserNick, FStatusMask, CreateColorFromJID(JabberClient.JID));
+  ImageAvatar.Picture.Assign(PNG);
+  PNG.Free;
+  SetImageStatus(stOffline, ImageShowType.Picture);
 end;
 
 procedure TFormMain.Button1Click(Sender: TObject);
@@ -1221,13 +1147,9 @@ var
   LastForm: TForm;
 begin
   if Assigned(FActiveChatForm) then
-  begin
-    LastForm := FActiveChatForm;
-  end
+    LastForm := FActiveChatForm
   else
-  begin
     LastForm := nil;
-  end;
   if not GetGroupChatByJID(ConfJID, FormChat) then
   begin
     FormChat := TFormConference.Create(Self);
@@ -1280,19 +1202,12 @@ begin
   Result := False;
 end;
 
-procedure TFormMain.sButton1Click(Sender: TObject);
-begin
-  PopupMenuStatus.Popup(FormMain.left + 51, FormMain.top + FormMain.Height - 370);
-end;
-
 procedure TFormMain.Start;
 begin
   {$IFDEF DEBUG}
   FormConsole.Show;
   {$ENDIF}
-  if JabberClient.CheckAccount then
-    CheckConnect
-  else if CheckAccount then
+  if CheckAccount then
     CheckConnect;
   Show;
 end;
@@ -1372,8 +1287,7 @@ begin
   Icon.Free;
 end;
 
-procedure TFormMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer;
-  var Accept: Boolean);
+procedure TFormMain.Splitter1CanResize(Sender: TObject; var NewSize: Integer; var Accept: Boolean);
 begin
   NewSize := Max(PanelLeft.Constraints.MinWidth, Min(NewSize, PanelLeft.Constraints.MaxWidth));
 end;
@@ -1481,7 +1395,7 @@ end;
 
 procedure TFormMain.MenuItemConsoleClick(Sender: TObject);
 begin
-  FormConsole.show;
+  FormConsole.Show;
 end;
 
 end.

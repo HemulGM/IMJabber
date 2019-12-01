@@ -73,9 +73,9 @@ uses
 
 {$R *.dfm}
 
-class procedure TFormChatRoom.SwowPopupWnd(text: string);
+class procedure TFormChatRoom.SwowPopupWnd(Text: string);
 begin
-  FormMain.TrayIcon.BalloonHint := text;
+  FormMain.TrayIcon.BalloonHint := Text;
   FormMain.TrayIcon.ShowBalloonHint;
 end;
 
@@ -141,7 +141,7 @@ begin
       FromType := mtMe;
       ShowFrom := False;
       From := Item.Nick;
-      text := Item.Body;
+      Text := Item.Body;
       Date := Now;
     end;
 
@@ -179,7 +179,6 @@ begin
   hChatMessages.Repaint;
   if (not Active) or (not Visible) then
   begin
-    FormMain.TrayIcon.Animate := True;
     FormMain.PlaySounds(sndMessage);
   end;
 end;

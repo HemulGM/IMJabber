@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{F4C7A1A5-978A-4A56-B327-DF736A592394}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="HGMJabber.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\Components\HGMComponents.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="HGMJabber">
+        <MSBuild Projects="HGMJabber.dproj"/>
+    </Target>
+    <Target Name="HGMJabber:Clean">
+        <MSBuild Projects="HGMJabber.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="HGMJabber:Make">
+        <MSBuild Projects="HGMJabber.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="HGMComponents">
+        <MSBuild Projects="..\Components\HGMComponents.dproj"/>
+    </Target>
+    <Target Name="HGMComponents:Clean">
+        <MSBuild Projects="..\Components\HGMComponents.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="HGMComponents:Make">
+        <MSBuild Projects="..\Components\HGMComponents.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="HGMJabber;HGMComponents"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="HGMJabber:Clean;HGMComponents:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="HGMJabber:Make;HGMComponents:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
